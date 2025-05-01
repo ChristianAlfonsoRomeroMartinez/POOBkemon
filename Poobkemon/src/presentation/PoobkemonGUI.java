@@ -61,34 +61,35 @@ public class PoobkemonGUI extends JFrame {
     private void start() {
         // Limpia el contenido actual
         getContentPane().removeAll();
+        getContentPane().setBackground(Color.BLACK); // Fondo negro para el content pane
+        
         // Panel principal con BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-         // --- Panel izquierdo (botones) ---
+    
+        // --- Panel izquierdo (botones) ---
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK); // Fondo negro
         buttonPanel.setLayout(new GridLayout(4, 1, 10, 15));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
-
+    
         Font buttonFont = new Font("Arial", Font.BOLD, 16);
-        // Aquí iría la lógica de inicio de tu aplicación
-
-            // Botones (solo NEW GAME habilitado inicialmente)
+        
+        // Botones (solo NEW GAME habilitado inicialmente)
         if (!false) {
-           JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
+            JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
             continueBtn.addActionListener(e -> continueGame());
             buttonPanel.add(continueBtn);
         }
-
+    
         JButton newGameBtn = createMenuButton("NEW GAME", buttonFont, true);
-
-        //NO OLVIDAR HACER LAS VERIFICACIONES DE QUE SI ES LA PRIMER PARTIDA NO HAY OLDAGAME
-        JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true); // Desactivado
-        JButton scoreBtn = createMenuButton("SCORE", buttonFont, true); // Desactivado
+        JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true);
+        JButton scoreBtn = createMenuButton("SCORE", buttonFont, true);
         
         newGameBtn.addActionListener(e -> startNewGame());
-        oldGameBtn.addActionListener(e -> {}); // Sin acción
-        scoreBtn.addActionListener(e -> {}); // Sin acción
+        oldGameBtn.addActionListener(e -> {});
+        scoreBtn.addActionListener(e -> {});
         
         buttonPanel.add(newGameBtn);
         buttonPanel.add(oldGameBtn);
@@ -96,18 +97,32 @@ public class PoobkemonGUI extends JFrame {
         
         // --- Panel derecho (logo Pokébola) ---
         JPanel logoPanel = new JPanel(new BorderLayout());
+        logoPanel.setBackground(Color.BLACK); // Fondo negro
+        
         try {
             String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
-            ImageIcon pokeballIcon = new ImageIcon(imagePath); // Load image from absolute path
-            JLabel logoLabel = new JLabel(new ImageIcon(pokeballIcon.getImage().getScaledInstance(450, 450, Image.SCALE_SMOOTH)));
+            ImageIcon pokeballIcon = new ImageIcon(imagePath);
+            
+            // Crear una versión recoloreada de la pokeball para mejor contraste
+            Image image = pokeballIcon.getImage();
+            Image newimg = image.getScaledInstance(450, 450, Image.SCALE_SMOOTH);
+            
+            // Crear un JLabel con la imagen
+            JLabel logoLabel = new JLabel(new ImageIcon(newimg));
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            logoLabel.setBackground(Color.BLACK); // Fondo negro
             logoPanel.add(logoLabel, BorderLayout.CENTER);
         } catch (Exception e) {
-            logoPanel.add(new JLabel("mult/pokeball.png", SwingConstants.CENTER));
+            JLabel errorLabel = new JLabel("Image not found", SwingConstants.CENTER);
+            errorLabel.setForeground(Color.WHITE); // Texto blanco para el mensaje de error
+            errorLabel.setBackground(Color.BLACK); // Fondo negro
+            errorLabel.setOpaque(true); // Hacer el fondo visible
+            logoPanel.add(errorLabel);
         }
         
         // --- Botón BACK abajo ---
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(Color.BLACK); // Fondo negro
         JButton backBtn = createMenuButton("BACK", buttonFont, true);
         backBtn.addActionListener(e -> returnToGame());
         bottomPanel.add(backBtn);
@@ -121,19 +136,39 @@ public class PoobkemonGUI extends JFrame {
         revalidate();
         repaint();
     }
-
+    
     private JButton createMenuButton(String text, Font font, boolean enabled) {
         JButton button = new JButton(text);
         button.setFont(font);
         button.setEnabled(enabled);
         button.setPreferredSize(new Dimension(180, 40));
-        button.setBackground(enabled ? new Color(70, 130, 180) : new Color(150, 150, 150));
+        
+        // Estilo de botones con tema oscuro
+        button.setBackground(enabled ? new Color(200, 50, 50) : new Color(80, 80, 80)); // Rojo para habilitados, gris oscuro para deshabilitados
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.BLACK, 1),
             BorderFactory.createEmptyBorder(5, 15, 5, 15)
         ));
+        
+        // Efecto hover para mejor interactividad
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (button.isEnabled()) {
+                    button.setBackground(new Color(230, 70, 70)); // Rojo más claro al pasar el mouse
+                }
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (button.isEnabled()) {
+                    button.setBackground(new Color(200, 50, 50)); // Volver al color original
+                }
+            }
+        });
+        
         return button;
     }
 
