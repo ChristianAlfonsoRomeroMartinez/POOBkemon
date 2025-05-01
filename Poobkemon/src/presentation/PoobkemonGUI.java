@@ -1,8 +1,8 @@
 package presentation;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class PoobkemonGUI extends JFrame {
 
@@ -97,7 +97,8 @@ public class PoobkemonGUI extends JFrame {
         // --- Panel derecho (logo Pokébola) ---
         JPanel logoPanel = new JPanel(new BorderLayout());
         try {
-            ImageIcon pokeballIcon = new ImageIcon("mult/pokeball.png"); // Asegúrate de tener esta imagen
+            String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
+            ImageIcon pokeballIcon = new ImageIcon(imagePath); // Load image from absolute path
             JLabel logoLabel = new JLabel(new ImageIcon(pokeballIcon.getImage().getScaledInstance(450, 450, Image.SCALE_SMOOTH)));
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
             logoPanel.add(logoLabel, BorderLayout.CENTER);
