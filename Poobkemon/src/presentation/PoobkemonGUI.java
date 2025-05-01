@@ -62,6 +62,7 @@ public class PoobkemonGUI extends JFrame {
     // Limpia el contenido actual
     getContentPane().removeAll();
     getContentPane().setBackground(Color.BLACK);
+    getContentPane().setLayout(new BorderLayout());
     
     // Panel principal con BorderLayout
     JPanel mainPanel = new JPanel(new BorderLayout());
@@ -71,10 +72,10 @@ public class PoobkemonGUI extends JFrame {
     // --- Panel izquierdo (botones) ---
     JPanel buttonPanel = new JPanel();
     buttonPanel.setBackground(Color.BLACK);
-    buttonPanel.setLayout(new GridLayout(4, 1, 15, 20)); // Más espacio entre botones
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40)); // Más margen derecho
+    buttonPanel.setLayout(new GridLayout(4, 1, 15, 20));
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40));
 
-    Font buttonFont = new Font("Arial", Font.BOLD, 18); // Tamaño de fuente aumentado
+    Font buttonFont = new Font("Arial", Font.BOLD, 18);
         
     // Botones
     if (!false) {
@@ -95,39 +96,78 @@ public class PoobkemonGUI extends JFrame {
     buttonPanel.add(oldGameBtn);
     buttonPanel.add(scoreBtn);
         
-    // --- Panel derecho (logo Pokébola) ---
-    JPanel logoPanel = new JPanel(new BorderLayout());
+    // --- Panel derecho (logo Pokébola) - Ahora responsive ---
+    JPanel logoPanel = new JPanel(new BorderLayout()) {
+        private Image originalImage;
+        private Image scaledImage;
+        
+        {
+            try {
+                String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
+                originalImage = new ImageIcon(imagePath).getImage();
+            } catch (Exception e) {
+                originalImage = null;
+            }
+        }
+        
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            
+            if (originalImage != null) {
+                // Calcular tamaño manteniendo relación de aspecto
+                int panelWidth = getWidth();
+                int panelHeight = getHeight();
+                
+                // Tamaño máximo para la imagen (80% del panel para dejar márgenes)
+                int maxWidth = (int)(panelWidth * 1.0);
+                int maxHeight = (int)(panelHeight * 1.0);
+                
+                // Calcular dimensiones manteniendo aspect ratio
+                double aspectRatio = (double)originalImage.getWidth(null) / originalImage.getHeight(null);
+                int newWidth = maxWidth;
+                int newHeight = (int)(newWidth / aspectRatio);
+                
+                if (newHeight > maxHeight) {
+                    newHeight = maxHeight;
+                    newWidth = (int)(newHeight * aspectRatio);
+                }
+                
+                // Escalar solo si es necesario
+                if (scaledImage == null || 
+                    scaledImage.getWidth(null) != newWidth || 
+                    scaledImage.getHeight(null) != newHeight) {
+                    scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                }
+                
+                // Centrar la imagen
+                int x = (panelWidth - newWidth) / 2;
+                int y = (panelHeight - newHeight) / 2;
+                g2.drawImage(scaledImage, x, y, this);
+            } else {
+                // Mostrar mensaje de error si no se carga la imagen
+                g2.setColor(new Color(200, 50, 50));
+                g2.setFont(new Font("Arial", Font.BOLD, 24));
+                String text = "POKEBALL IMAGE";
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(text)) / 2;
+                int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+                g2.drawString(text, x, y);
+            }
+        }
+    };
     logoPanel.setBackground(Color.BLACK);
     
-    try {
-        String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
-        ImageIcon pokeballIcon = new ImageIcon(imagePath);
-        
-        // Mejor escalado de imagen con renderizado suave
-        Image image = pokeballIcon.getImage();
-        Image newimg = image.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
-        
-        JLabel logoLabel = new JLabel(new ImageIcon(newimg)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                super.paintComponent(g2);
-            }
-        };
-        
-        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        logoLabel.setBackground(Color.BLACK);
-        logoPanel.add(logoLabel, BorderLayout.CENTER);
-    } catch (Exception e) {
-        JLabel errorLabel = new JLabel("POKEBALL IMAGE", SwingConstants.CENTER);
-        errorLabel.setForeground(new Color(200, 50, 50));
-        errorLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        errorLabel.setBackground(Color.BLACK);
-        errorLabel.setOpaque(true);
-        logoPanel.add(errorLabel);
-    }
+    // Listener para redimensionamiento
+    this.addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            logoPanel.repaint(); // Redibuja la imagen cuando cambia el tamaño
+        }
+    });
         
     // --- Botón BACK abajo ---
     JPanel bottomPanel = new JPanel(new BorderLayout());
