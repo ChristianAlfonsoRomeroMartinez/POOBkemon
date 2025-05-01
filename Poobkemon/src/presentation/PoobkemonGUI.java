@@ -222,7 +222,78 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
 
     private void startNewGame() {
-        System.out.println("Nueva partida");
+        // Limpia el contenido actual
+        getContentPane().removeAll();
+
+        // Panel principal con fondo negro
+        JPanel typeGamePanel = new JPanel();
+        typeGamePanel.setBackground(Color.BLACK);
+        typeGamePanel.setLayout(new BoxLayout(typeGamePanel, BoxLayout.Y_AXIS));
+        typeGamePanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+
+        // Título "Type Game"
+        JLabel titleLabel = new JLabel("Type Game");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        typeGamePanel.add(titleLabel);
+
+        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 40)));
+
+        // Botones rojos
+        Font buttonFont = new Font("Arial", Font.BOLD, 20);
+        Color buttonColor = new Color(200, 0, 0);
+
+        JButton humanVsHumanBtn = new JButton("Human vs Human");
+        humanVsHumanBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        humanVsHumanBtn.setFont(buttonFont);
+        humanVsHumanBtn.setBackground(buttonColor);
+        humanVsHumanBtn.setForeground(Color.WHITE);
+        humanVsHumanBtn.setFocusPainted(false);
+        humanVsHumanBtn.setMaximumSize(new Dimension(300, 50));
+        humanVsHumanBtn.addActionListener(e -> System.out.println("Human vs Human selected"));
+        typeGamePanel.add(humanVsHumanBtn);
+
+        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JButton humanVsMachineBtn = new JButton("Human vs Machine");
+        humanVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        humanVsMachineBtn.setFont(buttonFont);
+        humanVsMachineBtn.setBackground(buttonColor);
+        humanVsMachineBtn.setForeground(Color.WHITE);
+        humanVsMachineBtn.setFocusPainted(false);
+        humanVsMachineBtn.setMaximumSize(new Dimension(300, 50));
+        humanVsMachineBtn.addActionListener(e -> System.out.println("Human vs Machine selected"));
+        typeGamePanel.add(humanVsMachineBtn);
+
+        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JButton machineVsMachineBtn = new JButton("Machine vs Machine");
+        machineVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        machineVsMachineBtn.setFont(buttonFont);
+        machineVsMachineBtn.setBackground(buttonColor);
+        machineVsMachineBtn.setForeground(Color.WHITE);
+        machineVsMachineBtn.setFocusPainted(false);
+        machineVsMachineBtn.setMaximumSize(new Dimension(300, 50));
+        machineVsMachineBtn.addActionListener(e -> System.out.println("Machine vs Machine selected"));
+        typeGamePanel.add(machineVsMachineBtn);
+
+        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 40)));
+
+        // Botón Back para volver a la pantalla anterior
+        JButton backBtn = new JButton("Back");
+        backBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backBtn.setFont(buttonFont);
+        backBtn.setBackground(new Color(70, 130, 180));
+        backBtn.setForeground(Color.WHITE);
+        backBtn.setFocusPainted(false);
+        backBtn.setMaximumSize(new Dimension(150, 40));
+        backBtn.addActionListener(e -> returnToGame());
+        typeGamePanel.add(backBtn);
+
+        getContentPane().add(typeGamePanel);
+        revalidate();
+        repaint();
     }
 
     private void returnToGame() {
