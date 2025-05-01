@@ -59,118 +59,162 @@ public class PoobkemonGUI extends JFrame {
     }
 
     private void start() {
-        // Limpia el contenido actual
-        getContentPane().removeAll();
-        getContentPane().setBackground(Color.BLACK); // Fondo negro para el content pane
-        
-        // Panel principal con BorderLayout
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    // Limpia el contenido actual
+    getContentPane().removeAll();
+    getContentPane().setBackground(Color.BLACK);
     
-        // --- Panel izquierdo (botones) ---
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.BLACK); // Fondo negro
-        buttonPanel.setLayout(new GridLayout(4, 1, 10, 15));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
-    
-        Font buttonFont = new Font("Arial", Font.BOLD, 16);
+    // Panel principal con BorderLayout
+    JPanel mainPanel = new JPanel(new BorderLayout());
+    mainPanel.setBackground(Color.BLACK);
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+    // --- Panel izquierdo (botones) ---
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setBackground(Color.BLACK);
+    buttonPanel.setLayout(new GridLayout(4, 1, 15, 20)); // Más espacio entre botones
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40)); // Más margen derecho
+
+    Font buttonFont = new Font("Arial", Font.BOLD, 18); // Tamaño de fuente aumentado
         
-        // Botones (solo NEW GAME habilitado inicialmente)
-        if (!false) {
-            JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
-            continueBtn.addActionListener(e -> continueGame());
-            buttonPanel.add(continueBtn);
-        }
-    
-        JButton newGameBtn = createMenuButton("NEW GAME", buttonFont, true);
-        JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true);
-        JButton scoreBtn = createMenuButton("SCORE", buttonFont, true);
-        
-        newGameBtn.addActionListener(e -> startNewGame());
-        oldGameBtn.addActionListener(e -> {});
-        scoreBtn.addActionListener(e -> {});
-        
-        buttonPanel.add(newGameBtn);
-        buttonPanel.add(oldGameBtn);
-        buttonPanel.add(scoreBtn);
-        
-        // --- Panel derecho (logo Pokébola) ---
-        JPanel logoPanel = new JPanel(new BorderLayout());
-        logoPanel.setBackground(Color.BLACK); // Fondo negro
-        
-        try {
-            String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
-            ImageIcon pokeballIcon = new ImageIcon(imagePath);
-            
-            // Crear una versión recoloreada de la pokeball para mejor contraste
-            Image image = pokeballIcon.getImage();
-            Image newimg = image.getScaledInstance(450, 450, Image.SCALE_SMOOTH);
-            
-            // Crear un JLabel con la imagen
-            JLabel logoLabel = new JLabel(new ImageIcon(newimg));
-            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            logoLabel.setBackground(Color.BLACK); // Fondo negro
-            logoPanel.add(logoLabel, BorderLayout.CENTER);
-        } catch (Exception e) {
-            JLabel errorLabel = new JLabel("Image not found", SwingConstants.CENTER);
-            errorLabel.setForeground(Color.WHITE); // Texto blanco para el mensaje de error
-            errorLabel.setBackground(Color.BLACK); // Fondo negro
-            errorLabel.setOpaque(true); // Hacer el fondo visible
-            logoPanel.add(errorLabel);
-        }
-        
-        // --- Botón BACK abajo ---
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(Color.BLACK); // Fondo negro
-        JButton backBtn = createMenuButton("BACK", buttonFont, true);
-        backBtn.addActionListener(e -> returnToGame());
-        bottomPanel.add(backBtn);
-        
-        // --- Ensamblar componentes ---
-        mainPanel.add(buttonPanel, BorderLayout.WEST);
-        mainPanel.add(logoPanel, BorderLayout.CENTER);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-        
-        getContentPane().add(mainPanel);
-        revalidate();
-        repaint();
+    // Botones
+    if (!false) {
+        JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
+        continueBtn.addActionListener(e -> continueGame());
+        buttonPanel.add(continueBtn);
     }
+
+    JButton newGameBtn = createMenuButton("NEW GAME", buttonFont, true);
+    JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true);
+    JButton scoreBtn = createMenuButton("SCORE", buttonFont, true);
+        
+    newGameBtn.addActionListener(e -> startNewGame());
+    oldGameBtn.addActionListener(e -> {});
+    scoreBtn.addActionListener(e -> {});
+        
+    buttonPanel.add(newGameBtn);
+    buttonPanel.add(oldGameBtn);
+    buttonPanel.add(scoreBtn);
+        
+    // --- Panel derecho (logo Pokébola) ---
+    JPanel logoPanel = new JPanel(new BorderLayout());
+    logoPanel.setBackground(Color.BLACK);
     
-    private JButton createMenuButton(String text, Font font, boolean enabled) {
-        JButton button = new JButton(text);
-        button.setFont(font);
-        button.setEnabled(enabled);
-        button.setPreferredSize(new Dimension(180, 40));
+    try {
+        String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
+        ImageIcon pokeballIcon = new ImageIcon(imagePath);
         
-        // Estilo de botones con tema oscuro
-        button.setBackground(enabled ? new Color(200, 50, 50) : new Color(80, 80, 80)); // Rojo para habilitados, gris oscuro para deshabilitados
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 1),
-            BorderFactory.createEmptyBorder(5, 15, 5, 15)
-        ));
+        // Mejor escalado de imagen con renderizado suave
+        Image image = pokeballIcon.getImage();
+        Image newimg = image.getScaledInstance(400, 400, Image.SCALE_SMOOTH);
         
-        // Efecto hover para mejor interactividad
-        button.addMouseListener(new MouseAdapter() {
+        JLabel logoLabel = new JLabel(new ImageIcon(newimg)) {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                if (button.isEnabled()) {
-                    button.setBackground(new Color(230, 70, 70)); // Rojo más claro al pasar el mouse
-                }
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                super.paintComponent(g2);
+            }
+        };
+        
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        logoLabel.setBackground(Color.BLACK);
+        logoPanel.add(logoLabel, BorderLayout.CENTER);
+    } catch (Exception e) {
+        JLabel errorLabel = new JLabel("POKEBALL IMAGE", SwingConstants.CENTER);
+        errorLabel.setForeground(new Color(200, 50, 50));
+        errorLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        errorLabel.setBackground(Color.BLACK);
+        errorLabel.setOpaque(true);
+        logoPanel.add(errorLabel);
+    }
+        
+    // --- Botón BACK abajo ---
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+    bottomPanel.setBackground(Color.BLACK);
+    bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+    JButton backBtn = createMenuButton("BACK", buttonFont, true);
+    backBtn.addActionListener(e -> returnToGame());
+    
+    // Centrar el botón BACK
+    JPanel backBtnContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    backBtnContainer.setBackground(Color.BLACK);
+    backBtnContainer.add(backBtn);
+    bottomPanel.add(backBtnContainer, BorderLayout.EAST);
+        
+    // --- Ensamblar componentes ---
+    mainPanel.add(buttonPanel, BorderLayout.WEST);
+    mainPanel.add(logoPanel, BorderLayout.CENTER);
+    mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        
+    getContentPane().add(mainPanel);
+    revalidate();
+    repaint();
+}
+
+private JButton createMenuButton(String text, Font font, boolean enabled) {
+    JButton button = new JButton(text) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            // Fondo con gradiente y esquinas redondeadas
+            if (isEnabled()) {
+                GradientPaint gp = new GradientPaint(
+                    0, 0, new Color(180, 40, 40), 
+                    0, getHeight(), new Color(120, 20, 20)
+                );
+                g2.setPaint(gp);
+            } else {
+                g2.setColor(new Color(60, 60, 60));
             }
             
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (button.isEnabled()) {
-                    button.setBackground(new Color(200, 50, 50)); // Volver al color original
-                }
-            }
-        });
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
+            
+            // Borde con efecto de resaltado
+            g2.setColor(isEnabled() ? new Color(255, 255, 255, 120) : new Color(100, 100, 100));
+            g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
+            
+            super.paintComponent(g2);
+            g2.dispose();
+        }
         
-        return button;
-    }
+        @Override
+        protected void paintBorder(Graphics g) {
+            // No pintar borde por defecto
+        }
+    };
+    
+    button.setFont(font);
+    button.setEnabled(enabled);
+    button.setPreferredSize(new Dimension(200, 50)); // Tamaño aumentado
+    button.setContentAreaFilled(false);
+    button.setOpaque(false);
+    button.setForeground(Color.WHITE);
+    button.setFocusPainted(false);
+    button.setBorder(BorderFactory.createEmptyBorder(5, 25, 5, 25));
+    
+    // Efecto hover mejorado
+    button.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (button.isEnabled()) {
+                button.setForeground(new Color(255, 255, 200)); // Texto amarillo claro
+            }
+        }
+        
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (button.isEnabled()) {
+                button.setForeground(Color.WHITE);
+            }
+        }
+    });
+    
+    return button;
+}
 
     // Métodos de ejemplo para las acciones
     private void continueGame() {
