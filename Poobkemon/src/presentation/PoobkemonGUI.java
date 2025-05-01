@@ -263,167 +263,139 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
 
     private void startNewGame() {
         getContentPane().removeAll();
-
+    
         JPanel typeGamePanel = new JPanel(new BorderLayout());
         typeGamePanel.setBackground(Color.BLACK);
-        typeGamePanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-
+        typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    
         JLabel titleLabel = new JLabel("Type Game", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         typeGamePanel.add(titleLabel, BorderLayout.NORTH);
-
-        Font buttonFont = new Font("Arial", Font.BOLD, 20);
-
-        // Panel para botones en el centro
-        JPanel buttonPanel = new JPanel();
+    
+        Font buttonFont = new Font("Arial", Font.BOLD, 18);
+    
+        JPanel contentPanel = new JPanel(new BorderLayout(20, 0));
+        contentPanel.setBackground(Color.BLACK);
+    
+        // Paneles de imágenes responsivas (25% del ancho cada uno)
+        JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "walli.png");
+        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight())); // CAMBIO
+    
+        JPanel rightImagesPanel = createImagePanel("human.png", "walli.png", "walli.png");
+        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight())); // CAMBIO
+    
+        contentPanel.add(leftImagesPanel, BorderLayout.WEST);
+        contentPanel.add(rightImagesPanel, BorderLayout.EAST);
+    
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 20));
         buttonPanel.setBackground(Color.BLACK);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
-
-        // Botones con estilo igual a la pantalla de inicio
+    
         JButton humanVsHumanBtn = createMenuButton("Human vs Human", buttonFont, true);
-        humanVsHumanBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         humanVsHumanBtn.addActionListener(e -> System.out.println("Human vs Human selected"));
-
+    
         JButton humanVsMachineBtn = createMenuButton("Human vs Machine", buttonFont, true);
-        humanVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         humanVsMachineBtn.addActionListener(e -> System.out.println("Human vs Machine selected"));
-
+    
         JButton machineVsMachineBtn = createMenuButton("Machine vs Machine", buttonFont, true);
-        machineVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         machineVsMachineBtn.addActionListener(e -> System.out.println("Machine vs Machine selected"));
-
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+    
         buttonPanel.add(humanVsHumanBtn);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         buttonPanel.add(humanVsMachineBtn);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         buttonPanel.add(machineVsMachineBtn);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 40)));
-
-        // Panel izquierdo con imágenes verticales: human, machine, machine
-        JPanel leftImagesPanel = new JPanel();
-        leftImagesPanel.setLayout(new BoxLayout(leftImagesPanel, BoxLayout.Y_AXIS));
-        leftImagesPanel.setBackground(Color.BLACK);
-
-        JLabel leftHuman1 = new JLabel();
-        JLabel leftMachine1 = new JLabel();
-        JLabel leftMachine2 = new JLabel();
-
-        try {
-            String humanPath = System.getProperty("user.dir") + "/Poobkemon/mult/human.png";
-            ImageIcon humanIcon = new ImageIcon(humanPath);
-            Image humanImg = humanIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            leftHuman1.setIcon(new ImageIcon(humanImg));
-            leftMachine1.setIcon(new ImageIcon(humanImg));
-        } catch (Exception e) {
-            leftHuman1.setText("Human Img");
-            leftHuman1.setForeground(Color.WHITE);
-            leftMachine1.setText("Human Img");
-            leftMachine1.setForeground(Color.WHITE);
-        }
-
-        try {
-            String walliPath = System.getProperty("user.dir") + "/Poobkemon/mult/walli.png";
-            ImageIcon walliIcon = new ImageIcon(walliPath);
-            Image walliImg = walliIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            leftMachine2.setIcon(new ImageIcon(walliImg));
-        } catch (Exception e) {
-            leftMachine2.setText("Machine Img");
-            leftMachine2.setForeground(Color.WHITE);
-        }
-
-        leftHuman1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        leftMachine1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        leftMachine2.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        leftImagesPanel.add(leftHuman1);
-        leftImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        leftImagesPanel.add(leftMachine1);
-        leftImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        leftImagesPanel.add(leftMachine2);
-
-        // Panel derecho con imágenes verticales: human, machine, machine
-        JPanel rightImagesPanel = new JPanel();
-        rightImagesPanel.setLayout(new BoxLayout(rightImagesPanel, BoxLayout.Y_AXIS));
-        rightImagesPanel.setBackground(Color.BLACK);
-
-        JLabel rightHuman1 = new JLabel();
-        JLabel rightMachine2 = new JLabel();
-        JLabel rightMachine1 = new JLabel();
-
-        try {
-            String humanPath = System.getProperty("user.dir") + "/Poobkemon/mult/human.png";
-            ImageIcon humanIcon = new ImageIcon(humanPath);
-            Image humanImg = humanIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            rightHuman1.setIcon(new ImageIcon(humanImg));
-        } catch (Exception e) {
-            rightHuman1.setText("Human Img");
-            rightHuman1.setForeground(Color.WHITE);
-        }
-
-        try {
-            String walliPath = System.getProperty("user.dir") + "/Poobkemon/mult/walli.png";
-            ImageIcon walliIcon = new ImageIcon(walliPath);
-            Image walliImg = walliIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            rightMachine2.setIcon(new ImageIcon(walliImg));
-            rightMachine1.setIcon(new ImageIcon(walliImg));
-        } catch (Exception e) {
-            rightMachine2.setText("Machine Img");
-            rightMachine2.setForeground(Color.WHITE);
-            rightMachine1.setText("Machine Img");
-            rightMachine1.setForeground(Color.WHITE);
-        }
-
-        rightHuman1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rightMachine2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        rightMachine1.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        rightImagesPanel.add(rightHuman1);
-        rightImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        rightImagesPanel.add(rightMachine2);
-        rightImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        rightImagesPanel.add(rightMachine1);
-
-        // Panel principal de imágenes con botones en el centro
-        JPanel imagesPanel = new JPanel(new BorderLayout());
-        imagesPanel.setBackground(Color.BLACK);
-        imagesPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
-
-        imagesPanel.add(leftImagesPanel, BorderLayout.WEST);
-        imagesPanel.add(rightImagesPanel, BorderLayout.EAST);
-        imagesPanel.add(buttonPanel, BorderLayout.CENTER);
-
-        typeGamePanel.add(imagesPanel, BorderLayout.CENTER);
-
-        JButton backBtn = createMenuButton("Back", buttonFont, true);
-        backBtn.setBackground(new Color(70, 130, 180));
-        backBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backBtn.addActionListener(e -> returnToGame());
-
-        JPanel backPanel = new JPanel();
-        backPanel.setBackground(Color.BLACK);
-        backPanel.add(backBtn);
-
-        typeGamePanel.add(backPanel, BorderLayout.SOUTH);
-
+    
+        JPanel buttonContainer = new JPanel(new BorderLayout());
+        buttonContainer.setBackground(Color.BLACK);
+        buttonContainer.add(buttonPanel, BorderLayout.CENTER);
+        contentPanel.add(buttonContainer, BorderLayout.CENTER);
+    
+        typeGamePanel.add(contentPanel, BorderLayout.CENTER);
+    
+        JButton backBtn = createMenuButton("BACK", buttonFont, true);
+        backBtn.addActionListener(e -> start());
+        
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(backBtn);
+        
+        typeGamePanel.add(bottomPanel, BorderLayout.SOUTH);
+    
         getContentPane().add(typeGamePanel);
         revalidate();
         repaint();
     }
+    
+    // MÉTODO ACTUALIZADO PARA IMÁGENES RESPONSIVAS
+    private JPanel createImagePanel(String... imageNames) {
+        return new JPanel(new GridLayout(imageNames.length, 1, 0, 20)) {
+            private Image[] images = new Image[imageNames.length];
+            
+            {
+                setBackground(Color.BLACK);
+                setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                
+                for (int i = 0; i < imageNames.length; i++) {
+                    try {
+                        String path = System.getProperty("user.dir") + "/Poobkemon/mult/" + imageNames[i];
+                        images[i] = new ImageIcon(path).getImage();
+                    } catch (Exception e) {
+                        images[i] = null;
+                    }
+                }
+                
+                addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        repaint();
+                    }
+                });
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                
+                int cellWidth = getWidth();
+                int cellHeight = getHeight() / imageNames.length;
+                
+                for (int i = 0; i < imageNames.length; i++) {
+                    if (images[i] != null) {
+                        int originalWidth = images[i].getWidth(null);
+                        int originalHeight = images[i].getHeight(null);
+                        float aspectRatio = (float) originalWidth / originalHeight;
+                        
+                        int newWidth = (int) (cellWidth * 0.8);
+                        int newHeight = (int) (newWidth / aspectRatio);
+                        
+                        if (newHeight > cellHeight * 0.8) {
+                            newHeight = (int) (cellHeight * 0.8);
+                            newWidth = (int) (newHeight * aspectRatio);
+                        }
+                        
+                        int x = (cellWidth - newWidth) / 2;
+                        int y = (i * cellHeight) + (cellHeight - newHeight) / 2;
+                        
+                        g2.drawImage(images[i], x, y, newWidth, newHeight, this);
+                    }
+                }
+            }
+        };
+    }
+
+
 
     private void returnToGame() {
-        getContentPane().removeAll(); // Limpia el contenido actual
-        prepareButtons(); // Vuelve a preparar los botones iniciales
-        revalidate(); // Actualiza el diseño
-        repaint(); // Redibuja la ventana
+        getContentPane().removeAll();
+        prepareButtons();
+        revalidate();
+        repaint();
     }
-    
 
     private void exitApplication() {
         int confirm = JOptionPane.showConfirmDialog(this,"¿Estás seguro que quieres salir de Poobkemon?","Confirmar salida",JOptionPane.YES_NO_OPTION);
-        
         if (confirm == JOptionPane.YES_OPTION) {
             System.exit(0);
         }
