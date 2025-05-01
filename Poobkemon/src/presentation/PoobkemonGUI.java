@@ -222,74 +222,151 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
 
     private void startNewGame() {
-        // Limpia el contenido actual
         getContentPane().removeAll();
 
-        // Panel principal con fondo negro
-        JPanel typeGamePanel = new JPanel();
+        JPanel typeGamePanel = new JPanel(new BorderLayout());
         typeGamePanel.setBackground(Color.BLACK);
-        typeGamePanel.setLayout(new BoxLayout(typeGamePanel, BoxLayout.Y_AXIS));
         typeGamePanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // Título "Type Game"
-        JLabel titleLabel = new JLabel("Type Game");
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel titleLabel = new JLabel("Type Game", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        typeGamePanel.add(titleLabel);
+        typeGamePanel.add(titleLabel, BorderLayout.NORTH);
 
-        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 40)));
-
-        // Botones rojos
         Font buttonFont = new Font("Arial", Font.BOLD, 20);
-        Color buttonColor = new Color(200, 0, 0);
 
-        JButton humanVsHumanBtn = new JButton("Human vs Human");
+        // Panel para botones en el centro
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+
+        // Botones con estilo igual a la pantalla de inicio
+        JButton humanVsHumanBtn = createMenuButton("Human vs Human", buttonFont, true);
         humanVsHumanBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        humanVsHumanBtn.setFont(buttonFont);
-        humanVsHumanBtn.setBackground(buttonColor);
-        humanVsHumanBtn.setForeground(Color.WHITE);
-        humanVsHumanBtn.setFocusPainted(false);
-        humanVsHumanBtn.setMaximumSize(new Dimension(300, 50));
         humanVsHumanBtn.addActionListener(e -> System.out.println("Human vs Human selected"));
-        typeGamePanel.add(humanVsHumanBtn);
 
-        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JButton humanVsMachineBtn = new JButton("Human vs Machine");
+        JButton humanVsMachineBtn = createMenuButton("Human vs Machine", buttonFont, true);
         humanVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        humanVsMachineBtn.setFont(buttonFont);
-        humanVsMachineBtn.setBackground(buttonColor);
-        humanVsMachineBtn.setForeground(Color.WHITE);
-        humanVsMachineBtn.setFocusPainted(false);
-        humanVsMachineBtn.setMaximumSize(new Dimension(300, 50));
         humanVsMachineBtn.addActionListener(e -> System.out.println("Human vs Machine selected"));
-        typeGamePanel.add(humanVsMachineBtn);
 
-        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        JButton machineVsMachineBtn = new JButton("Machine vs Machine");
+        JButton machineVsMachineBtn = createMenuButton("Machine vs Machine", buttonFont, true);
         machineVsMachineBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        machineVsMachineBtn.setFont(buttonFont);
-        machineVsMachineBtn.setBackground(buttonColor);
-        machineVsMachineBtn.setForeground(Color.WHITE);
-        machineVsMachineBtn.setFocusPainted(false);
-        machineVsMachineBtn.setMaximumSize(new Dimension(300, 50));
         machineVsMachineBtn.addActionListener(e -> System.out.println("Machine vs Machine selected"));
-        typeGamePanel.add(machineVsMachineBtn);
 
-        typeGamePanel.add(Box.createRigidArea(new Dimension(0, 40)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        buttonPanel.add(humanVsHumanBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        buttonPanel.add(humanVsMachineBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        buttonPanel.add(machineVsMachineBtn);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 40)));
 
-        // Botón Back para volver a la pantalla anterior
-        JButton backBtn = new JButton("Back");
-        backBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backBtn.setFont(buttonFont);
+        // Panel izquierdo con imágenes verticales: human, machine, machine
+        JPanel leftImagesPanel = new JPanel();
+        leftImagesPanel.setLayout(new BoxLayout(leftImagesPanel, BoxLayout.Y_AXIS));
+        leftImagesPanel.setBackground(Color.BLACK);
+
+        JLabel leftHuman1 = new JLabel();
+        JLabel leftMachine1 = new JLabel();
+        JLabel leftMachine2 = new JLabel();
+
+        try {
+            String humanPath = System.getProperty("user.dir") + "/Poobkemon/mult/human.png";
+            ImageIcon humanIcon = new ImageIcon(humanPath);
+            Image humanImg = humanIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            leftHuman1.setIcon(new ImageIcon(humanImg));
+            leftMachine1.setIcon(new ImageIcon(humanImg));
+        } catch (Exception e) {
+            leftHuman1.setText("Human Img");
+            leftHuman1.setForeground(Color.WHITE);
+            leftMachine1.setText("Human Img");
+            leftMachine1.setForeground(Color.WHITE);
+        }
+
+        try {
+            String walliPath = System.getProperty("user.dir") + "/Poobkemon/mult/walli.png";
+            ImageIcon walliIcon = new ImageIcon(walliPath);
+            Image walliImg = walliIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            leftMachine2.setIcon(new ImageIcon(walliImg));
+        } catch (Exception e) {
+            leftMachine2.setText("Machine Img");
+            leftMachine2.setForeground(Color.WHITE);
+        }
+
+        leftHuman1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leftMachine1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leftMachine2.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        leftImagesPanel.add(leftHuman1);
+        leftImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftImagesPanel.add(leftMachine1);
+        leftImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftImagesPanel.add(leftMachine2);
+
+        // Panel derecho con imágenes verticales: human, machine, machine
+        JPanel rightImagesPanel = new JPanel();
+        rightImagesPanel.setLayout(new BoxLayout(rightImagesPanel, BoxLayout.Y_AXIS));
+        rightImagesPanel.setBackground(Color.BLACK);
+
+        JLabel rightHuman1 = new JLabel();
+        JLabel rightMachine2 = new JLabel();
+        JLabel rightMachine1 = new JLabel();
+
+        try {
+            String humanPath = System.getProperty("user.dir") + "/Poobkemon/mult/human.png";
+            ImageIcon humanIcon = new ImageIcon(humanPath);
+            Image humanImg = humanIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            rightHuman1.setIcon(new ImageIcon(humanImg));
+        } catch (Exception e) {
+            rightHuman1.setText("Human Img");
+            rightHuman1.setForeground(Color.WHITE);
+        }
+
+        try {
+            String walliPath = System.getProperty("user.dir") + "/Poobkemon/mult/walli.png";
+            ImageIcon walliIcon = new ImageIcon(walliPath);
+            Image walliImg = walliIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            rightMachine2.setIcon(new ImageIcon(walliImg));
+            rightMachine1.setIcon(new ImageIcon(walliImg));
+        } catch (Exception e) {
+            rightMachine2.setText("Machine Img");
+            rightMachine2.setForeground(Color.WHITE);
+            rightMachine1.setText("Machine Img");
+            rightMachine1.setForeground(Color.WHITE);
+        }
+
+        rightHuman1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightMachine2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightMachine1.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        rightImagesPanel.add(rightHuman1);
+        rightImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        rightImagesPanel.add(rightMachine2);
+        rightImagesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        rightImagesPanel.add(rightMachine1);
+
+        // Panel principal de imágenes con botones en el centro
+        JPanel imagesPanel = new JPanel(new BorderLayout());
+        imagesPanel.setBackground(Color.BLACK);
+        imagesPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
+
+        imagesPanel.add(leftImagesPanel, BorderLayout.WEST);
+        imagesPanel.add(rightImagesPanel, BorderLayout.EAST);
+        imagesPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        typeGamePanel.add(imagesPanel, BorderLayout.CENTER);
+
+        JButton backBtn = createMenuButton("Back", buttonFont, true);
         backBtn.setBackground(new Color(70, 130, 180));
-        backBtn.setForeground(Color.WHITE);
-        backBtn.setFocusPainted(false);
-        backBtn.setMaximumSize(new Dimension(150, 40));
+        backBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         backBtn.addActionListener(e -> returnToGame());
-        typeGamePanel.add(backBtn);
+
+        JPanel backPanel = new JPanel();
+        backPanel.setBackground(Color.BLACK);
+        backPanel.add(backBtn);
+
+        typeGamePanel.add(backPanel, BorderLayout.SOUTH);
 
         getContentPane().add(typeGamePanel);
         revalidate();
