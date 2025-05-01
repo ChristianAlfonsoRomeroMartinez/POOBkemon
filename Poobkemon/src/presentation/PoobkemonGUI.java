@@ -15,8 +15,8 @@ public class PoobkemonGUI extends JFrame {
 
     private void prepareElementsDimension() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int windowWidth = screenSize.width/2;
-        int windowHeight = screenSize.height/2;
+        int windowWidth = screenSize.width;
+        int windowHeight = screenSize.height;
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
     }
@@ -262,15 +262,66 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
 
     private void startNewGame() {
-        getContentPane().removeAll();
+        // Primero mostrar diálogo de selección de modo de juego
+        JPanel modeSelectionPanel = new JPanel(new BorderLayout());
+        modeSelectionPanel.setBackground(Color.BLACK);
+        modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
     
+        JLabel titleLabel = new JLabel("SELECT GAME MODE", SwingConstants.CENTER);
+        titleLabel.setForeground(Color.RED);
+        titleLabel.setFont(new Font("SERIF", Font.BOLD, 28));
+        modeSelectionPanel.add(titleLabel, BorderLayout.NORTH);
+    
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 20, 20));
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
+    
+        Font buttonFont = new Font("Arial", Font.BOLD, 20);
+    
+        // Botón para modo Normal
+        JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true);
+        normalModeBtn.setPreferredSize(new Dimension(300, 80));
+        normalModeBtn.addActionListener(e -> {
+            getContentPane().removeAll();
+            showGameTypeSelection("NORMAL"); // Pasar el modo seleccionado
+        });
+    
+        // Botón para modo Survival
+        JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true);
+        normalModeBtn.setPreferredSize(new Dimension(300, 80));
+        survivalModeBtn.addActionListener(e -> {
+            getContentPane().removeAll();
+            showGameTypeSelection("SURVIVAL"); // Pasar el modo seleccionado
+        });
+    
+        buttonPanel.add(normalModeBtn);
+        buttonPanel.add(survivalModeBtn);
+    
+        // Botón Back
+        JButton backBtn = createMenuButton("BACK", buttonFont, true);
+        backBtn.addActionListener(e -> start());
+        
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.add(backBtn);
+    
+        modeSelectionPanel.add(buttonPanel, BorderLayout.CENTER);
+        modeSelectionPanel.add(bottomPanel, BorderLayout.SOUTH);
+    
+        getContentPane().removeAll();
+        getContentPane().add(modeSelectionPanel);
+        revalidate();
+        repaint();
+    }
+    
+    private void showGameTypeSelection(String gameMode) {
         JPanel typeGamePanel = new JPanel(new BorderLayout());
         typeGamePanel.setBackground(Color.BLACK);
         typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-        JLabel titleLabel = new JLabel("GAME MODE", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.red);
-        titleLabel.setFont(new Font("SERIF ", Font.BOLD, 28));
+        JLabel titleLabel = new JLabel("GAME TYPE (" + gameMode + " MODE)", SwingConstants.CENTER);
+        titleLabel.setForeground(Color.RED);
+        titleLabel.setFont(new Font("SERIF", Font.BOLD, 28));
         typeGamePanel.add(titleLabel, BorderLayout.NORTH);
     
         Font buttonFont = new Font("Arial", Font.BOLD, 18);
@@ -280,10 +331,10 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     
         // Paneles de imágenes responsivas (25% del ancho cada uno)
         JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "walli.png");
-        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight())); // CAMBIO
+        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
         JPanel rightImagesPanel = createImagePanel("human.png", "walli.png", "walli.png");
-        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight())); // CAMBIO
+        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
         contentPanel.add(leftImagesPanel, BorderLayout.WEST);
         contentPanel.add(rightImagesPanel, BorderLayout.EAST);
@@ -293,13 +344,22 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
     
         JButton humanVsHumanBtn = createMenuButton("Human vs Human", buttonFont, true);
-        humanVsHumanBtn.addActionListener(e -> System.out.println("Human vs Human selected"));
+        humanVsHumanBtn.addActionListener(e -> {
+            System.out.println(gameMode + " mode - Human vs Human selected");
+            // Aquí iniciarías el juego con los parámetros seleccionados
+        });
     
         JButton humanVsMachineBtn = createMenuButton("Human vs Machine", buttonFont, true);
-        humanVsMachineBtn.addActionListener(e -> System.out.println("Human vs Machine selected"));
+        humanVsMachineBtn.addActionListener(e -> {
+            System.out.println(gameMode + " mode - Human vs Machine selected");
+            // Aquí iniciarías el juego con los parámetros seleccionados
+        });
     
         JButton machineVsMachineBtn = createMenuButton("Machine vs Machine", buttonFont, true);
-        machineVsMachineBtn.addActionListener(e -> System.out.println("Machine vs Machine selected"));
+        machineVsMachineBtn.addActionListener(e -> {
+            System.out.println(gameMode + " mode - Machine vs Machine selected");
+            // Aquí iniciarías el juego con los parámetros seleccionados
+        });
     
         buttonPanel.add(humanVsHumanBtn);
         buttonPanel.add(humanVsMachineBtn);
@@ -313,7 +373,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         typeGamePanel.add(contentPanel, BorderLayout.CENTER);
     
         JButton backBtn = createMenuButton("BACK", buttonFont, true);
-        backBtn.addActionListener(e -> start());
+        backBtn.addActionListener(e -> startNewGame()); // Volver a selección de modo
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(Color.BLACK);
