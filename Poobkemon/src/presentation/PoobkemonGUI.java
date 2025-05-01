@@ -74,7 +74,7 @@ public class PoobkemonGUI extends JFrame {
         // Aquí iría la lógica de inicio de tu aplicación
 
             // Botones (solo NEW GAME habilitado inicialmente)
-        if (!true) {
+        if (!false) {
            JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
             continueBtn.addActionListener(e -> continueGame());
             buttonPanel.add(continueBtn);
@@ -102,7 +102,7 @@ public class PoobkemonGUI extends JFrame {
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
             logoPanel.add(logoLabel, BorderLayout.CENTER);
         } catch (Exception e) {
-            logoPanel.add(new JLabel("LOGO POKEBOLA", SwingConstants.CENTER));
+            logoPanel.add(new JLabel("mult/pokeball.png", SwingConstants.CENTER));
         }
         
         // --- Botón BACK abajo ---
@@ -146,8 +146,10 @@ public class PoobkemonGUI extends JFrame {
     }
 
     private void returnToGame() {
-        System.out.println("Volver al juego");
-        // Aquí iría la lógica para cerrar el menú de pausa
+        getContentPane().removeAll(); // Limpia el contenido actual
+        prepareButtons(); // Vuelve a preparar los botones iniciales
+        revalidate(); // Actualiza el diseño
+        repaint(); // Redibuja la ventana
     }
     
 
