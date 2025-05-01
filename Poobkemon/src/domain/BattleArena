@@ -1,6 +1,53 @@
 
 public class BattleArena{
-    public static int turn;
+    public static int turn = 0;
     public static int neccesaryTime = 20;
-    publc
+    public static int currentTime = 0;
+    public String gameMode;
+    public String typePlayers;
+    public boolean finishedBattle;
+    public boolean isGamePaused;
+    private ArrayList<Coach> Players = new ArrayList<>(2);
+
+    /**Constructor de la clase Arena de batalla 
+     * @param gameMode Modo de juego ("Normal" o "Survvival")
+     * @param typePlayers Tipo de juego ("Player vs Player", "Player vs Machine", "Machine vs Machine")
+    */
+    public void BattleArena(String gameMode, String typePlayers){
+        this.finishedBattle = false;
+        this.isGamePaused = false;
+        this.Players = new ArrayList<>();
+        this.gameMode = gameMode;
+        this.typePlayers = typePlayers;
+        
+    }
+        private void changeTurn(){
+            this.turn++;
+        }
+
+        public boolean isFinishedBattle(){
+            return this.finishedBattle;
+        }
+
+        public void setGamePaused(boolean isGamePaused){
+            this.isGamePaused = isGamePaused;
+        }
+
+        public boolean isGamePaused(){
+            return this.isGamePaused;
+        }
+
+        public void setFinishedBattle(boolean finishedBattle){
+            this.finishedBattle = finishedBattle;
+        }
+
+        public void saveGame(){
+            // Save game logic here
+        }
+
+        public void loadGame(){
+            // Load game logic here
+        }
+
+
 }

@@ -1,0 +1,22 @@
+
+
+public class Coach{
+    private int score;
+    private Pokemon currentPokemon;
+    private ArrayList<String> poobkemonList = new ArrayList<>(); 
+
+    public Coach(String name, int id, int level, int score, int numberOfPoobkemon) {;
+        this.score = score;
+
+    }
+
+    public int getscore() {
+        return score;
+    }
+
+    public void setscore(int score) {
+        this.score = score;
+    }
+
+
+}
