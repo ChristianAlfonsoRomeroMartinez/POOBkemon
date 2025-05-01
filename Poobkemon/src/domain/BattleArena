@@ -1,0 +1,6 @@
+
+public class BattleArena{
+    public static int turn;
+    public static int neccesaryTime = 20;
+    publc
+}
