@@ -123,8 +123,8 @@ public class PoobkemonGUI extends JFrame {
                 int panelHeight = getHeight();
                 
                 // Tamaño máximo para la imagen (80% del panel para dejar márgenes)
-                int maxWidth = (int)(panelWidth * 1.0);
-                int maxHeight = (int)(panelHeight * 1.0);
+                int maxWidth = (int)(panelWidth * 1.5);
+                int maxHeight = (int)(panelHeight * 1.5);
                 
                 // Calcular dimensiones manteniendo aspect ratio
                 double aspectRatio = (double)originalImage.getWidth(null) / originalImage.getHeight(null);
