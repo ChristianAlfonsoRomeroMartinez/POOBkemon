@@ -1,0 +1,41 @@
+public class poobkemon[
+    private String name;
+    private int level;
+    private String type;
+    private int healthPoints;
+    private int attackPoints;
+    private int defensePoints;
+
+    public Poobkemon(String name, int level, String type, int healthPoints, int attackPoints, int defensePoints) {
+        this.name = name;
+        this.level = level;
+        this.type = type;
+        this.healthPoints = healthPoints;
+        this.attackPoints = attackPoints;
+        this.defensePoints = defensePoints;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public int getHealthPoints() {
+        return healthPoints;
+    }
+
+    public int getAttackPoints() {
+        return attackPoints;
+    }
+
+    public int getDefensePoints() {
+        return defensePoints;
+    }
+]
