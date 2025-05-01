@@ -15,8 +15,8 @@ public class PoobkemonGUI extends JFrame {
 
     private void prepareElementsDimension() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int windowWidth = screenSize.width / 2;
-        int windowHeight = screenSize.height / 2;
+        int windowWidth = screenSize.width/2;
+        int windowHeight = screenSize.height/2;
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
     }
