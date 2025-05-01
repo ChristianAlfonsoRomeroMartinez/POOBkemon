@@ -268,9 +268,9 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         typeGamePanel.setBackground(Color.BLACK);
         typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-        JLabel titleLabel = new JLabel("Type Game", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        JLabel titleLabel = new JLabel("GAME MODE", SwingConstants.CENTER);
+        titleLabel.setForeground(Color.red);
+        titleLabel.setFont(new Font("SERIF ", Font.BOLD, 28));
         typeGamePanel.add(titleLabel, BorderLayout.NORTH);
     
         Font buttonFont = new Font("Arial", Font.BOLD, 18);
