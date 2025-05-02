@@ -15,13 +15,27 @@ import javax.swing.border.Border;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
+    private String font = "Times New Roman";
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
         prepareElementsDimension();
         prepareBackground();
+        preprareMenu();
         prepareButtons();
         setupWindowListeners();
+    }
+
+    private void preprareMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("Options");
+        JMenuItem music = new JMenuItem("Pause Music");
+
+        menuBar.add(fileMenu);
+        fileMenu.add(music);
+
+        
+        setJMenuBar(menuBar);
     }
 
     private void prepareBackground(){
@@ -86,7 +100,7 @@ public class PoobkemonGUI extends JFrame {
         };
         
         // Configuración del botón (sin cambios)
-        startButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // Cambiado a Arial por si no tienes la fuente Pokémon
+        startButton.setFont(new Font(font, Font.BOLD, 16)); // Cambiado a Arial por si no tienes la fuente Pokémon
         startButton.setForeground(textColor);
         startButton.setBorder(compoundBorder);
         startButton.setContentAreaFilled(false);
@@ -120,7 +134,7 @@ public class PoobkemonGUI extends JFrame {
             }
         };
         
-        exitButton.setFont(new Font("Times New Roman", Font.BOLD, 16));
+        exitButton.setFont(new Font(font, Font.BOLD, 16));
         exitButton.setForeground(textColor);
         exitButton.setBorder(compoundBorder);
         exitButton.setContentAreaFilled(false);
@@ -205,7 +219,7 @@ public class PoobkemonGUI extends JFrame {
         buttonPanel.setLayout(new GridLayout(4, 1, 15, 20));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40));
 
-        Font buttonFont = new Font("Arial", Font.BOLD, 18);
+        Font buttonFont = new Font(font, Font.BOLD, 18);
             
         // Botones
         if (!false) {
@@ -221,6 +235,7 @@ public class PoobkemonGUI extends JFrame {
         newGameBtn.addActionListener(e -> startNewGame());
         oldGameBtn.addActionListener(e -> {});
         scoreBtn.addActionListener(e -> {});
+        
             
         buttonPanel.add(newGameBtn);
         buttonPanel.add(oldGameBtn);
@@ -333,8 +348,8 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
             // Fondo con gradiente y esquinas redondeadas
             if (isEnabled()) {
                 GradientPaint gp = new GradientPaint(
-                    0, 0, new Color(180, 40, 40), 
-                    0, getHeight(), new Color(120, 20, 20)
+                    0, 0, new Color(35, 120, 65),
+                    0, getHeight(), new Color(70, 160, 90)
                 );
                 g2.setPaint(gp);
             } else {
@@ -395,7 +410,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         // Primero mostrar diálogo de selección de modo de juego
         JPanel modeSelectionPanel = new JPanel(new BorderLayout());
         modeSelectionPanel.setBackground(Color.BLACK);
-        modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     
         JLabel titleLabel = new JLabel("SELECT GAME MODE", SwingConstants.CENTER);
         titleLabel.setForeground(Color.RED);
@@ -406,7 +421,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         buttonPanel.setBackground(Color.BLACK);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
     
-        Font buttonFont = new Font("Arial", Font.BOLD, 20);
+        Font buttonFont = new Font(font, Font.BOLD, 20);
     
         // Botón para modo Normal
         JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true);
