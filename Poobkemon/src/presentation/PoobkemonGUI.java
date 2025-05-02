@@ -58,7 +58,7 @@ public class PoobkemonGUI extends JFrame {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new GridLayout(3, 1, 0, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(150, 300, 10, 300));
+        panel.setBorder(BorderFactory.createEmptyBorder(150, 270, 10, 270));
     
         // Paleta de colores corregida
         Color buttonColor = new Color(35, 120, 65);
