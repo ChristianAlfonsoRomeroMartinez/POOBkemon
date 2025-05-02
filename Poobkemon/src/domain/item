@@ -1,0 +1,24 @@
+
+public class item{
+    private String name;
+    private String description;
+    private int effectValue;
+
+    public item(String name, String description, int effectValue) {
+        this.name = name;
+        this.description = description;
+        this.effectValue = effectValue;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public int getEffectValue() {
+        return this.effectValue;
+    }   
+}
