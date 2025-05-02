@@ -16,6 +16,7 @@ import javax.swing.border.Border;
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
     private String font = "Times New Roman";
+    private ReproductorMusica reproductor;
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
@@ -31,6 +32,16 @@ public class PoobkemonGUI extends JFrame {
         JMenu fileMenu = new JMenu("Options");
         JMenuItem music = new JMenuItem("Pause Music");
 
+        music.addActionListener(e -> {
+            if (reproductor.estaReproduciendo()) {
+                reproductor.detener();
+                music.setText("Play Music");
+            } else {
+                reproductor.reproducir();
+                music.setText("Pause Music");
+            }
+        });
+        
         menuBar.add(fileMenu);
         fileMenu.add(music);
 
@@ -42,7 +53,7 @@ public class PoobkemonGUI extends JFrame {
         fondo = new FondoAnimado("Poobkemon/mult/pokemonIntro.gif");
         fondo.setLayout(new BorderLayout());
         setContentPane(fondo);
-        new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
+        reproductor = new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
     }
 
 
@@ -175,6 +186,7 @@ public class PoobkemonGUI extends JFrame {
     // Clase que reproduce un archivo WAV en bucle
     class ReproductorMusica {
         private Clip clip;
+        private boolean estaReproduciendo = false;
 
         public ReproductorMusica(String rutaArchivo) {
             try {
@@ -191,13 +203,19 @@ public class PoobkemonGUI extends JFrame {
         public void detener() {
             if (clip != null && clip.isRunning()) {
                 clip.stop();
+                estaReproduciendo = false;
             }
         }
     
         public void reproducir() {
             if (clip != null) {
                 clip.start();
+                estaReproduciendo = true;
             }
+        }
+        
+        public boolean estaReproduciendo() {
+            return estaReproduciendo;
         }
     }
 
