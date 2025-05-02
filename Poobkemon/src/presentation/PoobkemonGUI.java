@@ -2,48 +2,65 @@ package presentation;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 public class PoobkemonGUI extends JFrame {
+    private FondoAnimado fondo;
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
         prepareElementsDimension();
+        prepareBackground();
         prepareButtons();
         setupWindowListeners();
     }
 
+    private void prepareBackground(){
+        fondo = new FondoAnimado("Poobkemon/mult/pokemonIntro.gif");
+        fondo.setLayout(new BorderLayout());
+        setContentPane(fondo);
+        new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
+    }
+
+
     private void prepareElementsDimension() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int windowWidth = screenSize.width;
-        int windowHeight = screenSize.height;
+        int windowWidth = screenSize.width/2;
+        int windowHeight = screenSize.height/2;
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
     }
 
     private void prepareButtons() {
         JPanel panel = new JPanel();
+        panel.setOpaque(false); // Para que el fondo GIF se vea a través
         panel.setLayout(new GridLayout(3, 1, 0, 20));
-        panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-
-        // Título
+        panel.setBorder(BorderFactory.createEmptyBorder(50, 150, 50, 150));
+    
         JLabel title = new JLabel("Poobkemon 2025-1", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(Color.WHITE); // Mejor contraste con el fondo
         panel.add(title);
-
-        // Botón Start
+    
         JButton startButton = new JButton("Start");
         startButton.setFont(new Font("Arial", Font.PLAIN, 18));
         startButton.addActionListener(e -> start());
         panel.add(startButton);
-
-        // Botón Exit
+    
         JButton exitButton = new JButton("Exit");
         exitButton.setFont(new Font("Arial", Font.PLAIN, 18));
         exitButton.addActionListener(e -> exitApplication());
         panel.add(exitButton);
-
-        getContentPane().add(panel, BorderLayout.CENTER);
+    
+        fondo.add(panel, BorderLayout.SOUTH); // Ahora lo agregas al panel fondo
     }
 
     private void setupWindowListeners() {
@@ -57,6 +74,51 @@ public class PoobkemonGUI extends JFrame {
         });
 
     }
+
+    // Clase para dibujar el fondo animado y escalarlo
+    class FondoAnimado extends JPanel {
+        private final ImageIcon gif;
+
+        public FondoAnimado(String rutaGIF) {
+            gif = new ImageIcon(rutaGIF);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(gif.getImage(), 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+
+    // Clase que reproduce un archivo WAV en bucle
+    class ReproductorMusica {
+        private Clip clip;
+
+        public ReproductorMusica(String rutaArchivo) {
+            try {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(rutaArchivo));
+                clip = AudioSystem.getClip();
+
+                clip.open(audioStream);
+                clip.loop(Clip.LOOP_CONTINUOUSLY); // Repetir sin fin
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                System.err.println("Error al reproducir música: " + e.getMessage());
+            }
+        }
+
+        public void detener() {
+            if (clip != null && clip.isRunning()) {
+                clip.stop();
+            }
+        }
+    
+        public void reproducir() {
+            if (clip != null) {
+                clip.start();
+            }
+        }
+    }
+
 
     private void start() {
         // Limpia el contenido actual
@@ -330,10 +392,10 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         contentPanel.setBackground(Color.BLACK);
     
         // Paneles de imágenes responsivas (25% del ancho cada uno)
-        JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "walli.png");
+        JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "porygon.png");
         leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
-        JPanel rightImagesPanel = createImagePanel("human.png", "walli.png", "walli.png");
+        JPanel rightImagesPanel = createImagePanel("human.png", "porygon.png", "porygon.png");
         rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
         contentPanel.add(leftImagesPanel, BorderLayout.WEST);
