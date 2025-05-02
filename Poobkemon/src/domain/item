@@ -1,12 +1,12 @@
-public class item{
+public class Item {
     private String name;
     private String description;
     private int id;
     private int quantity;
-    private String type;
-    private String effect;
+    private String type; // Healing, Status Cure, Stat Boost
+    private String effect; // Specific effect (e.g., "Heal 50 HP", "Cure Poison", "Increase Speed by 20")
 
-    public item(String name, String description, int id, int quantity, String type, String effect) {
+    public Item(String name, String description, int id, int quantity, String type, String effect) {
         this.name = name;
         this.description = description;
         this.id = id;
@@ -15,51 +15,25 @@ public class item{
         this.effect = effect;
     }
 
-    public String getName() {
-        return name;
-    }
+    // Getters y setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getEffect() { return effect; }
+    public void setEffect(String effect) { this.effect = effect; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getEffect() {
-        return effect;
-    }
-
-    public void setEffect(String effect) {
-        this.effect = effect;
+    public void use(Pokemon pokemon) {
+        // Implement item usage logic here based on the item's effect
+        // Example:
+        if (type.equals("Healing")) {
+            // Logic to heal the Pokemon
+        }
     }
 }

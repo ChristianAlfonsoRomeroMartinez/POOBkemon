@@ -1,1 +1,27 @@
-public class attack
+public class Attack {
+    private String name;
+    private String type; // Physical, Special, Status
+    private int power;
+    private double accuracy; // Probabilidad de precision (0.0 a 1.0)
+    private String effect; // Description of the effect (e.g., "Poison", "Paralyze", "Increase Speed")
+
+    public Attack(String name, String type, int power, double accuracy, String effect) {
+        this.name = name;
+        this.type = type;
+        this.power = power;
+        this.accuracy = accuracy;
+        this.effect = effect;
+    }
+
+    // Getters y setters
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public int getPower() { return power; }
+    public void setPower(int power) { this.power = power; }
+    public double getAccuracy() { return accuracy; }
+    public void setAccuracy(double accuracy) { this.accuracy = accuracy; }
+    public String getEffect() { return effect; }
+    public void setEffect(String effect) { this.effect = effect; }
+}

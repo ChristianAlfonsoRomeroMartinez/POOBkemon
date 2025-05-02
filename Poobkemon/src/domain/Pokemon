@@ -1,29 +1,81 @@
+import java.util.ArrayList;
+
 public class Pokemon {
     private String name;
     private int level;
     private int id;
-    private int healthPoints;
-    private int attackPoints;
-    private int defensePoints;
-    private int speedPoints;
+    private int maxHealthPoints; // PS maximos
+    private int currentHealthPoints; // PS actuales
+    private int attack;
+    private int defense;
+    private int specialAttack;
+    private int specialDefense;
+    private double evasion; // Probabilidad de evasion (0.0 a 1.0)
+    private double accuracy; // Probabilidad de precision (0.0 a 1.0)
+    private int speed;
     private String type;
-    private String statusCondition;
-    private String move1;
-    private String move2;
-    private String move3;
-    private String move4;
+    private StatusCondition statusCondition;
+    private ArrayList<Attack> attacks;
 
-    public Pokemon(String name, int level, int id, int healthPoints, int attackPoints, int defensePoints, int speedPoints, String type, String statusCondition, String move1, String move2, String move3, String move4) {
+    public Pokemon(String name, int level, int id, int maxHealthPoints, int attack, int defense, int specialAttack, int specialDefense,
+                   double evasion, double accuracy, int speed, String type, ArrayList<Attack> attacks) {
         this.name = name;
         this.level = level;
         this.id = id;
-        this.healthPoints = healthPoints;
-        this.attackPoints = attackPoints;
-        this.defensePoints = defensePoints;
-        this.speedPoints = speedPoints;
+        this.maxHealthPoints = maxHealthPoints;
+        this.currentHealthPoints = maxHealthPoints; // Inicialmente, la vida actual es la maxima
+        this.attack = attack;
+        this.defense = defense;
+        this.specialAttack = specialAttack;
+        this.specialDefense = specialDefense;
+        this.evasion = evasion;
+        this.accuracy = accuracy;
+        this.speed = speed;
         this.type = type;
-        this.statusCondition = statusCondition;
-        this.move1 = move1;
-        this.move2 = move2;
-        this.move3 = move3;
-        this.move4 = move4;
+        this.statusCondition = StatusCondition.NORMAL; // Inicialmente, no tiene condicion de estado
+        this.attacks = attacks;
+    }
+
+    // Getters y setters para todos los atributos
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public int getLevel() { return level; }
+    public void setLevel(int level) { this.level = level; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getMaxHealthPoints() { return maxHealthPoints; }
+    public void setMaxHealthPoints(int maxHealthPoints) { this.maxHealthPoints = maxHealthPoints; }
+    public int getCurrentHealthPoints() { return currentHealthPoints; }
+    public void setCurrentHealthPoints(int currentHealthPoints) { this.currentHealthPoints = currentHealthPoints; }
+    public int getAttack() { return attack; }
+    public void setAttack(int attack) { this.attack = attack; }
+    public int getDefense() { return defense; }
+    public void setDefense(int defense) { this.defense = defense; }
+    public int getSpecialAttack() { return specialAttack; }
+    public void setSpecialAttack(int specialAttack) { this.specialAttack = specialAttack; }
+    public int getSpecialDefense() { return specialDefense; }
+    public void setSpecialDefense(int specialDefense) { this.specialDefense = specialDefense; }
+    public double getEvasion() { return evasion; }
+    public void setEvasion(double evasion) { this.evasion = evasion; }
+    public double getAccuracy() { return accuracy; }
+    public void setAccuracy(double accuracy) { this.accuracy = accuracy; }
+    public int getSpeed() { return speed; }
+    public void setSpeed(int speed) { this.speed = speed; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public StatusCondition getStatusCondition() { return statusCondition; }
+    public void setStatusCondition(StatusCondition statusCondition) { this.statusCondition = statusCondition; }
+    public ArrayList<Attack> getAttacks() { return attacks; }
+    public void setAttacks(ArrayList<Attack> attacks) { this.attacks = attacks; }
+
+    public boolean isFainted() {
+        return currentHealthPoints <= 0;
+    }
+
+    public void receiveDamage(int damage) {
+        currentHealthPoints -= damage;
+        if (currentHealthPoints < 0) {
+            currentHealthPoints = 0;
+        }
+    }
+}
