@@ -1,5 +1,7 @@
 package domain;
 
+import java.util.ArrayList;
+
 public class Pokemon{
     private String name;
     private ArrayList<Effect> efectos = new ArrayList<>();{}

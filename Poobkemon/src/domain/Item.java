@@ -4,12 +4,15 @@ public class Item{
     private String name;
     private String description;
     private int effectValue;
-    private String type; // Type of item (e.g., healing, attack boost, etc.)
+    private int applyTo; // 0: vida, 1: ataque, 2: defensa, 3: ataqueEspecial, 4: defensaEspecial, 5: velocidad, 6: precision, 7: evasión
 
-    public item(String name, String description, int effectValue) {
+
+    public Item(String name, String description, int effectValue, int applyTo) {
         this.name = name;
         this.description = description;
         this.effectValue = effectValue;
+        this.applyTo = applyTo;
+
     }
 
     public String getName() {
@@ -24,20 +27,8 @@ public class Item{
         return this.effectValue;
     }   
 
-    public void applyItemEffect(Pokemon pokemon, String type) {
-        switch (type) {
-            case "healing":
-            pokemon.setHealth(pokemon.getHealth() + this.effectValue);
-                break;
-            case "attack":
-                // Implement attack boost logic here
-                break;
-            case "defense":
-                // Implement defense boost logic here
-                break;
-            default:
-                System.out.println("Unknown item type.");
-        }
-        
+    public void applyItemEffect(Pokemon pokemon ) {
+        // vida ataque defensa ataqueEspecial defensaEspecial velocidad precision evasión
+        pokemon.applyItemEffect(this.effectValue, this.applyTo);
     }
 }
