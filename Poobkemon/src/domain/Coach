@@ -2,7 +2,7 @@ package domain;
 
 import java.util.ArrayList;
 public class Coach {
-    private ArrayList<Pokemon> pokemons = new ArrayList<>();
+    private Pokemon[6] pokemons = new ArrayList<>();
     private ArrayList<Item> items = new ArrayList<>();
     private Pokemon currentPokemon;
     private int Score;
@@ -12,7 +12,7 @@ public class Coach {
         this.Score = 0;
     }
 
-    public void useItem(Item item) {
+    public void useItem(Item item, String type) {
         items.remove(item);
         // Apply the effect of the item to the current Pokemon
         item.applyItemEffect(currentPokemon);
