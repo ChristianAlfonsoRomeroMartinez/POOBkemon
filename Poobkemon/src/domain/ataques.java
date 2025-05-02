@@ -1,69 +1,86 @@
 package domain;
 
 public class ataques {
-    public static void main() {
-        int [][] matriz = new int[18][18]; 
+    // Declarar la matriz como un atributo estático
+    private static double[][] matriz = new double[18][18];
+    {
+
+        valores();
     }
-    public static int efectividad(int[][] matriz, int i, int j) {
+  
+
+
+    // Método principal (punto de entrada del programa)
+    public static void main(int i,int j) {
+
+
+      
+        System.out.println("Efectividad del ataque: " + efectividad(i, j));
+    }
+
+    // Método para obtener la efectividad de un ataque
+    public static double efectividad(int i, int j) {
         return matriz[i][j];
     }
+
+    // Método para inicializar la matriz con valores
     public static void valores() {
-        matriz[0][0] = 0.5; 
-        matriz[0][1] = 0.5; 
-        matriz[0][2] = 1; 
-        matriz[0][3] = 1; 
-        matriz[0][4] = 0.5; 
-        matriz[0][5] = 1; 
-        matriz[0][6] = 0.5; 
-        matriz[0][7] = 2; 
-        matriz[0][8] = 2; 
-        matriz[0][9] = 1; 
-        matriz[0][10] = 1; 
-        matriz[0][11] = 1; 
-        matriz[0][12] = 1; 
-        matriz[0][13] = 2; 
-        matriz[0][14] = 1; 
-        matriz[0][15] = 1; 
-        matriz[0][16] = 1; 
-        matriz[0][17] = 1; 
+        matriz[0][0] = 0.5;
+        matriz[0][1] = 0.5;
+        matriz[0][2] = 1;
+        matriz[0][3] = 1;
+        matriz[0][4] = 0.5;
+        matriz[0][5] = 1;
+        matriz[0][6] = 0.5;
+        matriz[0][7] = 2;
+        matriz[0][8] = 2;
+        matriz[0][9] = 1;
+        matriz[0][10] = 1;
+        matriz[0][11] = 1;
+        matriz[0][12] = 1;
+        matriz[0][13] = 2;
+        matriz[0][14] = 1;
+        matriz[0][15] = 1;
+        matriz[0][16] = 1;
+        matriz[0][17] = 1;
 
-        matriz[1][0] = 1; 
-        matriz[1][1] = 0.5;     
-        matriz[1][2] = 1; 
-        matriz[1][3] = 0.5; 
-        matriz[1][4] = 1; 
-        matriz[1][5] = 1; 
-        matriz[1][6] = 2; 
-        matriz[1][7] = 1; 
-        matriz[1][8] = 1; 
-        matriz[1][9] = 1; 
-        matriz[1][10] = 1; 
-        matriz[1][11] = 0.5; 
-        matriz[1][12] = 1; 
-        matriz[1][13] = 2; 
-        matriz[1][14] = 1; 
-        matriz[1][15] = 2; 
-        matriz[1][16] = 1; 
-        matriz[1][17] = 1; 
+        matriz[1][0] = 1;
+        matriz[1][1] = 0.5;
+        matriz[1][2] = 1;
+        matriz[1][3] = 0.5;
+        matriz[1][4] = 1;
+        matriz[1][5] = 1;
+        matriz[1][6] = 2;
+        matriz[1][7] = 1;
+        matriz[1][8] = 1;
+        matriz[1][9] = 1;
+        matriz[1][10] = 1;
+        matriz[1][11] = 0.5;
+        matriz[1][12] = 1;
+        matriz[1][13] = 2;
+        matriz[1][14] = 1;
+        matriz[1][15] = 2;
+        matriz[1][16] = 1;
+        matriz[1][17] = 1;
 
-        matriz[2][0] = 0.5; 
-        matriz[2][1] = 1; 
-        matriz[2][2] = 1; 
-        matriz[2][3] = 1; 
-        matriz[2][4] = 1; 
-        matriz[2][5] = 0.5; 
-        matriz[2][6] = 0.5; 
-        matriz[2][7] = 0.5; 
-        matriz[2][8] = 1; 
-        matriz[2][9] = 0.5; 
-        matriz[2][10] = 1; 
-        matriz[2][11] = 2; 
-        matriz[2][12] = 2; 
-        matriz[2][13] = 1; 
-        matriz[2][14] = 2; 
-        matriz[2][15] = 1; 
-        matriz[2][16] = 0.5; 
-        matriz[2][17] = 0.5; 
+        matriz[2][0] = 0.5;
+        matriz[2][1] = 1;
+        matriz[2][2] = 1;
+        matriz[2][3] = 1;
+        matriz[2][4] = 1;
+        matriz[2][5] = 0.5;
+        matriz[2][6] = 0.5;
+        matriz[2][7] = 0.5;
+        matriz[2][8] = 1;
+        matriz[2][9] = 0.5;
+        matriz[2][10] = 1;
+        matriz[2][11] = 2;
+        matriz[2][12] = 2;
+        matriz[2][13] = 1;
+        matriz[2][14] = 2;
+        matriz[2][15] = 1;
+        matriz[2][16] = 0.5;
+        matriz[2][17] = 0.5;
 
         matriz[3][0] = 0.5;
         matriz[3][1] = 1;
@@ -80,10 +97,9 @@ public class ataques {
         matriz[3][12] = 1;
         matriz[3][13] = 1;
         matriz[3][14] = 1;
-        matriz[3][15] = 1; 
+        matriz[3][15] = 1;
         matriz[3][16] = 1;
         matriz[3][17] = 1;
-
 
         matriz[4][0] = 1;
         matriz[4][1] = 2;
@@ -96,13 +112,13 @@ public class ataques {
         matriz[4][8] = 1;
         matriz[4][9] = 1;
         matriz[4][10] = 1;
-        matriz[4][11] = 0.5; 
+        matriz[4][11] = 0.5;
         matriz[4][12] = 1;
-        matriz[4][13] = 1; 
-        matriz[4][14] = 1; 
+        matriz[4][13] = 1;
+        matriz[4][14] = 1;
         matriz[4][15] = 0;
         matriz[4][16] = 1;
-        matriz[4][17] = 2; 
+        matriz[4][17] = 2;
 
         matriz[5][0] = 1;
         matriz[5][1] = 1;
@@ -110,20 +126,20 @@ public class ataques {
         matriz[5][3] = 1;
         matriz[5][4] = 1;
         matriz[5][5] = 2;
-        matriz[5][6] = 1; 
-        matriz[5][7] = 1; 
-        matriz[5][8] = 1; 
-        matriz[5][9] = 1; 
+        matriz[5][6] = 1;
+        matriz[5][7] = 1;
+        matriz[5][8] = 1;
+        matriz[5][9] = 1;
         matriz[5][10] = 0;
         matriz[5][11] = 1;
-        matriz[5][12] = 2; 
-        matriz[5][13] = 1; 
-        matriz[5][14] = 0.5; 
+        matriz[5][12] = 2;
+        matriz[5][13] = 1;
+        matriz[5][14] = 0.5;
         matriz[5][15] = 1;
-        matriz[5][16] = 1; 
+        matriz[5][16] = 1;
         matriz[5][17] = 1;
-        
-        matriz[6][0] = 2; 
+
+        matriz[6][0] = 2;
         matriz[6][1] = 0.5;
         matriz[6][2] = 2;
         matriz[6][3] = 0.5;
@@ -195,7 +211,7 @@ public class ataques {
         matriz[9][12] = 0.5;
         matriz[9][13] = 2;
         matriz[9][14] = 2;
-        matriz[9][15] = 1;  
+        matriz[9][15] = 1;
         matriz[9][16] = 0.5;
         matriz[9][17] = 0.5;
 
@@ -267,7 +283,7 @@ public class ataques {
         matriz[13][8] = 2;
         matriz[13][9] = 0.5;
         matriz[13][10] = 1;
-        matriz[13][11] = 1; 
+        matriz[13][11] = 1;
         matriz[13][12] = 1;
         matriz[13][13] = 1;
         matriz[13][14] = 1;
@@ -290,7 +306,7 @@ public class ataques {
         matriz[14][12] = 1;
         matriz[14][13] = 0.5;
         matriz[14][14] = 0.5;
-        matriz[14][15] = 1; 
+        matriz[14][15] = 1;
         matriz[14][16] = 1;
         matriz[14][17] = 1;
 
@@ -350,11 +366,5 @@ public class ataques {
         matriz[17][15] = 1;
         matriz[17][16] = 1;
         matriz[17][17] = 1;
-
-
-
-
-
-        
     }
 }
