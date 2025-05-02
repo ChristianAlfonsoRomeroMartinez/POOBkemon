@@ -32,6 +32,7 @@ public class PoobkemonGUI extends JFrame {
         JMenu fileMenu = new JMenu("Options");
         JMenuItem music = new JMenuItem("Pause Music");
 
+        //Pone en pausa la música del juego
         music.addActionListener(e -> {
             if (reproductor.estaReproduciendo()) {
                 reproductor.detener();
@@ -41,7 +42,7 @@ public class PoobkemonGUI extends JFrame {
                 music.setText("Pause Music");
             }
         });
-        
+
         menuBar.add(fileMenu);
         fileMenu.add(music);
 
@@ -186,7 +187,7 @@ public class PoobkemonGUI extends JFrame {
     // Clase que reproduce un archivo WAV en bucle
     class ReproductorMusica {
         private Clip clip;
-        private boolean estaReproduciendo = false;
+        private boolean estaReproduciendo = true;
 
         public ReproductorMusica(String rutaArchivo) {
             try {
@@ -223,17 +224,17 @@ public class PoobkemonGUI extends JFrame {
     private void start() {
         // Limpia el contenido actual
         getContentPane().removeAll();
-        getContentPane().setBackground(Color.BLACK);
+        //getContentPane().setBackground(Color.BLACK);
         getContentPane().setLayout(new BorderLayout());
         
         // Panel principal con BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.BLACK);
+        //mainPanel.setBackground(Color.BLACK);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // --- Panel izquierdo (botones) ---
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.BLACK);
+        //buttonPanel.setBackground(Color.BLACK);
         buttonPanel.setLayout(new GridLayout(4, 1, 15, 20));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40));
 
