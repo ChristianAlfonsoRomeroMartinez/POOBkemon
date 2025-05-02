@@ -1,6 +1,6 @@
 package domain;
 
-public class ataques {
+public class efectividad {
     // Declarar la matriz como un atributo estático
     private static double[][] matriz = new double[18][18];
     {
