@@ -11,6 +11,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
@@ -41,28 +42,96 @@ public class PoobkemonGUI extends JFrame {
 
     private void prepareButtons() {
         JPanel panel = new JPanel();
-        panel.setOpaque(false); // Para que el fondo GIF se vea a través
-        panel.setLayout(new GridLayout(3, 1, 0, 20));
-        panel.setBorder(BorderFactory.createEmptyBorder(50, 150, 50, 150));
+        panel.setOpaque(false);
+        panel.setLayout(new GridLayout(3, 1, 0, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(150, 300, 10, 300));
     
-        JLabel title = new JLabel("Poobkemon 2025-1", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(Color.WHITE); // Mejor contraste con el fondo
-        panel.add(title);
+        // Paleta de colores corregida
+        Color buttonColor = new Color(35, 120, 65);
+        Color hoverColor = new Color(70, 160, 90);
+        Color pressedColor = new Color(20, 90, 50);
+        Color textColor = new Color(255, 255, 200);
     
-        JButton startButton = new JButton("Start");
-        startButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        // Borde corregido - especificamos grosor (1 pixel)
+        Border compoundBorder = BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(100, 160, 120), 1), // Grosor añadido aquí
+            BorderFactory.createEmptyBorder(5, 15, 5, 15)
+        );
+    
+        // Botón Play
+        JButton startButton = new JButton("Play") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                if (getModel().isPressed()) {
+                    g2.setColor(pressedColor);
+                } else if (getModel().isRollover()) {
+                    g2.setColor(hoverColor);
+                } else {
+                    g2.setColor(buttonColor);
+                }
+                
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                
+                if (!getModel().isPressed()) {
+                    g2.setColor(new Color(255, 255, 255, 50));
+                    g2.fillRoundRect(1, 1, getWidth()-2, getHeight()/2, 8, 8);
+                }
+                
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        
+        // Configuración del botón (sin cambios)
+        startButton.setFont(new Font("Times New Roman", Font.BOLD, 16)); // Cambiado a Arial por si no tienes la fuente Pokémon
+        startButton.setForeground(textColor);
+        startButton.setBorder(compoundBorder);
+        startButton.setContentAreaFilled(false);
+        startButton.setFocusPainted(false);
         startButton.addActionListener(e -> start());
-        panel.add(startButton);
     
-        JButton exitButton = new JButton("Exit");
-        exitButton.setFont(new Font("Arial", Font.PLAIN, 18));
+        // Botón Exit (mismo estilo)
+        JButton exitButton = new JButton("Exit") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                if (getModel().isPressed()) {
+                    g2.setColor(pressedColor);
+                } else if (getModel().isRollover()) {
+                    g2.setColor(hoverColor);
+                } else {
+                    g2.setColor(buttonColor);
+                }
+                
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+                
+                if (!getModel().isPressed()) {
+                    g2.setColor(new Color(255, 255, 255, 50));
+                    g2.fillRoundRect(1, 1, getWidth()-2, getHeight()/2, 8, 8);
+                }
+                
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
+        
+        exitButton.setFont(new Font("Times New Roman", Font.BOLD, 16));
+        exitButton.setForeground(textColor);
+        exitButton.setBorder(compoundBorder);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setFocusPainted(false);
         exitButton.addActionListener(e -> exitApplication());
-        panel.add(exitButton);
     
-        fondo.add(panel, BorderLayout.SOUTH); // Ahora lo agregas al panel fondo
+        panel.add(startButton);
+        panel.add(exitButton);
+        fondo.add(panel, BorderLayout.SOUTH);
     }
-
+    
     private void setupWindowListeners() {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
@@ -72,7 +141,6 @@ public class PoobkemonGUI extends JFrame {
                 exitApplication();
             }
         });
-
     }
 
     // Clase para dibujar el fondo animado y escalarlo
