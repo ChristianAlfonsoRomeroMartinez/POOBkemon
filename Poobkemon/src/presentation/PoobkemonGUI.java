@@ -255,7 +255,7 @@ public class PoobkemonGUI extends JFrame {
 
         // --- Panel izquierdo (botones) ---
         JPanel buttonPanel = new JPanel();
-        //buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new GridLayout(4, 1, 15, 20));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 40));
 
@@ -281,82 +281,13 @@ public class PoobkemonGUI extends JFrame {
         buttonPanel.add(oldGameBtn);
         buttonPanel.add(scoreBtn);
             
-        // --- Panel derecho (logo Pokébola) - Ahora responsive ---
-        JPanel logoPanel = new JPanel(new BorderLayout()) {
-            private Image originalImage;
-            private Image scaledImage;
-            
-            {
-                try {
-                    String imagePath = System.getProperty("user.dir") + "/Poobkemon/mult/pokeball.png";
-                    originalImage = new ImageIcon(imagePath).getImage();
-                } catch (Exception e) {
-                    originalImage = null;
-                }
-            }
-            
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D)g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                
-                if (originalImage != null) {
-                    // Calcular tamaño manteniendo relación de aspecto
-                    int panelWidth = getWidth();
-                    int panelHeight = getHeight();
-                    
-                    // Tamaño máximo para la imagen (80% del panel para dejar márgenes)
-                    int maxWidth = (int)(panelWidth * 1.5);
-                    int maxHeight = (int)(panelHeight * 1.5);
-                    
-                    // Calcular dimensiones manteniendo aspect ratio
-                    double aspectRatio = (double)originalImage.getWidth(null) / originalImage.getHeight(null);
-                    int newWidth = maxWidth;
-                    int newHeight = (int)(newWidth / aspectRatio);
-                    
-                    if (newHeight > maxHeight) {
-                        newHeight = maxHeight;
-                        newWidth = (int)(newHeight * aspectRatio);
-                    }
-                    
-                    // Escalar solo si es necesario
-                    if (scaledImage == null || 
-                        scaledImage.getWidth(null) != newWidth || 
-                        scaledImage.getHeight(null) != newHeight) {
-                        scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-                    }
-                    
-                    // Centrar la imagen
-                    int x = (panelWidth - newWidth) / 2;
-                    int y = (panelHeight - newHeight) / 2;
-                    g2.drawImage(scaledImage, x, y, this);
-                } else {
-                    // Mostrar mensaje de error si no se carga la imagen
-                    g2.setColor(new Color(200, 50, 50));
-                    g2.setFont(new Font("Arial", Font.BOLD, 24));
-                    String text = "POKEBALL IMAGE";
-                    FontMetrics fm = g2.getFontMetrics();
-                    int x = (getWidth() - fm.stringWidth(text)) / 2;
-                    int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
-                    g2.drawString(text, x, y);
-                }
-            }
-        };
         
         
-        // Listener para redimensionamiento
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                logoPanel.repaint(); // Redibuja la imagen cuando cambia el tamaño
-            }
-        });
+        
             
         // --- Botón BACK abajo ---
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setOpaque(false); // Esto es esencial para la transparencia
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         JButton backBtn = createMenuButton("BACK", buttonFont, true);
@@ -364,13 +295,12 @@ public class PoobkemonGUI extends JFrame {
         
         // Centrar el botón BACK
         JPanel backBtnContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        backBtnContainer.setBackground(Color.BLACK);
+        backBtnContainer.setOpaque(false); // Esto es esencial para la transparencia
         backBtnContainer.add(backBtn);
         bottomPanel.add(backBtnContainer, BorderLayout.EAST);
             
         // --- Ensamblar componentes ---
         mainPanel.add(buttonPanel, BorderLayout.WEST);
-        mainPanel.add(logoPanel, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
             
         fondo.add(mainPanel, BorderLayout.CENTER);
@@ -384,60 +314,101 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
-            // Fondo con gradiente y esquinas redondeadas
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            // --- Fondo con gradiente y esquinas redondeadas ---
             if (isEnabled()) {
+                // Gradiente principal (verde oscuro a verde claro)
                 GradientPaint gp = new GradientPaint(
-                    0, 0, new Color(35, 120, 65),
-                    0, getHeight(), new Color(70, 160, 90)
+                    0, 0, new Color(50, 120, 70, 180),
+                    0, getHeight(), new Color(65, 150, 85)
                 );
                 g2.setPaint(gp);
+                
+                // Sombra suave debajo del botón
+                g2.setColor(new Color(0, 0, 0, 50));
+                g2.fillRoundRect(1, 3, getWidth()-2, getHeight()-2, 25, 25);
             } else {
-                g2.setColor(new Color(60, 60, 60));
+                // Fondo deshabilitado (gris con transparencia)
+                g2.setColor(new Color(70, 70, 70, 150));
             }
             
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
+            // Relleno del botón
+            g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
             
-            // Borde con efecto de resaltado
-            g2.setColor(isEnabled() ? new Color(255, 255, 255, 120) : new Color(100, 100, 100));
-            g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
+            // --- Borde con efecto de resaltado ---
+            if (isEnabled()) {
+                // Borde exterior brillante (solo si está habilitado)
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.setColor(new Color(180, 255, 180, 120));
+                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 25, 25);
+            }
+
+            // --- Texto centrado con sombra ---
+            g2.setColor(Color.WHITE);
+            FontMetrics fm = g2.getFontMetrics();
+            int x = (getWidth() - fm.stringWidth(getText())) / 2;
+            int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
             
-            super.paintComponent(g2);
+            // Sombra del texto (sutil)
+            g2.setColor(new Color(0, 0, 0, 100));
+            g2.drawString(getText(), x + 1, y + 1);
+            
+            // Texto principal
+            g2.setColor(getForeground());
+            g2.drawString(getText(), x, y);
+            
             g2.dispose();
         }
-        
+
         @Override
         protected void paintBorder(Graphics g) {
             // No pintar borde por defecto
         }
     };
-    
-    button.setFont(font);
+
+    // --- Configuración base del botón ---
+    button.setFont(font.deriveFont(Font.BOLD)); // Texto en negrita
     button.setEnabled(enabled);
-    button.setPreferredSize(new Dimension(200, 50)); // Tamaño aumentado
+    button.setPreferredSize(new Dimension(220, 55)); // Tamaño ligeramente más grande
     button.setContentAreaFilled(false);
     button.setOpaque(false);
     button.setForeground(Color.WHITE);
     button.setFocusPainted(false);
     button.setBorder(BorderFactory.createEmptyBorder(5, 25, 5, 25));
-    
-    // Efecto hover mejorado
+
+    // --- Efectos de hover y pulsación ---
     button.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (button.isEnabled()) {
-                button.setForeground(new Color(255, 255, 200)); // Texto amarillo claro
+                button.setForeground(new Color(255, 230, 150)); // Texto dorado claro
+                button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
         }
-        
+
         @Override
         public void mouseExited(MouseEvent e) {
             if (button.isEnabled()) {
                 button.setForeground(Color.WHITE);
+                button.setCursor(Cursor.getDefaultCursor());
             }
         }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            if (button.isEnabled()) {
+                // Efecto de "presionado" (mueve ligeramente el texto)
+                button.setBorder(BorderFactory.createEmptyBorder(6, 25, 4, 25));
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            button.setBorder(BorderFactory.createEmptyBorder(5, 25, 5, 25));
+        }
     });
-    
+
     return button;
 }
 
