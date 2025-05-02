@@ -172,15 +172,34 @@ public class PoobkemonGUI extends JFrame {
     // Clase para dibujar el fondo animado y escalarlo
     class FondoAnimado extends JPanel {
         private final ImageIcon gif;
-
+        private Image imagenFija; // Para la segunda pantalla
+    
         public FondoAnimado(String rutaGIF) {
             gif = new ImageIcon(rutaGIF);
         }
-
+    
+        // Método para cambiar a imagen fija
+        public void setImagenFija(String rutaImagen) {
+            this.imagenFija = new ImageIcon(rutaImagen).getImage();
+            repaint();
+        }
+    
+        // Método para volver al GIF animado
+        public void resetToGif() {
+            this.imagenFija = null;
+            repaint();
+        }
+    
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.drawImage(gif.getImage(), 0, 0, getWidth(), getHeight(), this);
+            if (imagenFija != null) {
+                // Dibuja la imagen fija
+                g.drawImage(imagenFija, 0, 0, getWidth(), getHeight(), this);
+            } else {
+                // Dibuja el GIF animado
+                g.drawImage(gif.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
         }
     }
 
@@ -222,14 +241,16 @@ public class PoobkemonGUI extends JFrame {
 
 
     private void start() {
+        // Cambia a imagen fija para la segunda pantalla
+        fondo.setImagenFija("Poobkemon/mult/fondo1.jpeg"); // Cambia por tu ruta de imagen
+        
         // Limpia el contenido actual
         getContentPane().removeAll();
-        //getContentPane().setBackground(Color.BLACK);
-        getContentPane().setLayout(new BorderLayout());
+        setContentPane(fondo); // Vuelve a establecer el fondo como content pane
         
-        // Panel principal con BorderLayout
+        // Resto del código de start() se mantiene igual...
         JPanel mainPanel = new JPanel(new BorderLayout());
-        //mainPanel.setBackground(Color.BLACK);
+        mainPanel.setOpaque(false);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         // --- Panel izquierdo (botones) ---
@@ -323,7 +344,7 @@ public class PoobkemonGUI extends JFrame {
                 }
             }
         };
-        logoPanel.setBackground(Color.BLACK);
+        
         
         // Listener para redimensionamiento
         this.addComponentListener(new ComponentAdapter() {
@@ -352,7 +373,7 @@ public class PoobkemonGUI extends JFrame {
         mainPanel.add(logoPanel, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
             
-        getContentPane().add(mainPanel);
+        fondo.add(mainPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
 }
@@ -613,6 +634,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
 
     private void returnToGame() {
         getContentPane().removeAll();
+        fondo.resetToGif(); // Volver al GIF animado
         prepareButtons();
         revalidate();
         repaint();
