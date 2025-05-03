@@ -1,66 +1,96 @@
 package domain;
 
-import java.util.Random;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
-
-/**
- * Entrenador controlado por el usuario.
- */
 public class HumanCoach extends Coach {
     private Map<Integer, Consumer<HumanCoach>> actionMap = new HashMap<>();
     private String name;
+    
+    private Coach opponent;
 
     public HumanCoach(String name) {
+        super(); // Llamada al constructor de Coach
         this.name = name;
-        // Inicializar mapeo de acciones
-        actionMap.put(0, HumanCoach::performAttack);
-        actionMap.put(1, HumanCoach::performItem);
-        actionMap.put(2, HumanCoach::performSwitch);
-        actionMap.put(3, HumanCoach::performFlee);
+
+        initializeActionMap();
+    }
+
+    private void initializeActionMap() {
+        actionMap.put(0, hc -> performAttack());
+        actionMap.put(1, hc -> performItem());
+        actionMap.put(2, hc -> performSwitch());
+        actionMap.put(3, hc -> performFlee());
     }
 
     @Override
     public void doAction(int actionIndex) throws PoobkemonException {
-        Consumer<HumanCoach> handler = actionMap.get(actionIndex);
-        //if (handler == null) throw new PoobkemonException(PoobkemonException.INVALID_ACTION);
-        handler.accept(this);
+        if (!actionMap.containsKey(actionIndex)) {
+           // throw new PoobkemonException(PoobkemonException.INVALID_ACTION);
+        }
+        actionMap.get(actionIndex).accept(this);
     }
 
     @Override
     public void handleTurnTimeout() {
         Pokemon active = getActivePokemon();
-        active.setPs(active.getPs() / 2);
+        if (active != null) {
+            active.reducePP(); // Método a implementar en Pokemon
+        }
     }
 
-    // Métodos manejadores de cada acción:
-    private void performAttack() {
+    // Métodos auxiliares
+    private void performAttack() throws PoobkemonException {
+        Pokemon attacker = getActivePokemon();
         int moveIdx = getSelectedMoveIndexFromUI();
-        Attack atk = getActivePokemon().getAtaques().get(moveIdx);
-        getActivePokemon().attack(getOpponentPokemon(), atk);
+        
+        if (moveIdx < 0 || moveIdx >= attacker.getAtaques().size()) {
+            //throw new PoobkemonException(PoobkemonException.INVALID_MOVE);
+        }
+        
+        Attack atk = attacker.getAtaques().get(moveIdx);
+        attacker.attack(opponent.getActivePokemon(), atk);
     }
 
-    private void performItem() {
+    private void performItem() throws PoobkemonException {
         int itemIdx = getSelectedItemIndexFromUI();
-        Item item = getInventory().get(itemIdx);
-        item.applyItemEffect(getActivePokemon());
+        
+        
+        useItem(item);
+        itms.remove(itemIdx);
     }
 
-    @Override
-    private void switchToPokemon() {
+    private void performSwitch() throws PoobkemonException {
         int idx = getSelectedSwitchIndexFromUI();
-        switchToPokemon(idx);
+        switchToPokemon(idx); // Usar método de la clase padre
     }
 
-    private void performFlee() {
-        throw new PoobkemonException(PoobkemonException.CANNOT_FLEE);
+    //private void performFlee() throws PoobkemonException {
+        //throw new PoobkemonException(PoobkemonException.CANNOT_FLEE);
+    //}
+
+    // Métodos de UI (versión básica)
+    private int getSelectedMoveIndexFromUI() { 
+        // Implementación temporal
+        return 0; 
+    }
+    
+    private int getSelectedItemIndexFromUI() { 
+        // Implementación temporal
+        return 0; 
+    }
+    
+    private int getSelectedSwitchIndexFromUI() { 
+        // Implementación temporal
+        return 0; 
     }
 
-    // Stubs UI:
-    private int getSelectedMoveIndexFromUI() { throw new UnsupportedOperationException(); }
-    private int getSelectedItemIndexFromUI() { throw new UnsupportedOperationException(); }
-    private int getSelectedSwitchIndexFromUI() { throw new UnsupportedOperationException(); }
+    public void setOpponent(Coach opponent) {
+        this.opponent = opponent;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

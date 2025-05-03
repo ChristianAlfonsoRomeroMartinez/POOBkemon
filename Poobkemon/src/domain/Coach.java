@@ -8,6 +8,7 @@ public abstract class Coach {
     //private String name; // Nombre del entrenador
     private List<Pokemon> pokemons; // Lista de Pokémon del entrenador
     private int activePokemonIndex; // Índice del Pokémon actualmente en batalla
+    private List<Item> items; // Lista de objetos del entrenador
     private int score;
 
     public Coach() {

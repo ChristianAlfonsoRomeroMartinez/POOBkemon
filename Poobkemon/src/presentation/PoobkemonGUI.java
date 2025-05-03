@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -13,7 +15,10 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicLabelUI;
+
+import domain.Poobkemon;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
@@ -644,120 +649,168 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
 
     private void showPokemonSelectionScreen() {
-        // Configurar el frame principal
-        JFrame selectionFrame = new JFrame("Selección de Pokémon");
-        selectionFrame.setLayout(new BorderLayout());
-        selectionFrame.setSize(1000, 700);
-        selectionFrame.setLocationRelativeTo(null);
-    
-        // Panel principal dividido en dos
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(0.5); // Divide exactamente a la mitad
-        splitPane.setResizeWeight(0.5);
-        splitPane.setDividerSize(5);
-        splitPane.setContinuousLayout(true);
-    
-        // Panel para Jugador 1
-        JPanel player1Panel = createPlayerPanel("Jugador 1");
-        // Panel para Jugador 2
-        JPanel player2Panel = createPlayerPanel("Jugador 2");
-    
-        splitPane.setLeftComponent(player1Panel);
-        splitPane.setRightComponent(player2Panel);
-    
-        // Panel inferior con botones
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        JButton itemsButton = new JButton("ITEMS");
-        JButton startButton = new JButton("START");
-        JButton cancelButton = new JButton("CANCELAR");
-    
-        // Configurar botones
-        itemsButton.addActionListener(e -> {
-            buttonSound.play();
-            showItemsSelection(); // Método que implementarás después
-        });
-        
-        startButton.addActionListener(e -> {
-            buttonSound.play();
-            startBattle(); // Método que implementarás después
-            selectionFrame.dispose();
-        });
-        
-        cancelButton.addActionListener(e -> {
-            buttonSound.play();
-            selectionFrame.dispose();
-        });
-    
-        bottomPanel.add(itemsButton);
-        bottomPanel.add(startButton);
-        bottomPanel.add(cancelButton);
-    
-        selectionFrame.add(splitPane, BorderLayout.CENTER);
-        selectionFrame.add(bottomPanel, BorderLayout.SOUTH);
-        selectionFrame.setVisible(true);
-    }
-    
-    private JPanel createPlayerPanel(String defaultName) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
-        // Campo para ingresar nombre
-        JTextField nameField = new JTextField(defaultName);
-        nameField.setFont(new Font(font, Font.BOLD, 18));
-        nameField.setHorizontalAlignment(JTextField.CENTER);
-        panel.add(nameField, BorderLayout.NORTH);
-    
-        // Lista de Pokémon con scroll
-        JPanel pokemonListPanel = new JPanel();
-        pokemonListPanel.setLayout(new BoxLayout(pokemonListPanel, BoxLayout.Y_AXIS));
-        
-        // Lista de todos los Pokémon disponibles (ajusta con tus Pokémon reales)
-        String[] allPokemon = {"Pikachi", "Poliung", "Bollasov", "Rokema", /*...otros...*/};
-        
-        for (String pokemon : allPokemon) {
-            JCheckBox pokemonCheck = new JCheckBox(pokemon);
-            pokemonCheck.setFont(new Font(font, Font.PLAIN, 16));
-            
-            // Limitar a 6 selecciones
-            pokemonCheck.addItemListener(e -> {
-                if (pokemonCheck.isSelected()) {
-                    int selectedCount = countSelectedPokemon(pokemonListPanel);
-                    if (selectedCount > 6) {
-                        pokemonCheck.setSelected(false);
-                        JOptionPane.showMessageDialog(null, "Máximo 6 Pokémon por jugador");
-                    }
-                }
-            });
-            
-            pokemonListPanel.add(pokemonCheck);
+    // Limpiar el contenido actual
+    getContentPane().removeAll();
+    setContentPane(fondo); // Mantener el fondo actual
+    fondo.setImagenFija(rutaImagen); // Cambiar a la imagen fija
+
+    // Panel principal
+    JPanel mainPanel = new JPanel(new BorderLayout());
+    mainPanel.setOpaque(false);
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Márgenes más pequeños
+
+    // Panel de selección de Pokémon para ambos jugadores
+    JPanel selectionPanel = new JPanel(new GridLayout(1, 2, 10, 0)); // Espaciado reducido
+    selectionPanel.setOpaque(false);
+
+    // Panel del jugador 1
+    JPanel player1Panel = createPlayerSelectionPanel("Player 1");
+    // Panel del jugador 2
+    JPanel player2Panel = createPlayerSelectionPanel("Player 2");
+
+    selectionPanel.add(player1Panel);
+    selectionPanel.add(player2Panel);
+
+    // Botón START
+    JButton startButton = createMenuButton("START", new Font(font, Font.BOLD, 16), true);
+    startButton.addActionListener(e -> {
+        JTextField player1NameField = (JTextField) player1Panel.getClientProperty("nameField");
+        JTextField player2NameField = (JTextField) player2Panel.getClientProperty("nameField");
+
+        String player1Name = player1NameField.getText().trim();
+        String player2Name = player2NameField.getText().trim();
+
+        if (player1Name.isEmpty() || player2Name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ambos jugadores deben ingresar su nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        
-        JScrollPane scrollPane = new JScrollPane(pokemonListPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        panel.add(scrollPane, BorderLayout.CENTER);
-    
-        return panel;
-    }
-    
-    private int countSelectedPokemon(JPanel pokemonListPanel) {
-        int count = 0;
-        for (Component comp : pokemonListPanel.getComponents()) {
-            if (comp instanceof JCheckBox && ((JCheckBox) comp).isSelected()) {
-                count++;
-            }
+
+        List<String> selectedPlayer1 = getSelectedPokemon(player1Panel);
+        List<String> selectedPlayer2 = getSelectedPokemon(player2Panel);
+
+        if (selectedPlayer1.size() > 6 || selectedPlayer2.size() > 6) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar maximo 6 pokemones", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (selectedPlayer1.isEmpty() || selectedPlayer2.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar al menos un Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            System.out.println(player1Name + " seleccionó: " + selectedPlayer1);
+            System.out.println(player2Name + " seleccionó: " + selectedPlayer2);
+            // Aquí puedes pasar las listas seleccionadas al dominio o iniciar la batalla
         }
-        return count;
+    });
+
+    // Panel inferior con el botón START
+    JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    bottomPanel.setOpaque(false);
+    bottomPanel.add(startButton);
+
+    // Ensamblar el panel principal
+    mainPanel.add(selectionPanel, BorderLayout.CENTER);
+    mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+    fondo.add(mainPanel, BorderLayout.CENTER);
+    revalidate();
+    repaint();
+}
+
+/**
+ * Crea un panel de selección de Pokémon para un jugador.
+ */
+private JPanel createPlayerSelectionPanel(String playerName) {
+    JPanel playerPanel = new JPanel(new BorderLayout());
+    playerPanel.setOpaque(false);
+
+    // Campo de texto para el nombre del jugador
+    JTextField nameField = new JTextField(playerName);
+    nameField.setFont(new Font(font, Font.PLAIN, 14));
+    nameField.setHorizontalAlignment(SwingConstants.CENTER);
+
+    // Lista de Pokémon disponibles
+    List<String> availablePokemon = Poobkemon.getAvailablePokemon();
+    DefaultListModel<String> pokemonModel = new DefaultListModel<>();
+    availablePokemon.forEach(pokemonModel::addElement);
+
+    JList<String> pokemonList = new JList<>(pokemonModel);
+    pokemonList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    pokemonList.setVisibleRowCount(4); // Reducir filas visibles
+    pokemonList.setFont(new Font(font, Font.PLAIN, 14));
+    pokemonList.setBackground(new Color(240, 240, 240));
+    pokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+    // Scroll para la lista
+    JScrollPane scrollPane = new JScrollPane(pokemonList);
+    scrollPane.setOpaque(false);
+    scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+    // Botón para agregar Pokémon
+    JButton addButton = createMenuButton("ADD", new Font(font, Font.BOLD, 14), true);
+    DefaultListModel<String> selectedPokemonModel = new DefaultListModel<>();
+    JList<String> selectedPokemonList = new JList<>(selectedPokemonModel);
+    selectedPokemonList.setVisibleRowCount(4); // Reducir filas visibles
+    selectedPokemonList.setFont(new Font(font, Font.PLAIN, 14));
+    selectedPokemonList.setBackground(new Color(240, 240, 240));
+    selectedPokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+    addButton.addActionListener(e -> {
+        String selectedPokemon = pokemonList.getSelectedValue();
+        if (selectedPokemon != null && selectedPokemonModel.size() < 6) {
+            selectedPokemonModel.addElement(selectedPokemon);
+        } else if (selectedPokemonModel.size() >= 6) {
+            JOptionPane.showMessageDialog(this, "Solo puedes seleccionar 6 Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+
+    // Botón para borrar Pokémon
+    JButton removeButton = createMenuButton("REMOVE", new Font(font, Font.BOLD, 14), true);
+    removeButton.addActionListener(e -> {
+        String selectedPokemon = selectedPokemonList.getSelectedValue();
+        if (selectedPokemon != null) {
+            selectedPokemonModel.removeElement(selectedPokemon);
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un Pokémon para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+
+    // Panel para los botones ADD y REMOVE
+    JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0)); // Alinear botones horizontalmente con espacio entre ellos
+    buttonPanel.setOpaque(false);
+    buttonPanel.add(addButton);
+    buttonPanel.add(removeButton);
+
+    // Ensamblar el panel del jugador
+    JPanel topPanel = new JPanel(new BorderLayout());
+    topPanel.setOpaque(false);
+    topPanel.add(nameField, BorderLayout.NORTH);
+    topPanel.add(scrollPane, BorderLayout.CENTER);
+
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+    bottomPanel.setOpaque(false);
+    bottomPanel.add(buttonPanel, BorderLayout.NORTH); // Botones en la parte superior del panel inferior
+    bottomPanel.add(new JScrollPane(selectedPokemonList), BorderLayout.CENTER);
+
+    playerPanel.add(topPanel, BorderLayout.NORTH);
+    playerPanel.add(bottomPanel, BorderLayout.CENTER);
+
+    // Guardar el campo de texto y la lista seleccionada en el panel para acceder a ellos más tarde
+    playerPanel.putClientProperty("nameField", nameField);
+    playerPanel.putClientProperty("selectedPokemonList", selectedPokemonList);
+
+    return playerPanel;
+}
+
+/**
+ * Obtiene los Pokémon seleccionados de un panel de jugador.
+ */
+private List<String> getSelectedPokemon(JPanel playerPanel) {
+    @SuppressWarnings("unchecked")
+    JList<String> selectedPokemonList = (JList<String>) playerPanel.getClientProperty("selectedPokemonList");
+    List<String> selectedPokemons = new ArrayList<>();
+    for (int i = 0; i < selectedPokemonList.getModel().getSize(); i++) {
+        selectedPokemons.add(selectedPokemonList.getModel().getElementAt(i));
     }
+    return selectedPokemons;
+}
     
-    private void showItemsSelection() {
-        // Implementar lógica para selección de ítems
-        JOptionPane.showMessageDialog(null, "Pantalla de selección de ítems aparecerá aquí");
-    }
-    
-    private void startBattle() {
-        // Implementar lógica para comenzar la batalla
-        JOptionPane.showMessageDialog(null, "¡Batalla comenzada!");
-    }
     
     // MÉTODO ACTUALIZADO PARA IMÁGENES RESPONSIVAS
     private JPanel createImagePanel(String... imageNames) {
