@@ -601,7 +601,8 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         // 7. Botones (usarán tu estilo createMenuButton)
         JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true);
         humanVsHumanBtn.addActionListener(e -> {
-            System.out.println(gameMode + " mode - Human vs Human selected");
+            buttonSound.play();
+            showPokemonSelectionScreen();
         });
     
         JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true);
@@ -640,6 +641,122 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         fondo.add(typeGamePanel, BorderLayout.CENTER);
         revalidate();
         repaint();
+    }
+
+    private void showPokemonSelectionScreen() {
+        // Configurar el frame principal
+        JFrame selectionFrame = new JFrame("Selección de Pokémon");
+        selectionFrame.setLayout(new BorderLayout());
+        selectionFrame.setSize(1000, 700);
+        selectionFrame.setLocationRelativeTo(null);
+    
+        // Panel principal dividido en dos
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setDividerLocation(0.5); // Divide exactamente a la mitad
+        splitPane.setResizeWeight(0.5);
+        splitPane.setDividerSize(5);
+        splitPane.setContinuousLayout(true);
+    
+        // Panel para Jugador 1
+        JPanel player1Panel = createPlayerPanel("Jugador 1");
+        // Panel para Jugador 2
+        JPanel player2Panel = createPlayerPanel("Jugador 2");
+    
+        splitPane.setLeftComponent(player1Panel);
+        splitPane.setRightComponent(player2Panel);
+    
+        // Panel inferior con botones
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JButton itemsButton = new JButton("ITEMS");
+        JButton startButton = new JButton("START");
+        JButton cancelButton = new JButton("CANCELAR");
+    
+        // Configurar botones
+        itemsButton.addActionListener(e -> {
+            buttonSound.play();
+            showItemsSelection(); // Método que implementarás después
+        });
+        
+        startButton.addActionListener(e -> {
+            buttonSound.play();
+            startBattle(); // Método que implementarás después
+            selectionFrame.dispose();
+        });
+        
+        cancelButton.addActionListener(e -> {
+            buttonSound.play();
+            selectionFrame.dispose();
+        });
+    
+        bottomPanel.add(itemsButton);
+        bottomPanel.add(startButton);
+        bottomPanel.add(cancelButton);
+    
+        selectionFrame.add(splitPane, BorderLayout.CENTER);
+        selectionFrame.add(bottomPanel, BorderLayout.SOUTH);
+        selectionFrame.setVisible(true);
+    }
+    
+    private JPanel createPlayerPanel(String defaultName) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+        // Campo para ingresar nombre
+        JTextField nameField = new JTextField(defaultName);
+        nameField.setFont(new Font(font, Font.BOLD, 18));
+        nameField.setHorizontalAlignment(JTextField.CENTER);
+        panel.add(nameField, BorderLayout.NORTH);
+    
+        // Lista de Pokémon con scroll
+        JPanel pokemonListPanel = new JPanel();
+        pokemonListPanel.setLayout(new BoxLayout(pokemonListPanel, BoxLayout.Y_AXIS));
+        
+        // Lista de todos los Pokémon disponibles (ajusta con tus Pokémon reales)
+        String[] allPokemon = {"Pikachi", "Poliung", "Bollasov", "Rokema", /*...otros...*/};
+        
+        for (String pokemon : allPokemon) {
+            JCheckBox pokemonCheck = new JCheckBox(pokemon);
+            pokemonCheck.setFont(new Font(font, Font.PLAIN, 16));
+            
+            // Limitar a 6 selecciones
+            pokemonCheck.addItemListener(e -> {
+                if (pokemonCheck.isSelected()) {
+                    int selectedCount = countSelectedPokemon(pokemonListPanel);
+                    if (selectedCount > 6) {
+                        pokemonCheck.setSelected(false);
+                        JOptionPane.showMessageDialog(null, "Máximo 6 Pokémon por jugador");
+                    }
+                }
+            });
+            
+            pokemonListPanel.add(pokemonCheck);
+        }
+        
+        JScrollPane scrollPane = new JScrollPane(pokemonListPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        panel.add(scrollPane, BorderLayout.CENTER);
+    
+        return panel;
+    }
+    
+    private int countSelectedPokemon(JPanel pokemonListPanel) {
+        int count = 0;
+        for (Component comp : pokemonListPanel.getComponents()) {
+            if (comp instanceof JCheckBox && ((JCheckBox) comp).isSelected()) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private void showItemsSelection() {
+        // Implementar lógica para selección de ítems
+        JOptionPane.showMessageDialog(null, "Pantalla de selección de ítems aparecerá aquí");
+    }
+    
+    private void startBattle() {
+        // Implementar lógica para comenzar la batalla
+        JOptionPane.showMessageDialog(null, "¡Batalla comenzada!");
     }
     
     // MÉTODO ACTUALIZADO PARA IMÁGENES RESPONSIVAS
