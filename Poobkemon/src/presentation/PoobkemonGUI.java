@@ -19,11 +19,14 @@ public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
     private String rutaImagen = "Poobkemon/mult/fondo2.jpeg";
     private String font = "Times New Roman";
+    private String rutaEffectAudio = "Poobkemon/mult/button_click.wav";
     private ReproductorMusica reproductor;
+    private SoundEffect buttonSound;
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
         prepareElementsDimension();
+        prepareSounds();
         prepareBackground();
         preprareMenu();
         prepareButtons();
@@ -53,12 +56,18 @@ public class PoobkemonGUI extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    private void prepareSounds() {
+        buttonSound = new SoundEffect(rutaEffectAudio);
+        buttonSound.setVolume(80); // Ajusta el volumen si es necesario
+        reproductor = new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
+        reproductor.setVolume(70); // Ajusta el volumen al 50%
+    }
+
     private void prepareBackground(){
         fondo = new FondoAnimado("Poobkemon/mult/pokemonIntro.gif");
         fondo.setLayout(new BorderLayout());
         setContentPane(fondo);
-        reproductor = new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
-        reproductor.setVolume(70); // Ajusta el volumen al 50%
+        
     }
 
 
@@ -266,6 +275,37 @@ public class PoobkemonGUI extends JFrame {
     }
 }
 
+public class SoundEffect {
+    private Clip clip;
+
+    public SoundEffect(String soundPath) {
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(soundPath));
+            clip = AudioSystem.getClip();
+            clip.open(audioStream);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.err.println("Error al cargar el efecto de sonido: " + e.getMessage());
+        }
+    }
+
+    public void play() {
+        if (clip != null) {
+            clip.setFramePosition(0); // Rebobinar al inicio
+            clip.start();
+        }
+    }
+
+    // Opcional: Ajustar volumen (similar a ReproductorMusica)
+    public void setVolume(float percent) {
+        if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float range = gainControl.getMaximum() - gainControl.getMinimum();
+            float gain = (range * percent / 100.0f) + gainControl.getMinimum();
+            gainControl.setValue(gain);
+        }
+    }
+}
+
 
     private void start() {
         // Cambia a imagen fija para la segunda pantalla
@@ -337,6 +377,7 @@ public class PoobkemonGUI extends JFrame {
 
 private JButton createMenuButton(String text, Font font, boolean enabled) {
     JButton button = new JButton(text) {
+        
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -426,6 +467,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         public void mousePressed(MouseEvent e) {
             if (button.isEnabled()) {
                 // Efecto de "presionado" (mueve ligeramente el texto)
+                buttonSound.play();
                 button.setBorder(BorderFactory.createEmptyBorder(6, 25, 4, 25));
             }
         }
@@ -460,7 +502,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         // Título (con sombra para mejor legibilidad)
         JLabel titleLabel = new JLabel("SELECT GAME MODE", SwingConstants.CENTER);
         titleLabel.setForeground(Color.YELLOW);
-        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 32));
+        titleLabel.setFont(new Font(font, Font.BOLD, 32));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         
         // Efecto de sombra en el texto
@@ -543,11 +585,11 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         // 5. Paneles de imágenes (ajustados para el nuevo fondo)
         JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "porygon.png");
         leftImagesPanel.setOpaque(false);
-        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
+        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/6, getHeight()));
     
         JPanel rightImagesPanel = createImagePanel("human.png", "porygon.png", "porygon.png");
         rightImagesPanel.setOpaque(false);
-        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
+        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/6, getHeight()));
     
         // 6. Panel de botones (transparente)
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 20));
