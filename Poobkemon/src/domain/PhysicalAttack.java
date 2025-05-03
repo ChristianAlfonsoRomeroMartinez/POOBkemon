@@ -41,20 +41,27 @@ public class PhysicalAttack extends Attack {
         
     }
     
+    
     public PhysicalAttack(String name, String type, int baseDamage, int powerPoint, int precision) {
         super(name, type, baseDamage, powerPoint, precision);
     }
     
+    // En PhysicalAttack
     @Override
-    public int calcularDanio(Pokemon atacante, Pokemon defensor) {
+    public int calcDaño(Pokemon atacante, Pokemon defensor) {
         if (powerPoint <= 0) return 0;
         
         Random rand = new Random();
         if (rand.nextInt(100) + 1 > precision) return 0;
         
-        double efectividad = Efectividad.efectividad(atacante.getType(), defensor.getType());
+        // Usar número de tipo en lugar de string
+        double efectividad = Efectividad.efectividad(
+            numberType.get(this.getType()), 
+            numberType.get(defensor.getType())
+        );
+        
         int danioBase = (int) ((atacante.getPhysicalAttack() * baseDamage * efectividad) / defensor.getPhysicalDefense());
-        danioBase = Math.max(danioBase, 0);
+        danioBase = Math.max(danioBase, 1); // Mínimo 1 de daño
         
         usarAtaque();
         return danioBase;
