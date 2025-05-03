@@ -326,8 +326,8 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
                 g2.setPaint(gp);
                 
                 // Sombra suave debajo del botón
-                g2.setColor(new Color(0, 0, 0, 50));
-                g2.fillRoundRect(1, 3, getWidth()-2, getHeight()-2, 25, 25);
+                //g2.setColor(new Color(0, 0, 0, 50));
+                //g2.fillRoundRect(1, 3, getWidth()-2, getHeight()-2, 25, 25);
             } else {
                 // Fondo deshabilitado (gris con transparencia)
                 g2.setColor(new Color(70, 70, 70, 150));
