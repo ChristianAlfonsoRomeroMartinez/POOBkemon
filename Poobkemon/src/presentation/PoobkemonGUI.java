@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
@@ -16,6 +17,7 @@ import javax.swing.plaf.basic.BasicLabelUI;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
+    private String rutaImagen = "Poobkemon/mult/fondo2.jpeg";
     private String font = "Times New Roman";
     private ReproductorMusica reproductor;
 
@@ -56,6 +58,7 @@ public class PoobkemonGUI extends JFrame {
         fondo.setLayout(new BorderLayout());
         setContentPane(fondo);
         reproductor = new ReproductorMusica("Poobkemon/mult/musicaIntro.wav");
+        reproductor.setVolume(70); // Ajusta el volumen al 50%
     }
 
 
@@ -205,45 +208,68 @@ public class PoobkemonGUI extends JFrame {
     }
 
     // Clase que reproduce un archivo WAV en bucle
-    class ReproductorMusica {
-        private Clip clip;
-        private boolean estaReproduciendo = true;
+    public class ReproductorMusica {
+    private Clip clip;
+    private boolean estaReproduciendo = true;
+    private FloatControl gainControl; // Control de volumen
 
-        public ReproductorMusica(String rutaArchivo) {
-            try {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(rutaArchivo));
-                clip = AudioSystem.getClip();
+    public ReproductorMusica(String rutaArchivo) {
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(rutaArchivo));
+            clip = AudioSystem.getClip();
+            clip.open(audioStream);
 
-                clip.open(audioStream);
-                clip.loop(Clip.LOOP_CONTINUOUSLY); // Repetir sin fin
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                System.err.println("Error al reproducir música: " + e.getMessage());
+            // Obtener el control de volumen (si está disponible)
+            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                setVolume(50); // Volumen al 50% por defecto
             }
-        }
 
-        public void detener() {
-            if (clip != null && clip.isRunning()) {
-                clip.stop();
-                estaReproduciendo = false;
-            }
-        }
-    
-        public void reproducir() {
-            if (clip != null) {
-                clip.start();
-                estaReproduciendo = true;
-            }
-        }
-        
-        public boolean estaReproduciendo() {
-            return estaReproduciendo;
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            System.err.println("Error al reproducir música: " + e.getMessage());
         }
     }
+
+    /**
+     * Ajusta el volumen (porcentaje de 0 a 100).
+     * @param percent : 0 = mudo, 100 = máximo.
+     */
+    public void setVolume(int percent) {
+        if (gainControl == null) return; // Si no hay control de volumen, salir
+
+        // Convertir porcentaje a decibeles (rango típico: -80dB a 6dB)
+        float min = gainControl.getMinimum();
+        float max = gainControl.getMaximum();
+        float range = max - min;
+        float gain = (range * percent / 100.0f) + min;
+
+        gainControl.setValue(gain);
+    }
+
+    public void detener() {
+        if (clip != null && clip.isRunning()) {
+            clip.stop();
+            estaReproduciendo = false;
+        }
+    }
+
+    public void reproducir() {
+        if (clip != null) {
+            clip.start();
+            estaReproduciendo = true;
+        }
+    }
+
+    public boolean estaReproduciendo() {
+        return estaReproduciendo;
+    }
+}
 
 
     private void start() {
         // Cambia a imagen fija para la segunda pantalla
-        fondo.setImagenFija("Poobkemon/mult/fondo1.jpeg"); // Cambia por tu ruta de imagen
+        fondo.setImagenFija(rutaImagen); // Cambia por tu ruta de imagen
         
         // Limpia el contenido actual
         getContentPane().removeAll();
@@ -420,7 +446,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
 
     private void startNewGame() {
         // Restaurar el fondo animado original
-        fondo.setImagenFija("Poobkemon/mult/fondo1.jpeg");
+        fondo.setImagenFija(rutaImagen);
         
         // Limpiar el contenido actual
         getContentPane().removeAll();
@@ -494,75 +520,82 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
     
     private void showGameTypeSelection(String gameMode) {
+        // 1. Establecer la imagen de fondo (la misma que en el menú principal)
+        fondo.setImagenFija(rutaImagen); // Asegúrate que esta ruta sea correcta
         getContentPane().removeAll();
-
+        setContentPane(fondo); // Esto es clave para que se vea el fondo
+    
+        // 2. Crear el panel principal (transparente)
         JPanel typeGamePanel = new JPanel(new BorderLayout());
-        typeGamePanel.setBackground(Color.BLACK);
+        typeGamePanel.setOpaque(false); // ¡Importante! Para que se vea el fondo
         typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
+        // 3. Título con estilo mejorado (para que contraste con el fondo)
         JLabel titleLabel = new JLabel("GAME TYPE (" + gameMode + " MODE)", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.RED);
-        titleLabel.setFont(new Font("SERIF", Font.BOLD, 28));
-        typeGamePanel.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setForeground(Color.YELLOW);
+        titleLabel.setFont(new Font(font, Font.BOLD, 28));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 30, 0));
     
-        Font buttonFont = new Font("Arial", Font.BOLD, 18);
-    
+        // 4. Panel de contenido (transparente)
         JPanel contentPanel = new JPanel(new BorderLayout(20, 0));
-        contentPanel.setBackground(Color.BLACK);
+        contentPanel.setOpaque(false);
     
-        // Paneles de imágenes responsivas (25% del ancho cada uno)
+        // 5. Paneles de imágenes (ajustados para el nuevo fondo)
         JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "porygon.png");
+        leftImagesPanel.setOpaque(false);
         leftImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
         JPanel rightImagesPanel = createImagePanel("human.png", "porygon.png", "porygon.png");
+        rightImagesPanel.setOpaque(false);
         rightImagesPanel.setPreferredSize(new Dimension(getWidth()/4, getHeight()));
     
-        contentPanel.add(leftImagesPanel, BorderLayout.WEST);
-        contentPanel.add(rightImagesPanel, BorderLayout.EAST);
-    
+        // 6. Panel de botones (transparente)
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 20));
-        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setOpaque(false);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
     
-        JButton humanVsHumanBtn = createMenuButton("Human vs Human", buttonFont, true);
+        Font buttonFont = new Font("Arial", Font.BOLD, 18);
+    
+        // 7. Botones (usarán tu estilo createMenuButton)
+        JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true);
         humanVsHumanBtn.addActionListener(e -> {
             System.out.println(gameMode + " mode - Human vs Human selected");
-            // Aquí iniciarías el juego con los parámetros seleccionados
         });
     
-        JButton humanVsMachineBtn = createMenuButton("Human vs Machine", buttonFont, true);
+        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true);
         humanVsMachineBtn.addActionListener(e -> {
             System.out.println(gameMode + " mode - Human vs Machine selected");
-            // Aquí iniciarías el juego con los parámetros seleccionados
         });
     
-        JButton machineVsMachineBtn = createMenuButton("Machine vs Machine", buttonFont, true);
+        JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true);
         machineVsMachineBtn.addActionListener(e -> {
             System.out.println(gameMode + " mode - Machine vs Machine selected");
-            // Aquí iniciarías el juego con los parámetros seleccionados
         });
     
         buttonPanel.add(humanVsHumanBtn);
         buttonPanel.add(humanVsMachineBtn);
         buttonPanel.add(machineVsMachineBtn);
     
-        JPanel buttonContainer = new JPanel(new BorderLayout());
-        buttonContainer.setBackground(Color.BLACK);
-        buttonContainer.add(buttonPanel, BorderLayout.CENTER);
-        contentPanel.add(buttonContainer, BorderLayout.CENTER);
+        // 8. Ensamblar componentes
+        contentPanel.add(leftImagesPanel, BorderLayout.WEST);
+        contentPanel.add(rightImagesPanel, BorderLayout.EAST);
+        contentPanel.add(buttonPanel, BorderLayout.CENTER);
     
-        typeGamePanel.add(contentPanel, BorderLayout.CENTER);
-    
+        // 9. Botón BACK (derecha inferior)
         JButton backBtn = createMenuButton("BACK", buttonFont, true);
-        backBtn.addActionListener(e -> startNewGame()); // Volver a selección de modo
+        backBtn.addActionListener(e -> startNewGame());
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setOpaque(false);
         bottomPanel.add(backBtn);
-        
+    
+        // 10. Agregar todo al panel principal
+        typeGamePanel.add(titleLabel, BorderLayout.NORTH);
+        typeGamePanel.add(contentPanel, BorderLayout.CENTER);
         typeGamePanel.add(bottomPanel, BorderLayout.SOUTH);
     
-        getContentPane().add(typeGamePanel);
+        // 11. Agregar al contenedor principal
+        fondo.add(typeGamePanel, BorderLayout.CENTER);
         revalidate();
         repaint();
     }
