@@ -12,6 +12,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicLabelUI;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
@@ -418,59 +419,83 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     }
 
     private void startNewGame() {
-        // Primero mostrar diálogo de selección de modo de juego
+        // Restaurar el fondo animado original
+        fondo.setImagenFija("Poobkemon/mult/fondo1.jpeg");
+        
+        // Limpiar el contenido actual
+        getContentPane().removeAll();
+        setContentPane(fondo); // Vuelve a establecer el fondo animado
+        
+        // Crear el panel de selección de modo (con fondo transparente)
         JPanel modeSelectionPanel = new JPanel(new BorderLayout());
-        modeSelectionPanel.setBackground(Color.BLACK);
-        modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
+        modeSelectionPanel.setOpaque(false); // ¡Importante! Para que se vea el fondo
+        modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+
+        // Título (con sombra para mejor legibilidad)
         JLabel titleLabel = new JLabel("SELECT GAME MODE", SwingConstants.CENTER);
-        titleLabel.setForeground(Color.RED);
-        titleLabel.setFont(new Font("SERIF", Font.BOLD, 28));
-        modeSelectionPanel.add(titleLabel, BorderLayout.NORTH);
-    
+        titleLabel.setForeground(Color.YELLOW);
+        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 32));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
+        
+        // Efecto de sombra en el texto
+        titleLabel.setUI(new BasicLabelUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Sombra
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.drawString(titleLabel.getText(), 3, 23);
+                
+                // Texto principal
+                g2.setColor(Color.YELLOW);
+                g2.drawString(titleLabel.getText(), 0, 20);
+                
+                g2.dispose();
+            }
+        });
+
+        // Panel de botones (transparente)
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 20, 20));
-        buttonPanel.setBackground(Color.BLACK);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(50, 100, 50, 100));
-    
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 150, 20, 150));
+
         Font buttonFont = new Font(font, Font.BOLD, 20);
-    
+
         // Botón para modo Normal
         JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true);
-        normalModeBtn.setPreferredSize(new Dimension(300, 80));
-        normalModeBtn.addActionListener(e -> {
-            getContentPane().removeAll();
-            showGameTypeSelection("NORMAL"); // Pasar el modo seleccionado
-        });
-    
+        normalModeBtn.addActionListener(e -> showGameTypeSelection("NORMAL"));
+
         // Botón para modo Survival
         JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true);
-        normalModeBtn.setPreferredSize(new Dimension(300, 80));
-        survivalModeBtn.addActionListener(e -> {
-            getContentPane().removeAll();
-            showGameTypeSelection("SURVIVAL"); // Pasar el modo seleccionado
-        });
-    
+        survivalModeBtn.addActionListener(e -> showGameTypeSelection("SURVIVAL"));
+
         buttonPanel.add(normalModeBtn);
         buttonPanel.add(survivalModeBtn);
-    
-        // Botón Back
+
+        // Botón Back (alineado a la derecha)
         JButton backBtn = createMenuButton("BACK", buttonFont, true);
-        backBtn.addActionListener(e -> start());
+        backBtn.addActionListener(e -> start()); // Volver al menú principal
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(Color.BLACK);
+        bottomPanel.setOpaque(false);
         bottomPanel.add(backBtn);
-    
+
+        // Ensamblar componentes
+        modeSelectionPanel.add(titleLabel, BorderLayout.NORTH);
         modeSelectionPanel.add(buttonPanel, BorderLayout.CENTER);
         modeSelectionPanel.add(bottomPanel, BorderLayout.SOUTH);
-    
-        getContentPane().removeAll();
-        getContentPane().add(modeSelectionPanel);
+
+        // Agregar al fondo animado
+        fondo.add(modeSelectionPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
     }
     
     private void showGameTypeSelection(String gameMode) {
+        getContentPane().removeAll();
+
         JPanel typeGamePanel = new JPanel(new BorderLayout());
         typeGamePanel.setBackground(Color.BLACK);
         typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
