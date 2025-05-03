@@ -1,30 +1,17 @@
 package domain;
 
-public class efectividad {
-    // Declarar la matriz como un atributo estático
+public class Efectividad {
     private static double[][] matriz = new double[18][18];
-    {
 
+    static {
         valores();
     }
-  
 
-
-    // Método principal (punto de entrada del programa)
-    public static void main(int i,int j) {
-
-
-      
-        System.out.println("Efectividad del ataque: " + efectividad(i, j));
+    public static double efectividad(int tipoAtacante, int tipoDefensor) {
+        return matriz[tipoAtacante][tipoDefensor];
     }
 
-    // Método para obtener la efectividad de un ataque
-    public static double efectividad(int i, int j) {
-        return matriz[i][j];
-    }
-
-    // Método para inicializar la matriz con valores
-    public static void valores() {
+    private static void valores() {
         matriz[0][0] = 0.5;
         matriz[0][1] = 0.5;
         matriz[0][2] = 1;

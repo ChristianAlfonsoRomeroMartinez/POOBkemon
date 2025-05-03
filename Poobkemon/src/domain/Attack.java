@@ -1,45 +1,43 @@
 package domain;
 
-import java.util.Random;
-
 public abstract class Attack {
-    private String name;
-    private String type;
-    private int damage;
-    private int precision;
-    private int powerPoint;
+    protected String name;
+    protected String type;
+    protected int baseDamage;
+    protected int precision;
+    protected int powerPoint;
 
-    public Attack(String name, String type, int damage, int powerPoint) {
+    public Attack(String name, String type, int baseDamage, int powerPoint, int precision) {
         this.name = name;
         this.type = type;
-        this.damage = damage;
+        this.baseDamage = baseDamage;
         this.powerPoint = powerPoint;
-        this.precision = generatePrecision();
+        this.precision = precision;
     }
-
 
     public String getName() {
         return name;
     }
 
-    public int getDamage() {
-        return damage;
+    public int getBaseDamage() {
+        return baseDamage;
     }
 
     public String getType() {
         return type;
     }
 
-     private int generatePrecision() {
-        Random random = new Random();
-        return  random.nextInt(101); 
+    public int getPrecision() {
+        return precision;
     }
 
-    public void  PowerDispon() {
-        powerPoint =- 1;
+    public int getPowerPoint() {
+        return powerPoint;
     }
 
-    
+    public void usarAtaque() {
+        this.powerPoint = Math.max(this.powerPoint - 1, 0);
+    }
 
-    
+    public abstract int calcularDanio(Pokemon atacante, Pokemon defensor);
 }

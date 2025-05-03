@@ -10,7 +10,7 @@ public abstract class Pokemon {
     protected int physicalAttack;
     protected int specialDefense;
     protected int physicalDefense;
-    protected int type;
+    protected int type; // Tipo del Pokémon (índice en la matriz de efectividad)
 
     public Pokemon(String name, int id, int ps, int speed, int underEffect, int specialAttack, int physicalAttack, int specialDefense, int physicalDefense, int type) {
         this.name = name;
@@ -29,20 +29,8 @@ public abstract class Pokemon {
         return name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public int getPs() {
-        return ps;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public int getUnderEffect() {
-        return underEffect;
+    public int getType() {
+        return type;
     }
 
     public int getSpecialAttack() {
@@ -61,13 +49,7 @@ public abstract class Pokemon {
         return physicalDefense;
     }
 
-    public int getType() {
-        return type;
+    public void recibirDanio(int cantidad) {
+        this.ps = Math.max(this.ps - cantidad, 0);
     }
-
-    public void setUnderEffect(int effect) {
-        this.underEffect = effect;
-    }
-
-   
 }
