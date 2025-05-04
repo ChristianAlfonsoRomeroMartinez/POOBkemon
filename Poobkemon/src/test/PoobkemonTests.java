@@ -1,0 +1,140 @@
+package test;
+
+import domain.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PoobkemonTests {
+    private HumanCoach coach1;
+    private HumanCoach coach2;
+    private BattleArenaNormal battleArena;
+
+    @BeforeEach
+    public void setup() throws PoobkemonException {
+        // Crear Pokémon y asignar ataques
+        ArrayList<String> pokemons1 = new ArrayList<>(List.of("Charizard", "Blastoise"));
+        ArrayList<String> pokemons2 = new ArrayList<>(List.of("Venusaur", "Gengar"));
+
+        Attack[][] attacks1 = {
+            {new PhysicalAttack("Garra Dragón", "Dragon", 80, 10, 100)},
+            {new SpecialAttack("Hidrobomba", "Agua", 110, 5, 80)}
+        };
+
+        Attack[][] attacks2 = {
+            {new SpecialAttack("Hoja Mágica", "Planta", 60, 10, 100)},
+            {new StatusAttack("Fuego Fatuo", "Fuego", 0, 5, 85, "Burn", 5)}
+        };
+
+        // Crear ítems
+        ArrayList<String> items1 = new ArrayList<>(List.of("Poción", "Superpoción"));
+        ArrayList<String> items2 = new ArrayList<>(List.of("Revive"));
+
+        // Configurar entrenadores
+        coach1 = new HumanCoach("Ash", pokemons1, items1);
+        coach2 = new HumanCoach("Gary", pokemons2, items2);
+
+        coach1.setPokemonAttacks(attacks1);
+        coach2.setPokemonAttacks(attacks2);
+
+        // Configurar arena de batalla
+        battleArena = new BattleArenaNormal();
+        battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
+    }
+
+    @Test
+    public void shouldApplyItemOnDamagedPokemon() throws PoobkemonException {
+        Pokemon activePokemon = coach1.getActivePokemon();
+        activePokemon.setPs(50); // Reducir PS del Pokémon activo
+        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
+
+        coach1.useItem(potion);
+
+        assertEquals(70, activePokemon.getPs(), "El PS del Pokémon debería haber aumentado en 20.");
+    }
+
+    @Test
+    public void shouldNotApplyItemOnFaintedPokemon() {
+        Pokemon activePokemon = coach1.getActivePokemon();
+        activePokemon.setPs(0); // Pokémon debilitado
+        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
+
+        assertThrows(IllegalStateException.class, () -> coach1.useItem(potion), "No se puede usar un ítem en un Pokémon debilitado.");
+    }
+
+    @Test
+    public void shouldSwitchToAnotherPokemon() throws PoobkemonException {
+        coach1.switchToPokemon(1); // Cambiar al segundo Pokémon
+        assertEquals("Blastoise", coach1.getActivePokemon().getName(), "El Pokémon activo debería ser Blastoise.");
+    }
+
+    @Test
+    public void shouldNotSwitchToFaintedPokemon() {
+        Pokemon secondPokemon = coach1.getPokemons().get(1);
+        secondPokemon.setPs(0); // Debilitar al segundo Pokémon
+
+        assertThrows(PoobkemonException.class, () -> coach1.switchToPokemon(1), "No se puede cambiar a un Pokémon debilitado.");
+    }
+
+    @Test
+    public void shouldAttackOpponentPokemon() {
+        Pokemon attacker = coach1.getActivePokemon();
+        Pokemon defender = coach2.getActivePokemon();
+        Attack attack = attacker.getAtaques().get(0);
+
+        attacker.attack(defender, attack);
+
+        assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon defensor debería haber disminuido.");
+    }
+
+    @Test
+    public void shouldNotAttackWithInvalidMove() {
+        Pokemon attacker = coach1.getActivePokemon();
+        Attack invalidAttack = new PhysicalAttack("Ataque Inválido", "Normal", 50, 10, 100);
+
+        assertThrows(IllegalArgumentException.class, () -> attacker.attack(coach2.getActivePokemon(), invalidAttack), "No se puede usar un ataque que el Pokémon no conoce.");
+    }
+
+    @Test
+    public void shouldEndBattleWhenAllPokemonFainted() throws PoobkemonException {
+        // Debilitar todos los Pokémon del entrenador 2
+        for (Pokemon pokemon : coach2.getPokemons()) {
+            pokemon.setPs(0);
+        }
+
+        assertTrue(battleArena.isBattleFinished(), "La batalla debería haber terminado porque todos los Pokémon del entrenador 2 están debilitados.");
+    }
+
+    @Test
+    public void shouldApplyStatusEffectOnPokemon() {
+        Pokemon defender = coach2.getActivePokemon();
+        Attack statusAttack = coach1.getActivePokemon().getAtaques().get(0);
+
+        defender.setStatus(3); // Quemado
+        defender.applyEffectDamage();
+
+        assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
+    }
+
+    @Test
+    public void shouldNotAllowMoreThanSixPokemon() {
+        ArrayList<String> pokemons = new ArrayList<>(List.of("Charizard", "Blastoise", "Venusaur", "Gengar", "Dragonite", "Togetic", "Tyranitar"));
+
+        assertThrows(PoobkemonException.class, () -> new HumanCoach("Ash", pokemons, new ArrayList<>()), "No se pueden tener más de 6 Pokémon.");
+    }
+
+    @Test
+    public void shouldHandleTurnTimeout() {
+        coach1.handleTurnTimeout();
+        Pokemon activePokemon = coach1.getActivePokemon();
+
+        assertTrue(activePokemon.getAtaques().stream().allMatch(a -> a.getPowerPoint() < a.getPowerPoint()), "El PP de los ataques debería haberse reducido.");
+    }
+}
+
+
+
