@@ -699,15 +699,14 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
             return;
         }
 
-        if (selectedPlayer1.size() != 6 || selectedPlayer2.size() != 6) {
+        if (selectedPlayer1.size() > 6 || selectedPlayer2.size() > 6) {
             JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar exactamente 6 Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }else if (selectedPlayer1.isEmpty() || selectedPlayer2.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar al menos un Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (player1Items == null || player2Items == null || player1Items.isEmpty() || player2Items.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar ítems.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
         System.out.println(player1Name + " seleccionó Pokémon: " + selectedPlayer1 + " e ítems: " + player1Items);
         System.out.println(player2Name + " seleccionó Pokémon: " + selectedPlayer2 + " e ítems: " + player2Items);

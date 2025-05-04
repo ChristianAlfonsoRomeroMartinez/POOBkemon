@@ -11,32 +11,39 @@ public abstract class Coach {
     private List<Item> items; // Lista de objetos del entrenador
     private int score;
 
-    public Coach() {
-        this.pokemons = new ArrayList<>();
+    public Coach(ArrayList<Pokemon> pokemons, ArrayList<Item> items) {
+        this.pokemons = pokemons;
+        this.items = items;
         this.activePokemonIndex = 0; // Por defecto, el primer Pokémon es el activo
         this.score = 0;
     }
 
-    public void addPokemon(Pokemon pokemon) throws PoobkemonException{
-        if (pokemons.size() >= MAX_CANT_POKEMON) {
-            throw new PoobkemonException(PoobkemonException.MAX_CANT_POKEMON);
+    public void setPokemonAttacks(Attack[][] pokemAttacks) {
+        for (Pokemon pokemon : pokemons) {
+            pokemon.setAttacks(pokemAttacks[pokemons.indexOf(pokemon)]);
         }
-        pokemons.add(pokemon);
     }
 
-    public void deletePokemon(Pokemon pokemon){
-        pokemons.remove(pokemon);
+    public void switchPokemon(int index) throws PoobkemonException {
+        if (index < 0 || index >= pokemons.size()) {
+            throw new PoobkemonException(PoobkemonException.INVALID_POKEMON_INDEX);
+        }
+        if (pokemons.get(index).getPs() <= 0) {
+            throw new PoobkemonException(PoobkemonException.FAINTED_POKEMON);
+        }
+        this.activePokemonIndex = index;
     }
 
-    public void setPokemons(List<Pokemon> pokemons) {
-        this.pokemons = pokemons;
+    public List<Pokemon> getPokemons() {
+        return pokemons;
+    }
+
+    public boolean checkPokemonStatus(Pokemon pokemon) {
+        return pokemon.getPs() <= 0;
     }
     
 
     public Pokemon getActivePokemon() {
-        if (pokemons.isEmpty()) {
-            return null;
-        }
         return pokemons.get(activePokemonIndex);
     }
 
@@ -97,7 +104,15 @@ public abstract class Coach {
     /**
      * Devuelve el pokemon actual del entrenador
      */
-    public Pokemon getCurrentPokemons() {
+    public Pokemon getCurrentPokemon() {
         return pokemons.get(activePokemonIndex);
+    }
+
+    public void switchPokemonWithExceptionHandling(int indexPokemonGUI) {
+        try {
+            switchPokemon(indexPokemonGUI);
+        } catch (PoobkemonException e) {
+            System.out.println("Error al cambiar de Pokémon: " + e.getMessage());
+        }
     }
 }

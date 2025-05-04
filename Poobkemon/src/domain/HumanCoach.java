@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -10,7 +11,8 @@ public class HumanCoach extends Coach {
     
     private Coach opponent;
 
-    public HumanCoach(String name){
+    public HumanCoach(String name, ArrayList<Pokemon> pokemons, ArrayList<Item> items) {
+        super(pokemons, items);
         this.name = name;
 
         initializeActionMap();

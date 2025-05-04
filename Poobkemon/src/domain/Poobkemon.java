@@ -23,9 +23,10 @@ public class Poobkemon {
         return Arrays.asList("Ataque 1", "Ataque 2", "Ataque especial");
     }
 
-    // Método para iniciar la batalla
-    public static void startBattle(String p1, List<String> t1, String p2, List<String> t2) {
-        // Lógica de inicio de batalla
+
+
+    public void attack(String moveName){
+
     }
 
     /**

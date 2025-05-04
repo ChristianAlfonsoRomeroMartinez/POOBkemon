@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,44 +12,20 @@ public abstract class BattleArena {
     private boolean isPaused;
     private Timer turnTimer;
     private Random rand = new Random();
+    private long timeRemaining = MAX_TIME_SECONDS * 1000L; // Tiempo restante en milisegundos
+    private long pauseStartTime; // Momento en que se pausó el juego
 
-    public BattleArena(boolean isPaused) {
-        this.isPaused = isPaused;
+    public BattleArena() {
+        this.isPaused = false;
     }
 
     /**
      * Inicia una batalla Player vs Player.
      */
-    public void startBattlePvP(String coachName1, String coachName2) throws PoobkemonException {
-        setupCoaches(coachName1, coachName2);
-
-        while (!isBattleFinished()) {
-            try {
-                // Iniciar turno
-                //System.out.println("Turno de: " + coaches[currentTurn].getName());
-                startTurnTimer(currentTurn);
-
-                // Ejecuta la acción del entrenador actual
-                coachAction(currentTurn);
-
-                // Detener el temporizador si la acción se completó a tiempo
-                cancelTurnTimer();
-
-                // Verificar si algún Pokémon murió
-                checkPokemonStatus();
-
-                // Cambiar de turno
-                currentTurn = 1 - currentTurn;
-
-            } catch (PoobkemonException e) {
-                System.out.println("Error durante la batalla: " + e.getMessage());
-                break;
-            }
-        }
-
-        // Finalizar batalla y determinar ganador
-        announceWinner();
-        endBattle();
+    public void startBattle(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1
+    , ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+    Attack[][] pokemAttacks1,Attack[][] pokemAttacks2) throws PoobkemonException {
+        
     }
 
     /**
@@ -64,14 +41,23 @@ public abstract class BattleArena {
     /**
      * Configura los entrenadores y determina quién inicia.
      */
-    private void setupCoaches(String coachName1, String coachName2) {
+    protected void setupCoaches(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1
+    , ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+    Attack[][] pokemAttacks1,Attack[][] pokemAttacks2 ) throws PoobkemonException {
         boolean firstStarts = rand.nextBoolean();
         if (firstStarts) {
-            coaches[0] = new HumanCoach(coachName1);
-            coaches[1] = new HumanCoach(coachName2);
+            coaches[0] = new HumanCoach(coachName1, pokemons1, items1);
+            coaches[0].setPokemonAttacks(pokemAttacks1);
+
+            coaches[1] = new HumanCoach(coachName2, pokemons2, items2);
+            coaches[1].setPokemonAttacks(pokemAttacks2);
         } else {
-            coaches[0] = new HumanCoach(coachName2);
-            coaches[1] = new HumanCoach(coachName1);
+            coaches[0] = new HumanCoach(coachName2, pokemons2, items2);
+            coaches[0].setPokemonAttacks(pokemAttacks2);
+
+            coaches[1] = new HumanCoach(coachName1, pokemons1, items1);
+            coaches[1].setPokemonAttacks(pokemAttacks1);
+
         }
         currentTurn = 0;
     }
@@ -86,23 +72,25 @@ public abstract class BattleArena {
     /**
      * Inicia el temporizador para un turno específico.
      */
-    private void startTurnTimer(final int coachIndex) {
+    protected void startTurnTimer(final int coachIndex) {
         turnTimer = new Timer();
         turnTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                //System.out.println("Tiempo excedido para " + coaches[coachIndex].getName());
-                coaches[coachIndex].handleTurnTimeout();
-                cancelTurnTimer();
-                currentTurn = 1 - coachIndex; // Cambiar turno automáticamente
+                if (!isPaused) {
+                    //System.out.println("Tiempo excedido para " + coaches[coachIndex].getName());
+                    coaches[coachIndex].handleTurnTimeout();
+                    cancelTurnTimer();
+                    currentTurn = 1 - coachIndex; // Cambiar turno automáticamente
+                }
             }
-        }, MAX_TIME_SECONDS * 1000L);
+        }, timeRemaining);
     }
 
     /**
      * Cancela el temporizador de turno activo.
      */
-    private void cancelTurnTimer() {
+    protected void cancelTurnTimer() {
         if (turnTimer != null) {
             turnTimer.cancel();
             turnTimer = null;
@@ -110,27 +98,9 @@ public abstract class BattleArena {
     }
 
     /**
-     * Verifica el estado de los Pokémon después de cada acción.
-     */
-    private void checkPokemonStatus() throws PoobkemonException {
-        if (coaches[0].getActivePokemon().getPs() == 0) {
-            //System.out.println(coaches[0].getName() + " perdió un Pokémon.");
-            if (coaches[0].areAllPokemonFainted()) {
-                throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
-            }
-        }
-        if (coaches[1].getActivePokemon().getPs() == 0) {
-            //System.out.println(coaches[1].getName() + " perdió un Pokémon.");
-            if (coaches[1].areAllPokemonFainted()) {
-                throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
-            }
-        }
-    }
-
-    /**
      * Anuncia el ganador de la batalla.
      */
-    private void announceWinner() {
+    protected void announceWinner() {
         if (coaches[0].areAllPokemonFainted()) {
             //System.out.println("Ganador: " + coaches[1].getName());
         } else if (coaches[1].areAllPokemonFainted()) {
@@ -144,18 +114,25 @@ public abstract class BattleArena {
      * Pausa la batalla.
      */
     public void pauseBattle() {
-        this.isPaused = true;
-        cancelTurnTimer();
-        System.out.println("La batalla ha sido pausada.");
+        if (!isPaused) {
+            this.isPaused = true;
+            pauseStartTime = System.currentTimeMillis(); // Guardar el momento en que se pausó
+            cancelTurnTimer(); // Detener el temporizador
+            System.out.println("La batalla ha sido pausada.");
+        }
     }
 
     /**
      * Reanuda la batalla.
      */
     public void resumeBattle() {
-        this.isPaused = false;
-        System.out.println("La batalla ha sido reanudada.");
-        startTurnTimer(currentTurn);
+        if (isPaused) {
+            this.isPaused = false;
+            long pauseDuration = System.currentTimeMillis() - pauseStartTime; // Calcular la duración de la pausa
+            timeRemaining -= pauseDuration; // Reducir el tiempo restante por la duración de la pausa
+            System.out.println("La batalla ha sido reanudada. Tiempo restante: " + timeRemaining / 1000 + " segundos.");
+            startTurnTimer(currentTurn); // Reiniciar el temporizador con el tiempo restante
+        }
     }
 
     /**
@@ -164,5 +141,40 @@ public abstract class BattleArena {
     public void endBattle() {
         cancelTurnTimer();
         System.out.println("La batalla ha terminado.");
+    }
+
+    /**
+     * Obtiene el entrenador actual.
+     */
+    protected Coach getCurrentCoach() {
+        return coaches[currentTurn];
+    }
+
+    /**
+     * Obtiene el entrenador oponente.
+     */
+    protected Coach getOpponentCoach() {
+        return coaches[1 - currentTurn];
+    }
+
+    /**
+     * Cambia al siguiente turno.
+     */
+    protected void nextTurn() {
+        currentTurn = 1 - currentTurn;
+    }
+
+    /**
+     * Obtiene el turno actual.
+     */
+    protected int getCurrentTurn() {
+        return currentTurn;
+    }
+
+    /**
+     * Obtiene los entrenadores.
+     */
+    protected Coach[] getCoaches() {
+        return coaches;
     }
 }

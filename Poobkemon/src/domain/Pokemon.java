@@ -15,6 +15,8 @@ public abstract class Pokemon {
     protected int physicalDefense;
     protected String type;
     protected int evasion;
+    protected int status; // 0: normal, 1: paralizado, 2: dormido, 3: quemado, 4: congelado, 5: envenenado
+    protected int turnStatus; // Turnos restantes de estado (si aplica)
     protected ArrayList<Attack> ataques = new ArrayList<>();
 
     public Pokemon(String name, int id, int ps, int speed, int specialAttack,
@@ -31,6 +33,8 @@ public abstract class Pokemon {
         this.physicalDefense = physicalDefense;
         this.type = type;
         this.evasion = evasion;
+        this.status = 0; // Normal
+        this.turnStatus = 0; // Sin turnos de estado
     }
 
     public String getName() { return name; }
@@ -44,6 +48,8 @@ public abstract class Pokemon {
     public int getPhysicalAttack() { return physicalAttack; }
     public int getSpecialDefense() { return specialDefense; }
     public int getPhysicalDefense() { return physicalDefense; }
+    public int getStatus() { return status; }
+    public int getTurnStatus() { return turnStatus; }
 
     public void setSpeed(int speed) { this.speed = speed; }
     public void setPs(int ps) { this.ps = Math.max(ps, 0); }
@@ -52,16 +58,44 @@ public abstract class Pokemon {
     public void setSpecialDefense(int specialDefense) { this.specialDefense = specialDefense; }
     public void setPhysicalAttack(int physicalAttack) { this.physicalAttack = physicalAttack; }
     public void setPhysicalDefense(int physicalDefense) { this.physicalDefense = physicalDefense; }
+    public void setStatus(int status) { this.status = status; }
+    public void setTurnStatus(int turnStatus) { this.turnStatus = turnStatus; }
 
-    public void setAtaques(List<Attack> ataques) {
-        if (ataques.size() > 4) {
-            throw new IllegalArgumentException("Un Pokémon solo puede tener hasta 4 ataques.");
-        }
-        this.ataques = new ArrayList<>(ataques);
-    }
+
 
     public List<Attack> getAtaques() {
         return ataques;
+    }
+
+    //Hacerlo sin los swiches
+    public void applyEffectDamage() {
+        if (status != 0) {
+            // Lógica para aplicar daño por estado
+            switch (status) {
+                case 1: // Paralizado
+                    // Lógica de parálisis
+                    break;
+                case 2: // Dormido
+                    // Lógica de sueño
+                    break;
+                case 3: // Quemado
+                    setPs(ps - (total_ps / 16)); // Daño por quemadura
+                    break;
+                case 4: // Congelado
+                    // Lógica de congelación
+                    break;
+                case 5: // Envenenado
+                    setPs(ps - (total_ps / 8)); // Daño por veneno
+                    break;
+            }
+        }
+    }   
+
+    public void setAttacks(Attack[] ataques) {
+        this.ataques = new ArrayList<>();
+        for (Attack ataque : ataques) {
+            this.ataques.add(ataque);
+        }
     }
 
     /**
