@@ -23,23 +23,27 @@ public abstract class BattleArena {
         setupCoaches(coachName1, coachName2);
 
         while (!isBattleFinished()) {
-            // Iniciar turno
-            System.out.println("Turno de: " + coaches[currentTurn].getName());
-            startTurnTimer(currentTurn);
+            try {
+                // Iniciar turno
+                //System.out.println("Turno de: " + coaches[currentTurn].getName());
+                startTurnTimer(currentTurn);
 
-            // Ejecuta la acción del entrenador actual
-            coachAction(currentTurn);
+                // Ejecuta la acción del entrenador actual
+                coachAction(currentTurn);
 
-            // Detener el temporizador si la acción se completó a tiempo
-            cancelTurnTimer();
+                // Detener el temporizador si la acción se completó a tiempo
+                cancelTurnTimer();
 
-            // Verificar si algún Pokémon murió
-            if (coaches[0].getCurrentPokemon().getPs() == 0 || coaches[1].getCurrentPokemon().getPs() == 0) {
-                throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
+                // Verificar si algún Pokémon murió
+                checkPokemonStatus();
+
+                // Cambiar de turno
+                currentTurn = 1 - currentTurn;
+
+            } catch (PoobkemonException e) {
+                System.out.println("Error durante la batalla: " + e.getMessage());
+                break;
             }
-
-            // Cambiar de turno
-            currentTurn = 1 - currentTurn;
         }
 
         // Finalizar batalla y determinar ganador
@@ -50,7 +54,7 @@ public abstract class BattleArena {
     /**
      * Ejecuta la acción del entrenador en el índice dado.
      */
-    private void coachAction(int index) {
+    private void coachAction(int index) throws PoobkemonException {
         // Obtiene la acción (ataque, cambio, ítem o huir)
         int action = coaches[index].selectAction();
         // Realiza la acción
@@ -58,19 +62,18 @@ public abstract class BattleArena {
     }
 
     /**
-     * Ordena aleatoriamente qué entrenador inicia y los inicializa.
+     * Configura los entrenadores y determina quién inicia.
      */
     private void setupCoaches(String coachName1, String coachName2) {
         boolean firstStarts = rand.nextBoolean();
         if (firstStarts) {
             coaches[0] = new HumanCoach(coachName1);
             coaches[1] = new HumanCoach(coachName2);
-            currentTurn = 0;
         } else {
             coaches[0] = new HumanCoach(coachName2);
             coaches[1] = new HumanCoach(coachName1);
-            currentTurn = 0;
         }
+        currentTurn = 0;
     }
 
     /**
@@ -88,11 +91,10 @@ public abstract class BattleArena {
         turnTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Tiempo excedido para " + coaches[coachIndex].getName());
+                //System.out.println("Tiempo excedido para " + coaches[coachIndex].getName());
                 coaches[coachIndex].handleTurnTimeout();
-                // Tras penalizar por tiempo, terminar turno
                 cancelTurnTimer();
-                currentTurn = 1 - coachIndex;
+                currentTurn = 1 - coachIndex; // Cambiar turno automáticamente
             }
         }, MAX_TIME_SECONDS * 1000L);
     }
@@ -108,13 +110,33 @@ public abstract class BattleArena {
     }
 
     /**
+     * Verifica el estado de los Pokémon después de cada acción.
+     */
+    private void checkPokemonStatus() throws PoobkemonException {
+        if (coaches[0].getActivePokemon().getPs() == 0) {
+            //System.out.println(coaches[0].getName() + " perdió un Pokémon.");
+            if (coaches[0].areAllPokemonFainted()) {
+                throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
+            }
+        }
+        if (coaches[1].getActivePokemon().getPs() == 0) {
+            //System.out.println(coaches[1].getName() + " perdió un Pokémon.");
+            if (coaches[1].areAllPokemonFainted()) {
+                throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
+            }
+        }
+    }
+
+    /**
      * Anuncia el ganador de la batalla.
      */
     private void announceWinner() {
         if (coaches[0].areAllPokemonFainted()) {
-            System.out.println("Ganador: " + coaches[1].getName());
+            //System.out.println("Ganador: " + coaches[1].getName());
+        } else if (coaches[1].areAllPokemonFainted()) {
+            //System.out.println("Ganador: " + coaches[0].getName());
         } else {
-            System.out.println("Ganador: " + coaches[0].getName());
+            System.out.println("La batalla terminó en empate.");
         }
     }
 
@@ -124,6 +146,7 @@ public abstract class BattleArena {
     public void pauseBattle() {
         this.isPaused = true;
         cancelTurnTimer();
+        System.out.println("La batalla ha sido pausada.");
     }
 
     /**
@@ -131,7 +154,7 @@ public abstract class BattleArena {
      */
     public void resumeBattle() {
         this.isPaused = false;
-        // Continuar con el turno actual reactivando el temporizador
+        System.out.println("La batalla ha sido reanudada.");
         startTurnTimer(currentTurn);
     }
 
@@ -140,10 +163,6 @@ public abstract class BattleArena {
      */
     public void endBattle() {
         cancelTurnTimer();
+        System.out.println("La batalla ha terminado.");
     }
-
-    // Métodos abstractos que implementarán las subclases de BattleArena:
-    // - obtener la acción del usuario o IA
-    // - definir lógica de PvM y MvM si se extiende
-    // public abstract int getActionFromUser();
 }

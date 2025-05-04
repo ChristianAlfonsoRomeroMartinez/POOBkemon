@@ -28,6 +28,11 @@ public abstract class Coach {
         pokemons.remove(pokemon);
     }
 
+    public void setPokemons(List<Pokemon> pokemons) {
+        this.pokemons = pokemons;
+    }
+    
+
     public Pokemon getActivePokemon() {
         if (pokemons.isEmpty()) {
             return null;
