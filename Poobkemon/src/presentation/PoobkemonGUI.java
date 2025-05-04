@@ -15,7 +15,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.plaf.basic.BasicLabelUI;
 
 import domain.Poobkemon;
@@ -78,8 +77,8 @@ public class PoobkemonGUI extends JFrame {
 
     private void prepareElementsDimension() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int windowWidth = screenSize.width/2;
-        int windowHeight = screenSize.height/2;
+        int windowWidth = screenSize.width/2 + 50;
+        int windowHeight = screenSize.height/2 + 30;
         setSize(windowWidth, windowHeight);
         setLocationRelativeTo(null);
     }
@@ -335,14 +334,14 @@ public class SoundEffect {
             
         // Botones
         if (!false) {
-            JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true);
+            JButton continueBtn = createMenuButton("CONTINUE", buttonFont, true, 220,55);
             continueBtn.addActionListener(e -> continueGame());
             buttonPanel.add(continueBtn);
         }
 
-        JButton newGameBtn = createMenuButton("NEW GAME", buttonFont, true);
-        JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true);
-        JButton scoreBtn = createMenuButton("SCORE", buttonFont, true);
+        JButton newGameBtn = createMenuButton("NEW GAME", buttonFont, true,220,55);
+        JButton oldGameBtn = createMenuButton("OLD GAME", buttonFont, true,220,55);
+        JButton scoreBtn = createMenuButton("SCORE", buttonFont, true,220,55);
             
         newGameBtn.addActionListener(e -> startNewGame());
         oldGameBtn.addActionListener(e -> {});
@@ -362,7 +361,7 @@ public class SoundEffect {
         bottomPanel.setOpaque(false); // Esto es esencial para la transparencia
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JButton backBtn = createMenuButton("BACK", buttonFont, true);
+        JButton backBtn = createMenuButton("BACK", buttonFont, true,200,55);
         backBtn.addActionListener(e -> returnToGame());
         
         // Centrar el botón BACK
@@ -380,9 +379,8 @@ public class SoundEffect {
         repaint();
 }
 
-private JButton createMenuButton(String text, Font font, boolean enabled) {
+private JButton createMenuButton(String text, Font font, boolean enabled, int width, int height) {
     JButton button = new JButton(text) {
-        
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -443,7 +441,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     // --- Configuración base del botón ---
     button.setFont(font.deriveFont(Font.BOLD)); // Texto en negrita
     button.setEnabled(enabled);
-    button.setPreferredSize(new Dimension(220, 55)); // Tamaño ligeramente más grande
+    button.setPreferredSize(new Dimension(width, height)); // Tamaño ligeramente más grande
     button.setContentAreaFilled(false);
     button.setOpaque(false);
     button.setForeground(Color.WHITE);
@@ -537,18 +535,18 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         Font buttonFont = new Font(font, Font.BOLD, 20);
 
         // Botón para modo Normal
-        JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true);
+        JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true,300,55);
         normalModeBtn.addActionListener(e -> showGameTypeSelection("NORMAL"));
 
         // Botón para modo Survival
-        JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true);
+        JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true,300,55);
         survivalModeBtn.addActionListener(e -> showGameTypeSelection("SURVIVAL"));
 
         buttonPanel.add(normalModeBtn);
         buttonPanel.add(survivalModeBtn);
 
         // Botón Back (alineado a la derecha)
-        JButton backBtn = createMenuButton("BACK", buttonFont, true);
+        JButton backBtn = createMenuButton("BACK", buttonFont, true, 200,55);
         backBtn.addActionListener(e -> start()); // Volver al menú principal
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -604,18 +602,18 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         Font buttonFont = new Font("Arial", Font.BOLD, 18);
     
         // 7. Botones (usarán tu estilo createMenuButton)
-        JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true);
+        JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true,220,55);
         humanVsHumanBtn.addActionListener(e -> {
             buttonSound.play();
             showPokemonSelectionScreen();
         });
     
-        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true);
+        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true,220,55);
         humanVsMachineBtn.addActionListener(e -> {
             System.out.println(gameMode + " mode - Human vs Machine selected");
         });
     
-        JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true);
+        JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true,220,55);
         machineVsMachineBtn.addActionListener(e -> {
             System.out.println(gameMode + " mode - Machine vs Machine selected");
         });
@@ -630,7 +628,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         contentPanel.add(buttonPanel, BorderLayout.CENTER);
     
         // 9. Botón BACK (derecha inferior)
-        JButton backBtn = createMenuButton("BACK", buttonFont, true);
+        JButton backBtn = createMenuButton("BACK", buttonFont, true,200,55);
         backBtn.addActionListener(e -> startNewGame());
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -657,11 +655,12 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     // Panel principal
     JPanel mainPanel = new JPanel(new BorderLayout());
     mainPanel.setOpaque(false);
-    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Márgenes más pequeños
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Márgenes más grandes para mejor separación
 
     // Panel de selección de Pokémon para ambos jugadores
-    JPanel selectionPanel = new JPanel(new GridLayout(1, 2, 10, 0)); // Espaciado reducido
+    JPanel selectionPanel = new JPanel(new GridLayout(1, 2, 30, 0)); // Espaciado horizontal entre jugadores
     selectionPanel.setOpaque(false);
+    selectionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Márgenes internos del panel de selección
 
     // Panel del jugador 1
     JPanel player1Panel = createPlayerSelectionPanel("Player 1");
@@ -672,7 +671,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     selectionPanel.add(player2Panel);
 
     // Botón START
-    JButton startButton = createMenuButton("START", new Font(font, Font.BOLD, 16), true);
+    JButton startButton = createMenuButton("START", new Font(font, Font.BOLD, 18), true, 200, 50);
     startButton.addActionListener(e -> {
         JTextField player1NameField = (JTextField) player1Panel.getClientProperty("nameField");
         JTextField player2NameField = (JTextField) player2Panel.getClientProperty("nameField");
@@ -689,20 +688,35 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
         List<String> selectedPlayer2 = getSelectedPokemon(player2Panel);
 
         if (selectedPlayer1.size() > 6 || selectedPlayer2.size() > 6) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar maximo 6 pokemones", "Error", JOptionPane.ERROR_MESSAGE);
-        } else if (selectedPlayer1.isEmpty() || selectedPlayer2.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar al menos un Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
-        } else {
+            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar maximo 6 Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (selectedPlayer1.size() == 0 || selectedPlayer2.size() == 0) {
+            JOptionPane.showMessageDialog(this, "Ambos jugadores deben seleccionar minimo 1 Pokémon.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        else {
             System.out.println(player1Name + " seleccionó: " + selectedPlayer1);
             System.out.println(player2Name + " seleccionó: " + selectedPlayer2);
             // Aquí puedes pasar las listas seleccionadas al dominio o iniciar la batalla
         }
     });
 
-    // Panel inferior con el botón START
-    JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    // Botón ITEMS
+    JButton itemsButton = createMenuButton("ITEMS", new Font(font, Font.BOLD, 18), true, 200, 50);
+    itemsButton.addActionListener(e -> {
+        JOptionPane.showMessageDialog(this, "Funcionalidad de selección de ítems aún no implementada.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        // Aquí puedes abrir una nueva ventana para seleccionar ítems
+    });
+
+    // Botón BACK
+    JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
+    backButton.addActionListener( e-> showGameTypeSelection("NORMAL"));
+
+    // Panel inferior con los botones
+    JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // Espaciado entre botones
     bottomPanel.setOpaque(false);
+    bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // Separación superior
+    bottomPanel.add(itemsButton);
     bottomPanel.add(startButton);
+    bottomPanel.add(backButton);
 
     // Ensamblar el panel principal
     mainPanel.add(selectionPanel, BorderLayout.CENTER);
@@ -713,6 +727,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled) {
     repaint();
 }
 
+
 /**
  * Crea un panel de selección de Pokémon para un jugador.
  */
@@ -722,7 +737,7 @@ private JPanel createPlayerSelectionPanel(String playerName) {
 
     // Campo de texto para el nombre del jugador
     JTextField nameField = new JTextField(playerName);
-    nameField.setFont(new Font(font, Font.PLAIN, 14));
+    nameField.setFont(new Font(font, Font.PLAIN, 17));
     nameField.setHorizontalAlignment(SwingConstants.CENTER);
 
     // Lista de Pokémon disponibles
@@ -743,7 +758,7 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
     // Botón para agregar Pokémon
-    JButton addButton = createMenuButton("ADD", new Font(font, Font.BOLD, 14), true);
+    JButton addButton = createMenuButton("ADD", new Font(font, Font.BOLD, 14), true,220,55);
     DefaultListModel<String> selectedPokemonModel = new DefaultListModel<>();
     JList<String> selectedPokemonList = new JList<>(selectedPokemonModel);
     selectedPokemonList.setVisibleRowCount(4); // Reducir filas visibles
@@ -761,7 +776,7 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     });
 
     // Botón para borrar Pokémon
-    JButton removeButton = createMenuButton("REMOVE", new Font(font, Font.BOLD, 14), true);
+    JButton removeButton = createMenuButton("REMOVE", new Font(font, Font.BOLD, 14), true,100,55);
     removeButton.addActionListener(e -> {
         String selectedPokemon = selectedPokemonList.getSelectedValue();
         if (selectedPokemon != null) {
