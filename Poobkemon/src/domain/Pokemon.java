@@ -91,6 +91,12 @@ public abstract class Pokemon {
         }
     }   
 
+    public void reducePP() {
+        for (Attack ataque : ataques) {
+            ataque.usarAtaque(); // Reduce el PP del ataque
+        }
+    }
+
     public void setAttacks(Attack[] ataques) {
         this.ataques = new ArrayList<>();
         for (Attack ataque : ataques) {

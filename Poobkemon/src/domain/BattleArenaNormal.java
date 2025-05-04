@@ -38,7 +38,7 @@ public class BattleArenaNormal extends BattleArena {
                         throw new PoobkemonException(PoobkemonException.POKEMON_GAME_OVER);
                     } else {
                         // Cambiar al siguiente Pokémon si es necesario
-                        opponentCoach.switchPokemon(opponentCoach.getNextAvailablePokemonIndex());
+                        //opponentCoach.switchPokemon(opponentCoach.getNextAvailablePokemonIndex());
                     }
                 }
 

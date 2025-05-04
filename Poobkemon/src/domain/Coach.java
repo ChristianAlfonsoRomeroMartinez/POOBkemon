@@ -6,16 +6,44 @@ import java.util.List;
 public abstract class Coach {
     public static final int MAX_CANT_POKEMON = 6;
     //private String name; // Nombre del entrenador
-    private List<Pokemon> pokemons; // Lista de Pokémon del entrenador
-    private int activePokemonIndex; // Índice del Pokémon actualmente en batalla
-    private List<Item> items; // Lista de objetos del entrenador
+    protected List<Pokemon> pokemons; // Lista de Pokémon del entrenador
+    protected int activePokemonIndex; // Índice del Pokémon actualmente en batalla
+    protected List<Item> items; // Lista de objetos del entrenador
     private int score;
 
-    public Coach(ArrayList<Pokemon> pokemons, ArrayList<Item> items) {
-        this.pokemons = pokemons;
-        this.items = items;
+    public Coach(ArrayList<String> pokemons, ArrayList<String> items) {
+        createPokemons(pokemons);
+        createItems(items);
         this.activePokemonIndex = 0; // Por defecto, el primer Pokémon es el activo
         this.score = 0;
+    }
+
+
+    public void agregarItem(String nombrePokemon) {
+        Item item = ItemFactory.createItem(nombrePokemon);
+        items.add(item);
+    }
+
+    public void createItems(ArrayList<String> items) {
+        this.items = new ArrayList<>();
+        for (String nombreItem : items) {
+            Item item = ItemFactory.createItem(nombreItem);
+            this.items.add(item);
+        }
+    }
+
+
+    private void createPokemons(ArrayList<String> pokemons) {
+        this.pokemons = new ArrayList<>();
+        for (String nombrePokemon : pokemons) {
+            Pokemon pokemon = PokemonFactory.createPokemon(nombrePokemon);
+            this.pokemons.add(pokemon);
+        }
+    }
+
+    public void agregarPokemon(String nombrePokemon) {
+        Pokemon pokemon = PokemonFactory.createPokemon(nombrePokemon);
+        pokemons.add(pokemon);
     }
 
     public void setPokemonAttacks(Attack[][] pokemAttacks) {
@@ -24,13 +52,8 @@ public abstract class Coach {
         }
     }
 
-    public void switchPokemon(int index) throws PoobkemonException {
-        if (index < 0 || index >= pokemons.size()) {
-            throw new PoobkemonException(PoobkemonException.INVALID_POKEMON_INDEX);
-        }
-        if (pokemons.get(index).getPs() <= 0) {
-            throw new PoobkemonException(PoobkemonException.FAINTED_POKEMON);
-        }
+    public void switchPokemon(int index)  {
+
         this.activePokemonIndex = index;
     }
 

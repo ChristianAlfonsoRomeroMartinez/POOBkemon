@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,9 +36,11 @@ public class Poobkemon {
      * @param coachName2 Nombre del segundo entrenador.
      * @throws PoobkemonException Si ocurre un error al configurar la batalla.
      */
-    public void startBattle(String coachName1, String coachName2) throws PoobkemonException {
-        battleArena = new BattleArena(false); // Crear la arena de batalla
-        battleArena.startBattlePvP(coachName1, coachName2);
+    public void startBattle(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1,
+                            ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+                            Attack[][] pokemAttacks1, Attack[][] pokemAttacks2) throws PoobkemonException {
+        battleArena = new BattleArenaNormal(); // Crear la arena de batalla
+        battleArena.startBattle(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
     }
 
     /**
@@ -52,17 +55,7 @@ public class Poobkemon {
         battleArena.handleAction(action, battleArena.getCurrentCoach(), battleArena.getOpponentCoach());
     }
 
-    /**
-     * Obtiene el estado actual de la batalla.
-     * Este método puede ser usado por la GUI para actualizar la interfaz.
-     * @return Una descripción del estado actual de la batalla.
-     */
-    public String getBattleState() {
-        if (battleArena == null) {
-            return "No hay una batalla en curso.";
-        }
-        return battleArena.getBattleState();
-    }
+
 
     /**
      * Cambia al siguiente Pokémon disponible del entrenador actual.
