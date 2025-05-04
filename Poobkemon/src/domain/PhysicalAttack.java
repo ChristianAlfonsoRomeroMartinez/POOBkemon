@@ -55,7 +55,7 @@ public class PhysicalAttack extends Attack {
         if (rand.nextInt(100) + 1 > precision) return 0;
         
         // Usar número de tipo en lugar de string
-        double efectividad = Efectividad.efectividad(
+        double efectividad = efectivity.efectividad(
             numberType.get(this.getType()), 
             numberType.get(defensor.getType())
         );

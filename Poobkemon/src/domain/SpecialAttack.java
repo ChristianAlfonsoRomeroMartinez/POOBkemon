@@ -49,7 +49,7 @@ public class SpecialAttack extends Attack {
         Random rand = new Random();
         if (rand.nextInt(100) + 1 > precision) return 0;
         
-        double efectividad = Efectividad.efectividad(numberType.get(this.getType()), 
+        double efectividad = efectivity.efectividad(numberType.get(this.getType()), 
                                                    numberType.get(defensor.getType()));
         int danioBase = (int) ((atacante.getSpecialAttack() * baseDamage * efectividad) / defensor.getSpecialDefense());
         danioBase = Math.max(danioBase, 1); // Mínimo 1 de daño

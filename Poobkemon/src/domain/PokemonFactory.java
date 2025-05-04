@@ -10,20 +10,20 @@ public class PokemonFactory {
 
     // Registramos todos los Pokémon disponibles
     static {
-        POKEMON_REGISTRY.put("Blastoise", Blastoise::new);
-        POKEMON_REGISTRY.put("Charizard", Charizard::new);  // Ejemplo adicional
-        POKEMON_REGISTRY.put("Pikachu", Donphan::new);
-        POKEMON_REGISTRY.put("Gengar", Gengar::new);
-        POKEMON_REGISTRY.put("Dragonite", Dragonite::new);
-        POKEMON_REGISTRY.put("Togetic", Togetic::new);
-        POKEMON_REGISTRY.put("Tyranitar", Tyranitar::new);
-        POKEMON_REGISTRY.put("Gardevoir", Gardevoir::new);
-        POKEMON_REGISTRY.put("Snorlax", Snorlax::new);
-        POKEMON_REGISTRY.put("Metagross", Metagross::new);
-        POKEMON_REGISTRY.put("Machamp", Machamp::new);
-        POKEMON_REGISTRY.put("Raichu", Raichu::new);
-        POKEMON_REGISTRY.put("Delibird", Delibird::new);
-        POKEMON_REGISTRY.put("Venusaur", Venusaur::new);
+        POKEMON_REGISTRY.put("Blastoise", blastoise::new);
+        POKEMON_REGISTRY.put("Charizard", charizard::new);  // Ejemplo adicional
+        POKEMON_REGISTRY.put("Pikachu", donphan::new);
+        POKEMON_REGISTRY.put("Gengar", gengar::new);
+        POKEMON_REGISTRY.put("Dragonite", dragonite::new);
+        POKEMON_REGISTRY.put("Togetic", togetic::new);
+        POKEMON_REGISTRY.put("Tyranitar", tyranitar::new);
+        POKEMON_REGISTRY.put("Gardevoir", gardevoir::new);
+        POKEMON_REGISTRY.put("Snorlax", snorlax::new);
+        POKEMON_REGISTRY.put("Metagross", metagross::new);
+        POKEMON_REGISTRY.put("Machamp", machamp::new);
+        POKEMON_REGISTRY.put("Raichu", raichu::new);
+        POKEMON_REGISTRY.put("Delibird", delibird::new);
+        POKEMON_REGISTRY.put("Venusaur", venusaur::new);
         
     }
 

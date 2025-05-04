@@ -1,6 +1,6 @@
 package domain;
 
-public class Efectividad {
+public class efectivity {
     private static double[][] matriz = new double[18][18];
 
     static {

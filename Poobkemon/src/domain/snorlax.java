@@ -1,8 +1,8 @@
 package domain;
 
-public class Snorlax extends Pokemon {
+public class snorlax extends Pokemon {
 
-    public Snorlax() {
+    public snorlax() {
         super("Snorlax", 9, 524, 174, 251, 350, 350, 251, "Normal",80);
     }
 }

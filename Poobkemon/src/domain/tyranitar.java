@@ -1,8 +1,8 @@
 package domain;
 
-public class Tyranitar extends Pokemon {
+public class tyranitar extends Pokemon {
 
-    public Tyranitar() {
+    public tyranitar() {
         super("Tyranitar", 7, 404, 243, 317, 403, 328, 350, "Roca",85);
     }
 }

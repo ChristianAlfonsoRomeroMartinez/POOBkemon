@@ -1,8 +1,8 @@
 package domain;
 
-public class Gengar extends Pokemon {
+public class gengar extends Pokemon {
 
-    public Gengar() {
+    public gengar() {
         super("Gengar", 4, 324, 350, 394, 251, 273, 240, "Fantasma",115);
     }
 }
