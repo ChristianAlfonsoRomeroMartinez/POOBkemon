@@ -22,8 +22,8 @@ public abstract class BattleArena {
     /**
      * Inicia una batalla Player vs Player.
      */
-    public void startBattle(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1
-    , ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+    public void startBattle(String coachName1, String coachName2, ArrayList<String> pokemons1
+    , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
     Attack[][] pokemAttacks1,Attack[][] pokemAttacks2) throws PoobkemonException {
         
     }
@@ -41,8 +41,8 @@ public abstract class BattleArena {
     /**
      * Configura los entrenadores y determina quién inicia.
      */
-    protected void setupCoaches(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1
-    , ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+    protected void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
+    , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
     Attack[][] pokemAttacks1,Attack[][] pokemAttacks2 ) throws PoobkemonException {
         boolean firstStarts = rand.nextBoolean();
         if (firstStarts) {

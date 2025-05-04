@@ -132,10 +132,7 @@ public abstract class Coach {
     }
 
     public void switchPokemonWithExceptionHandling(int indexPokemonGUI) {
-        try {
             switchPokemon(indexPokemonGUI);
-        } catch (PoobkemonException e) {
-            System.out.println("Error al cambiar de Pokémon: " + e.getMessage());
-        }
+
     }
 }
