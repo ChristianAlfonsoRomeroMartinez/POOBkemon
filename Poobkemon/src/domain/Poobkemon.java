@@ -18,7 +18,7 @@ public class Poobkemon {
         return Arrays.asList("Poción", "Superpoción", "Elixir");
     }
     
-    public static List<String> getAvailableAttacks(String pokemonName) {
+    public static List<String> getAvailableAttacks() {
         // Lógica para obtener ataques según Pokémon
         return Arrays.asList("Ataque 1", "Ataque 2", "Ataque especial");
     }

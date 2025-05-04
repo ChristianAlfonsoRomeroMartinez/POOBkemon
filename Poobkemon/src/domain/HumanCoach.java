@@ -10,8 +10,7 @@ public class HumanCoach extends Coach {
     
     private Coach opponent;
 
-    public HumanCoach(String name) {
-        super(); // Llamada al constructor de Coach
+    public HumanCoach(String name){
         this.name = name;
 
         initializeActionMap();
@@ -22,6 +21,10 @@ public class HumanCoach extends Coach {
         actionMap.put(1, hc -> performItem());
         actionMap.put(2, hc -> performSwitch());
         actionMap.put(3, hc -> performFlee());
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
