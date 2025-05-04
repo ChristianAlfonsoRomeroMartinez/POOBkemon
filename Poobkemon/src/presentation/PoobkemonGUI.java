@@ -1,5 +1,6 @@
 package presentation;
 
+import domain.Poobkemon;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -18,8 +18,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicLabelUI;
-
-import domain.Poobkemon;
 
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
@@ -751,6 +749,9 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     JTextField nameField = new JTextField(playerName);
     nameField.setFont(new Font(font, Font.PLAIN, 17));
     nameField.setHorizontalAlignment(SwingConstants.CENTER);
+    nameField.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+    nameField.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    nameField.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
 
     // Lista de Pokémon disponibles
     List<String> availablePokemon = Poobkemon.getAvailablePokemon();
@@ -761,12 +762,12 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     pokemonList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     pokemonList.setVisibleRowCount(5);
     pokemonList.setFont(new Font(font, Font.PLAIN, 14));
-    pokemonList.setBackground(new Color(240, 240, 240));
-    pokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    pokemonList.setBackground(new Color(0, 102, 153)); // Fondo azul
+    pokemonList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    pokemonList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102))); // Borde azul oscuro
 
     JScrollPane scrollPane = new JScrollPane(pokemonList);
     scrollPane.setOpaque(false); // Hacer el JScrollPane transparente
-    scrollPane.getViewport().setOpaque(false); // Hacer el Viewport transparente
     scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Eliminar bordes
 
     // Botón para agregar Pokémon
@@ -775,8 +776,9 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     JList<String> selectedPokemonList = new JList<>(selectedPokemonModel);
     selectedPokemonList.setVisibleRowCount(5);
     selectedPokemonList.setFont(new Font(font, Font.PLAIN, 14));
-    selectedPokemonList.setBackground(new Color(240, 240, 240));
-    selectedPokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    selectedPokemonList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+    selectedPokemonList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    selectedPokemonList.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
 
     JScrollPane selectedScrollPane = new JScrollPane(selectedPokemonList);
     selectedScrollPane.setOpaque(false); // Hacer el JScrollPane transparente
@@ -996,7 +998,9 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JLabel nameLabel = new JLabel(playerName, SwingConstants.CENTER);
         nameLabel.setFont(new Font(font, Font.BOLD, 16));
         nameLabel.setOpaque(true);
-        nameLabel.setBackground(new Color(0,0,0,0));
+        nameLabel.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        nameLabel.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        nameLabel.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         List<String> availableItems = Poobkemon.getAvailableItems();
         DefaultListModel<String> itemModel = new DefaultListModel<>();
@@ -1006,19 +1010,22 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         itemList.setVisibleRowCount(5);
         itemList.setFont(new Font(font, Font.PLAIN, 14));
-        itemList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        itemList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        itemList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        itemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         JScrollPane scrollPane = new JScrollPane(itemList);
-        scrollPane.setOpaque(true);
-        scrollPane.getViewport().setOpaque(true);
-
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
     
         JButton addButton = createMenuButton("ADD", new Font(font, Font.BOLD, 14), true, 100, 40);
         DefaultListModel<String> selectedItemModel = new DefaultListModel<>();
         JList<String> selectedItemList = new JList<>(selectedItemModel);
         selectedItemList.setVisibleRowCount(5);
         selectedItemList.setFont(new Font(font, Font.PLAIN, 14));
-        selectedItemList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        selectedItemList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        selectedItemList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        selectedItemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         addButton.addActionListener(e -> {
             String selectedItem = itemList.getSelectedValue();
@@ -1066,4 +1073,6 @@ private List<String> getSelectedItems(JPanel playerPanel) {
             ventana.setVisible(true);
         });
     }
+
+    
 }
