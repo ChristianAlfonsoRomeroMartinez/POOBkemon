@@ -966,11 +966,14 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         List<String> selectedItemsPlayer1 = getSelectedItems(player1Panel);
         List<String> selectedItemsPlayer2 = getSelectedItems(player2Panel);
 
+        // Validar máximo 6 ítems
+        if (selectedItemsPlayer1.size() > 6 || selectedItemsPlayer2.size() > 6) {
+            JOptionPane.showMessageDialog(this, "Máximo 6 ítems por jugador", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         playerItems.put("Player 1", selectedItemsPlayer1);
         playerItems.put("Player 2", selectedItemsPlayer2);
-
-        System.out.println("Player 1 seleccionó ítems: " + selectedItemsPlayer1);
-        System.out.println("Player 2 seleccionó ítems: " + selectedItemsPlayer2);
 
         showPokemonSelectionScreen();
     });
@@ -1170,13 +1173,13 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
     private void showMoveSelectionDialog(String pokemon, String player) {
         JDialog dialog = new JDialog(this, player + " - Seleccionar movimientos para " + pokemon, true);
-        dialog.setSize(400, 400);
+        dialog.setSize(500, 500);
         dialog.setLocationRelativeTo(this);
     
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     
-        JLabel titleLabel = new JLabel("Selecciona 4 movimientos para " + pokemon, SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Selecciona hasta 4 movimientos para " + pokemon, SwingConstants.CENTER);
         titleLabel.setFont(new Font(font, Font.BOLD, 16));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
     
@@ -1188,7 +1191,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         DefaultListModel<String> moveModel = new DefaultListModel<>();
         JList<String> moveList = new JList<>(moveModel);
-        moveList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        moveList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         moveList.setVisibleRowCount(8);
         JScrollPane scrollPane = new JScrollPane(moveList);
     
@@ -1215,22 +1218,50 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         mainPanel.add(typePanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     
-        JButton confirmButton = new JButton("Confirmar");
-        confirmButton.addActionListener(e -> {
-            List<String> selectedMovesList = moveList.getSelectedValuesList();
-            if (selectedMovesList.size() > 4) {
-                JOptionPane.showMessageDialog(dialog, "Solo puedes seleccionar 4 movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (selectedMovesList.isEmpty()) {
-                JOptionPane.showMessageDialog(dialog, "Debes seleccionar al menos un movimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+        // Lista temporal para mostrar los movimientos seleccionados
+        DefaultListModel<String> selectedMoveModel = new DefaultListModel<>();
+        JList<String> selectedMoveList = new JList<>(selectedMoveModel);
+        selectedMoveList.setVisibleRowCount(4);
+        JScrollPane selectedScrollPane = new JScrollPane(selectedMoveList);
+    
+        // Botón "Agregar"
+        JButton addButton = new JButton("Agregar");
+        addButton.addActionListener(e -> {
+            String selectedMove = moveList.getSelectedValue();
+            if (selectedMove != null) {
+                if (selectedMoveModel.size() < 4) {
+                    selectedMoveModel.addElement(selectedMove);
+                } else {
+                    JOptionPane.showMessageDialog(dialog, "No puedes agregar más de 4 movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
-                selectedMoves.put(player + "_" + pokemon, selectedMovesList);
-                dialog.dispose();
+                JOptionPane.showMessageDialog(dialog, "Selecciona un movimiento para agregar.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     
+        // Botón "Confirmar"
+        JButton confirmButton = new JButton("Confirmar");
+        confirmButton.addActionListener(e -> {
+            List<String> selectedMovesList = new ArrayList<>();
+            for (int i = 0; i < selectedMoveModel.size(); i++) {
+                selectedMovesList.add(selectedMoveModel.getElementAt(i));
+            }
+    
+            // Guardar los movimientos seleccionados
+            selectedMoves.put(player + "_" + pokemon, selectedMovesList);
+            dialog.dispose();
+        });
+    
+        // Panel para los botones y lista de movimientos seleccionados
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(addButton);
         buttonPanel.add(confirmButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+    
+        bottomPanel.add(selectedScrollPane, BorderLayout.CENTER);
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+    
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
     
         dialog.add(mainPanel);
         dialog.setVisible(true);
@@ -1245,10 +1276,24 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
     private void printPlayerSelection(String player, List<String> pokemons) {
         System.out.println("\n" + player + ":");
-        for(String pokemon : pokemons) {
+    
+        // Obtener ítems del jugador
+        List<String> items = playerItems.getOrDefault(player, new ArrayList<>());
+        if (items.isEmpty()) {
+            System.out.println("Ítems: No seleccionados");
+        } else {
+            System.out.println("Ítems: " + String.join(", ", items));
+        }
+    
+        // Imprimir cada Pokémon con sus movimientos
+        for (String pokemon : pokemons) {
             String key = player + "_" + pokemon;
-            List<String> moves = selectedMoves.getOrDefault(key, List.of("No seleccionados"));
-            System.out.println("- " + pokemon + ": " + String.join(", ", moves));
+            List<String> moves = selectedMoves.getOrDefault(key, new ArrayList<>());
+            if (moves.isEmpty()) {
+                System.out.println("- " + pokemon + ": No seleccionados");
+            } else {
+                System.out.println("- " + pokemon + ": " + String.join(", ", moves));
+            }
         }
     }
     
