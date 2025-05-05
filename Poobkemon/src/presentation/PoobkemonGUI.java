@@ -1,5 +1,6 @@
 package presentation;
 
+import domain.Poobkemon;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -19,8 +19,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicLabelUI;
 
-import domain.Poobkemon;
-
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
     private String rutaImagen = "Poobkemon/mult/fondo2.jpeg";
@@ -29,6 +27,7 @@ public class PoobkemonGUI extends JFrame {
     private ReproductorMusica reproductor;
     private SoundEffect buttonSound;
     private Map<String, List<String>> playerItems = new HashMap<>();
+    private Map<String, List<String>> selectedMoves = new HashMap<>();
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
@@ -711,6 +710,8 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         System.out.println(player1Name + " seleccionó Pokémon: " + selectedPlayer1 + " e ítems: " + player1Items);
         System.out.println(player2Name + " seleccionó Pokémon: " + selectedPlayer2 + " e ítems: " + player2Items);
 
+        showPokemonSummaryScreen(selectedPlayer1, selectedPlayer2);
+
         // Aquí puedes pasar las listas seleccionadas al dominio o iniciar la batalla
     });
 
@@ -751,6 +752,9 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     JTextField nameField = new JTextField(playerName);
     nameField.setFont(new Font(font, Font.PLAIN, 17));
     nameField.setHorizontalAlignment(SwingConstants.CENTER);
+    nameField.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+    nameField.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    nameField.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
 
     // Lista de Pokémon disponibles
     List<String> availablePokemon = Poobkemon.getAvailablePokemon();
@@ -761,12 +765,12 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     pokemonList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     pokemonList.setVisibleRowCount(5);
     pokemonList.setFont(new Font(font, Font.PLAIN, 14));
-    pokemonList.setBackground(new Color(240, 240, 240));
-    pokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    pokemonList.setBackground(new Color(0, 102, 153)); // Fondo azul
+    pokemonList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    pokemonList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102))); // Borde azul oscuro
 
     JScrollPane scrollPane = new JScrollPane(pokemonList);
     scrollPane.setOpaque(false); // Hacer el JScrollPane transparente
-    scrollPane.getViewport().setOpaque(false); // Hacer el Viewport transparente
     scrollPane.setBorder(BorderFactory.createEmptyBorder()); // Eliminar bordes
 
     // Botón para agregar Pokémon
@@ -775,8 +779,9 @@ private JPanel createPlayerSelectionPanel(String playerName) {
     JList<String> selectedPokemonList = new JList<>(selectedPokemonModel);
     selectedPokemonList.setVisibleRowCount(5);
     selectedPokemonList.setFont(new Font(font, Font.PLAIN, 14));
-    selectedPokemonList.setBackground(new Color(240, 240, 240));
-    selectedPokemonList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    selectedPokemonList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+    selectedPokemonList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    selectedPokemonList.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
 
     JScrollPane selectedScrollPane = new JScrollPane(selectedPokemonList);
     selectedScrollPane.setOpaque(false); // Hacer el JScrollPane transparente
@@ -996,7 +1001,9 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JLabel nameLabel = new JLabel(playerName, SwingConstants.CENTER);
         nameLabel.setFont(new Font(font, Font.BOLD, 16));
         nameLabel.setOpaque(true);
-        nameLabel.setBackground(new Color(0,0,0,0));
+        nameLabel.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        nameLabel.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        nameLabel.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         List<String> availableItems = Poobkemon.getAvailableItems();
         DefaultListModel<String> itemModel = new DefaultListModel<>();
@@ -1006,19 +1013,22 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         itemList.setVisibleRowCount(5);
         itemList.setFont(new Font(font, Font.PLAIN, 14));
-        itemList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        itemList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        itemList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        itemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         JScrollPane scrollPane = new JScrollPane(itemList);
-        scrollPane.setOpaque(true);
-        scrollPane.getViewport().setOpaque(true);
-
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
     
         JButton addButton = createMenuButton("ADD", new Font(font, Font.BOLD, 14), true, 100, 40);
         DefaultListModel<String> selectedItemModel = new DefaultListModel<>();
         JList<String> selectedItemList = new JList<>(selectedItemModel);
         selectedItemList.setVisibleRowCount(5);
         selectedItemList.setFont(new Font(font, Font.PLAIN, 14));
-        selectedItemList.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        selectedItemList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
+        selectedItemList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+        selectedItemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
     
         addButton.addActionListener(e -> {
             String selectedItem = itemList.getSelectedValue();
@@ -1066,4 +1076,157 @@ private List<String> getSelectedItems(JPanel playerPanel) {
             ventana.setVisible(true);
         });
     }
+
+    private void showPokemonSummaryScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
+        getContentPane().removeAll();
+        fondo.setImagenFija(rutaImagen);
+        
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setOpaque(false);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    
+        JLabel titleLabel = new JLabel("Selecciona los movimientos", SwingConstants.CENTER);
+        titleLabel.setFont(new Font(font, Font.BOLD, 24));
+        titleLabel.setForeground(Color.YELLOW);
+        
+        // Panel principal dividido en dos secciones
+        JPanel playersPanel = new JPanel(new GridLayout(1, 2, 20, 0)); // Dos columnas, una para cada jugador
+        playersPanel.setOpaque(false);
+        
+        // Panel para Jugador 1
+        JPanel player1Section = createPlayerSection("Jugador 1", player1Pokemon);
+        // Panel para Jugador 2
+        JPanel player2Section = createPlayerSection("Jugador 2", player2Pokemon);
+        
+        playersPanel.add(player1Section);
+        playersPanel.add(player2Section);
+    
+        // Panel de botones (FINALIZAR y BACK)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setOpaque(false);
+    
+        JButton nextButton = createMenuButton("FINALIZAR", new Font(font, Font.BOLD, 18), true, 200, 50);
+        nextButton.addActionListener(e -> printFinalSelection(player1Pokemon, player2Pokemon));
+    
+        JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
+        backButton.addActionListener(e -> showPokemonSelectionScreen()); // Regresa a la pantalla anterior
+    
+        buttonPanel.add(backButton);
+        buttonPanel.add(nextButton);
+    
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        mainPanel.add(playersPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+    
+        fondo.add(mainPanel);
+        revalidate();
+        repaint();
+    }
+    
+    private JPanel createPlayerSection(String playerName, List<String> pokemons) {
+        JPanel section = new JPanel(new BorderLayout());
+        section.setOpaque(false);
+        section.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
+        
+        // Título del jugador
+        JLabel playerLabel = new JLabel(playerName, SwingConstants.CENTER);
+        playerLabel.setFont(new Font(font, Font.BOLD, 20));
+        playerLabel.setForeground(Color.YELLOW);
+        playerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        
+        // Panel para los Pokémon en formato de cuadrícula (2 filas x 3 columnas)
+        JPanel pokemonGrid = new JPanel(new GridLayout(2, 3, 10, 10)); 
+        pokemonGrid.setOpaque(false);
+        
+        for (String pokemon : pokemons) {
+            // Construir la ruta relativa de la imagen
+            String imagePath = "Poobkemon/mult/" + pokemon.toLowerCase() + "Front.png";
+            File imageFile = new File(imagePath);
+            
+            if (imageFile.exists()) {
+                ImageIcon icon = new ImageIcon(imagePath);
+                
+                JButton btn = new JButton(icon);
+                btn.setPreferredSize(new Dimension(100, 100));
+                btn.addActionListener(e -> showMoveSelectionDialog(pokemon, playerName));
+                
+                // Ajustar imagen al tamaño del botón
+                btn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(
+                    80, 80, Image.SCALE_SMOOTH)));
+                btn.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+                btn.setContentAreaFilled(false);
+                
+                pokemonGrid.add(btn);
+            } else {
+                System.err.println("Imagen no encontrada para: " + pokemon + " en " + imagePath);
+            }
+        }
+        
+        section.add(playerLabel, BorderLayout.NORTH);
+        section.add(pokemonGrid, BorderLayout.CENTER);
+        
+        return section;
+    }
+    
+    private void showMoveSelectionDialog(String pokemon, String player) {
+        JDialog dialog = new JDialog(this, player + " - Seleccionar movimientos para " + pokemon, true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+    
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    
+        JLabel titleLabel = new JLabel("Selecciona 4 movimientos para " + pokemon, SwingConstants.CENTER);
+        titleLabel.setFont(new Font(font, Font.BOLD, 16));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+    
+        // Opciones de movimientos
+        DefaultListModel<String> moveModel = new DefaultListModel<>();
+        moveModel.addElement("Ataque Físico");
+        moveModel.addElement("Ataque Especial");
+        moveModel.addElement("Status");
+    
+        JList<String> moveList = new JList<>(moveModel);
+        moveList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        moveList.setVisibleRowCount(8);
+        JScrollPane scrollPane = new JScrollPane(moveList);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+    
+        JButton confirmButton = new JButton("Confirmar");
+        confirmButton.addActionListener(e -> {
+            List<String> selectedMovesList = moveList.getSelectedValuesList();
+            if (selectedMovesList.size() > 4) {
+                JOptionPane.showMessageDialog(dialog, "Solo puedes seleccionar 4 movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (selectedMovesList.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Debes seleccionar al menos un movimiento.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                selectedMoves.put(player + "_" + pokemon, selectedMovesList);
+                dialog.dispose();
+            }
+        });
+    
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(confirmButton);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+    
+        dialog.add(mainPanel);
+        dialog.setVisible(true);
+    }
+    
+    private void printFinalSelection(List<String> player1Pokemon, List<String> player2Pokemon) {
+        System.out.println("\n=== Selección Final ===");
+        
+        printPlayerSelection("Player 1", player1Pokemon);
+        printPlayerSelection("Player 2", player2Pokemon);
+    }
+    
+    private void printPlayerSelection(String player, List<String> pokemons) {
+        System.out.println("\n" + player + ":");
+        for(String pokemon : pokemons) {
+            String key = player + "_" + pokemon;
+            List<String> moves = selectedMoves.getOrDefault(key, List.of("No seleccionados"));
+            System.out.println("- " + pokemon + ": " + String.join(", ", moves));
+        }
+    }
+    
 }
