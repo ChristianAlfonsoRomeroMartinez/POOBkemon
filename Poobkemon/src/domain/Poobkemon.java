@@ -24,7 +24,26 @@ public class Poobkemon {
         return Arrays.asList("Ataque 1", "Ataque 2", "Ataque especial");
     }
 
+    /**
+     * Obtiene la lista de ataques físicos disponibles.
+     */
+    public static List<String> getPhysicalAttacks() {
+        return PhysicalAttack.ataquesFisicos.stream().map(Attack::getName).toList();
+    }
 
+    /**
+     * Obtiene la lista de ataques especiales disponibles.
+     */
+    public static List<String> getSpecialAttacks() {
+        return SpecialAttack.ataquesEspeciales.stream().map(Attack::getName).toList();
+    }
+
+    /**
+     * Obtiene la lista de ataques de estado disponibles.
+     */
+    public static List<String> getStatusAttacks() {
+        return StatusAttack.ataquesStatus.stream().map(Attack::getName).toList();
+    }
 
     public void attack(String moveName){
 

@@ -1170,7 +1170,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
     private void showMoveSelectionDialog(String pokemon, String player) {
         JDialog dialog = new JDialog(this, player + " - Seleccionar movimientos para " + pokemon, true);
-        dialog.setSize(400, 300);
+        dialog.setSize(400, 400);
         dialog.setLocationRelativeTo(this);
     
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -1180,16 +1180,39 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         titleLabel.setFont(new Font(font, Font.BOLD, 16));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
     
-        // Opciones de movimientos
-        DefaultListModel<String> moveModel = new DefaultListModel<>();
-        moveModel.addElement("Ataque Físico");
-        moveModel.addElement("Ataque Especial");
-        moveModel.addElement("Status");
+        // Panel para botones de tipo de ataque
+        JPanel typePanel = new JPanel(new FlowLayout());
+        JButton physicalButton = new JButton("Ataque Físico");
+        JButton specialButton = new JButton("Ataque Especial");
+        JButton statusButton = new JButton("Status");
     
+        DefaultListModel<String> moveModel = new DefaultListModel<>();
         JList<String> moveList = new JList<>(moveModel);
         moveList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         moveList.setVisibleRowCount(8);
         JScrollPane scrollPane = new JScrollPane(moveList);
+    
+        // Listeners para cargar ataques según el tipo
+        physicalButton.addActionListener(e -> {
+            moveModel.clear();
+            Poobkemon.getPhysicalAttacks().forEach(moveModel::addElement);
+        });
+    
+        specialButton.addActionListener(e -> {
+            moveModel.clear();
+            Poobkemon.getSpecialAttacks().forEach(moveModel::addElement);
+        });
+    
+        statusButton.addActionListener(e -> {
+            moveModel.clear();
+            Poobkemon.getStatusAttacks().forEach(moveModel::addElement);
+        });
+    
+        typePanel.add(physicalButton);
+        typePanel.add(specialButton);
+        typePanel.add(statusButton);
+    
+        mainPanel.add(typePanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
     
         JButton confirmButton = new JButton("Confirmar");
