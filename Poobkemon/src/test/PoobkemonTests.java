@@ -125,7 +125,23 @@ public class PoobkemonTests {
         assertEquals(activePokemon.getTotalPs(), activePokemon.getPs(), "El PS no debería exceder el máximo.");
     }
 
+    @Test
+    public void shouldHandleTurnTimeout() {
+        Pokemon activePokemon = coach1.getActivePokemon();
 
+        // Obtener los PP iniciales de los ataques
+        List<Integer> initialPP = activePokemon.getAtaques().stream()
+            .map(Attack::getPowerPoint)
+            .toList();
+
+        // Llamar a handleTurnTimeout
+        coach1.handleTurnTimeout();
+
+        // Verificar que los PP hayan disminuido
+        for (int i = 0; i < activePokemon.getAtaques().size(); i++) {
+            assertTrue(activePokemon.getAtaques().get(i).getPowerPoint() < initialPP.get(i), "El PP del ataque debería haberse reducido.");
+        }
+    }
 }
 
 

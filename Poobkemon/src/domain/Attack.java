@@ -63,6 +63,10 @@ public abstract class Attack {
     public int getPrecision() {
         return precision;
     }
+    
+    public void setPowerPoint(int pp) {
+    	this.powerPoint = pp;
+    }
 
     public int getPowerPoint() {
         return powerPoint;
