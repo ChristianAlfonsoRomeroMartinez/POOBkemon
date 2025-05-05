@@ -97,11 +97,18 @@ public abstract class Coach {
         return true;
     }
 
-    public void useItem(Item item) {
+    public void useItem(Item item) throws PoobkemonException {
         Pokemon activePokemon = getActivePokemon();
-        if (activePokemon != null) {
-            item.applyItemEffect(activePokemon);
+        if (activePokemon == null) {
+            throw new PoobkemonException(PoobkemonException.NO_POKEMONS_SELECTED);
         }
+        if (activePokemon.getPs() == activePokemon.getTotalPs()) {
+            throw new PoobkemonException(PoobkemonException.FULL_POKEMON_HEALTH);
+        }
+        if(activePokemon.getPs() <= 0 && item.getName()=="Revivir") {
+            throw new PoobkemonException(PoobkemonException.POKEMON_HAS_BEEN_FAINTED);
+        }
+        item.applyItemEffect(activePokemon);
     }
 
     public int getScore() {

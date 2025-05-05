@@ -7,7 +7,7 @@ public class PoobkemonException extends Exception {
     public static final String FAINTED_POKEMON = "El pokemon esta debilitado";
     public static final String POKEMON_HAS_BEEN_FAINTED = "El pokemon ha sido debilitado";
     public static final String POKEMON_GAME_OVER = "El juego ha terminado, no hay más pokemones disponibles";
-
+    public static final String FULL_POKEMON_HEALTH ="No se puede usar un ítem en un Pokémon con PS completos.";
 
     
     public PoobkemonException(String message) {

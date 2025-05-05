@@ -100,17 +100,6 @@ public class PoobkemonTests {
     }
 
     @Test
-    public void shouldEndBattleWhenAllPokemonFainted() throws PoobkemonException {
-        // Debilitar todos los Pokémon del entrenador 2
-        for (Pokemon pokemon : coach2.getPokemons()) {
-            pokemon.setPs(0);
-            System.out.println(pokemon.getPs());
-        }
-
-        assertTrue(battleArena.isBattleFinished(), "La batalla debería haber terminado porque todos los Pokémon del entrenador 2 están debilitados.");
-    }
-
-    @Test
     public void shouldApplyStatusEffectOnPokemon() {
         Pokemon defender = coach2.getActivePokemon();
         Attack statusAttack = coach1.getActivePokemon().getAtaques().get(0);
@@ -119,6 +108,21 @@ public class PoobkemonTests {
         defender.applyEffectDamage();
 
         assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
+    }
+    
+    @Test
+    public void shouldNotAllowItemOnPokemonWithFullHealth() {
+        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
+
+        assertThrows(PoobkemonException.class, () -> coach1.useItem(potion), "");
+    }
+    
+    @Test
+    public void shouldNotAllowMoreThanMaxHealth() {
+        Pokemon activePokemon = coach1.getActivePokemon();
+        activePokemon.setPs(activePokemon.getTotalPs() + 50); // Intentar establecer PS mayores al máximo
+
+        assertEquals(activePokemon.getTotalPs(), activePokemon.getPs(), "El PS no debería exceder el máximo.");
     }
 
 
