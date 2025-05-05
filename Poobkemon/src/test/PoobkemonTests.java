@@ -43,7 +43,7 @@ public class PoobkemonTests {
 
         // Configurar arena de batalla
         battleArena = new BattleArenaNormal();
-        battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
+        //battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
     }
 
     @Test

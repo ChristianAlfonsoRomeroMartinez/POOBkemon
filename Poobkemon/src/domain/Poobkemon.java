@@ -36,8 +36,8 @@ public class Poobkemon {
      * @param coachName2 Nombre del segundo entrenador.
      * @throws PoobkemonException Si ocurre un error al configurar la batalla.
      */
-    public void startBattle(String coachName1, String coachName2, ArrayList<Pokemon> pokemons1,
-                            ArrayList<Pokemon> pokemons2, ArrayList<Item> items1, ArrayList<Item> items2,
+    public void startBattle(String coachName1, String coachName2, ArrayList<String> pokemons1,
+                            ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
                             Attack[][] pokemAttacks1, Attack[][] pokemAttacks2) throws PoobkemonException {
         battleArena = new BattleArenaNormal(); // Crear la arena de batalla
         battleArena.startBattle(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
