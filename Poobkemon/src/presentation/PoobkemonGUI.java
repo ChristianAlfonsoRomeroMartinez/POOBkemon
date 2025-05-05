@@ -967,7 +967,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         List<String> selectedItemsPlayer2 = getSelectedItems(player2Panel);
 
         // Validar máximo 6 ítems
-        if (selectedItemsPlayer1.size() > 6 || selectedItemsPlayer2.size() > 6) {
+        if (selectedItemsPlayer1.size() > 4 || selectedItemsPlayer2.size() > 4) {
             JOptionPane.showMessageDialog(this, "Máximo 6 ítems por jugador", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -1035,10 +1035,10 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         addButton.addActionListener(e -> {
             String selectedItem = itemList.getSelectedValue();
-            if (selectedItem != null && selectedItemModel.size() < 6) {
+            if (selectedItem != null && selectedItemModel.size() < 4) {
                 selectedItemModel.addElement(selectedItem);
-            } else if (selectedItemModel.size() >= 6) {
-                JOptionPane.showMessageDialog(this, "Solo puedes seleccionar 6 ítems.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (selectedItemModel.size() >= 4) {
+                JOptionPane.showMessageDialog(this, "Solo puedes seleccionar 4 ítems.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
     
@@ -1242,13 +1242,19 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         // Botón "Confirmar"
         JButton confirmButton = new JButton("Confirmar");
         confirmButton.addActionListener(e -> {
+            if (selectedMoveModel.size() < 4) {
+                JOptionPane.showMessageDialog(dialog, "Debes seleccionar exactamente 4 movimientos para continuar.", "Error", JOptionPane.ERROR_MESSAGE);
+                return; // No permite continuar si no hay 4 movimientos seleccionados
+            }
+        
             List<String> selectedMovesList = new ArrayList<>();
             for (int i = 0; i < selectedMoveModel.size(); i++) {
                 selectedMovesList.add(selectedMoveModel.getElementAt(i));
             }
-    
+        
             // Guardar los movimientos seleccionados
             selectedMoves.put(player + "_" + pokemon, selectedMovesList);
+            System.out.println(player + " seleccionó movimientos para " + pokemon + ": " + selectedMovesList);
             dialog.dispose();
         });
     

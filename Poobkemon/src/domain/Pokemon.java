@@ -52,7 +52,6 @@ public abstract class Pokemon {
     public int getTurnStatus() { return turnStatus; }
 
     public void setSpeed(int speed) { this.speed = speed; }
-    public void setPs(int ps) { this.ps = Math.max(ps, 0); }
     public void setEvasion(int evasion) { this.evasion = evasion; }
     public void setSpecialAttack(int specialAttack) { this.specialAttack = specialAttack; }
     public void setSpecialDefense(int specialDefense) { this.specialDefense = specialDefense; }
@@ -61,7 +60,12 @@ public abstract class Pokemon {
     public void setStatus(int status) { this.status = status; }
     public void setTurnStatus(int turnStatus) { this.turnStatus = turnStatus; }
 
-
+    public void setPs(int ps) { 
+    	if(ps > total_ps) {
+    		this.ps = total_ps;
+    		return;
+    	}
+    	this.ps = Math.max(ps, 0); }
 
     public List<Attack> getAtaques() {
         return ataques;
@@ -93,7 +97,7 @@ public abstract class Pokemon {
 
     public void reducePP() {
         for (Attack ataque : ataques) {
-            ataque.usarAtaque(); // Reduce el PP del ataque
+            ataque.setPowerPoint(ataque.getPowerPoint()-1); // Reduce el PP del ataque
         }
     }
 
