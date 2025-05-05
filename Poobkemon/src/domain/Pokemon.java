@@ -41,7 +41,7 @@ public abstract class Pokemon {
     public String getType() { return type; }
     public int getId() { return id; }
     public int getTotalPs() { return total_ps; }
-    public int getPs() { return ps; }
+    public int getPs() { return this.ps; }
     public int getSpeed() { return speed; }
     public int getEvasion() { return evasion; }
     public int getSpecialAttack() { return specialAttack; }

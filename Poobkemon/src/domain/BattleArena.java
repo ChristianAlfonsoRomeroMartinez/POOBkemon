@@ -66,6 +66,7 @@ public abstract class BattleArena {
      * Verifica si la batalla ha terminado.
      */
     public boolean isBattleFinished() {
+    	System.out.println(coaches[0].areAllPokemonFainted() || coaches[1].areAllPokemonFainted());
         return coaches[0].areAllPokemonFainted() || coaches[1].areAllPokemonFainted();
     }
 

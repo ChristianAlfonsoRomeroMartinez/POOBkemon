@@ -88,6 +88,7 @@ public abstract class Coach {
 
 
     public boolean areAllPokemonFainted() {
+    	
         for (Pokemon pokemon : pokemons) {
             if (pokemon.getPs() > 0) {
                 return false;

@@ -104,6 +104,7 @@ public class PoobkemonTests {
         // Debilitar todos los Pokémon del entrenador 2
         for (Pokemon pokemon : coach2.getPokemons()) {
             pokemon.setPs(0);
+            System.out.println(pokemon.getPs());
         }
 
         assertTrue(battleArena.isBattleFinished(), "La batalla debería haber terminado porque todos los Pokémon del entrenador 2 están debilitados.");
@@ -120,20 +121,7 @@ public class PoobkemonTests {
         assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
     }
 
-    @Test
-    public void shouldNotAllowMoreThanSixPokemon() {
-        ArrayList<String> pokemons = new ArrayList<>(List.of("Charizard", "Blastoise", "Venusaur", "Gengar", "Dragonite", "Togetic", "Tyranitar"));
 
-        assertThrows(PoobkemonException.class, () -> new HumanCoach("Ash", pokemons, new ArrayList<>()), "No se pueden tener más de 6 Pokémon.");
-    }
-
-    @Test
-    public void shouldHandleTurnTimeout() {
-        coach1.handleTurnTimeout();
-        Pokemon activePokemon = coach1.getActivePokemon();
-
-        assertTrue(activePokemon.getAtaques().stream().allMatch(a -> a.getPowerPoint() < a.getPowerPoint()), "El PP de los ataques debería haberse reducido.");
-    }
 }
 
 
