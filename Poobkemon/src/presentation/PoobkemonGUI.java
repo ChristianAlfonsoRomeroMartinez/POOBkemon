@@ -28,6 +28,7 @@ public class PoobkemonGUI extends JFrame {
     private SoundEffect buttonSound;
     private Map<String, List<String>> playerItems = new HashMap<>();
     private Map<String, List<String>> selectedMoves = new HashMap<>();
+    private boolean isPlayer1Turn = true;
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
@@ -1079,163 +1080,11 @@ private List<String> getSelectedItems(JPanel playerPanel) {
             ventana.setVisible(true);
         });
     }
-
+    
     private void showPokemonSummaryScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
         getContentPane().removeAll();
         fondo.setImagenFija(rutaImagen);
-        
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setOpaque(false);
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-        JLabel titleLabel = new JLabel("Selecciona los movimientos", SwingConstants.CENTER);
-        titleLabel.setFont(new Font(font, Font.BOLD, 24));
-        titleLabel.setForeground(Color.YELLOW);
-        
-        JPanel playersPanel = new JPanel(new GridLayout(1, 2, 20, 0));
-        playersPanel.setOpaque(false);
-        
-        JPanel player1Section = createPlayerSection("Jugador 1", player1Pokemon);
-        JPanel player2Section = createPlayerSection("Jugador 2", player2Pokemon);
-        
-        playersPanel.add(player1Section);
-        playersPanel.add(player2Section);
-    
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setOpaque(false);
-    
-        JButton nextButton = createMenuButton("FINALIZAR", new Font(font, Font.BOLD, 18), true, 200, 50);
-        nextButton.addActionListener(e -> {
-            // Validar que todos los Pokémon tengan movimientos seleccionados
-            for (String pokemon : player1Pokemon) {
-                if (!selectedMoves.containsKey("Player 1_" + pokemon)) {
-                    JOptionPane.showMessageDialog(this, "Faltan movimientos para " + pokemon + " de Jugador 1", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-            for (String pokemon : player2Pokemon) {
-                if (!selectedMoves.containsKey("Player 2_" + pokemon)) {
-                    JOptionPane.showMessageDialog(this, "Faltan movimientos para " + pokemon + " de Jugador 2", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-    
-            // Mostrar la pantalla de batalla
-            showBattleScreen(player1Pokemon, player2Pokemon);
-        });
-    
-        JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
-        backButton.addActionListener(e -> showPokemonSelectionScreen());
-    
-        buttonPanel.add(backButton);
-        buttonPanel.add(nextButton);
-    
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
-        mainPanel.add(playersPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-    
-        fondo.add(mainPanel);
-        revalidate();
-        repaint();
-    }
-    
-    private void showBattleScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
-        getContentPane().removeAll();
-        fondo.setImagenFija(rutaImagen);
-    
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setOpaque(false);
-    
-        // Panel superior: Pokémon del oponente
-        JPanel opponentPanel = createBattlePokemonPanel(player2Pokemon.get(0), false);
-        mainPanel.add(opponentPanel, BorderLayout.NORTH);
-    
-        // Panel central: Pokémon del jugador
-        JPanel playerPanel = createBattlePokemonPanel(player1Pokemon.get(0), true);
-        mainPanel.add(playerPanel, BorderLayout.CENTER);
-    
-        // Panel inferior: Botones de acción
-        JPanel actionPanel = createBattleActionPanel(player1Pokemon, player2Pokemon);
-        mainPanel.add(actionPanel, BorderLayout.SOUTH);
-    
-        fondo.add(mainPanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
-    }
-    
-    private JPanel createBattlePokemonPanel(String pokemonName, boolean isPlayer) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-    
-        String imagePath = "Poobkemon/mult/" + pokemonName.toLowerCase() + (isPlayer ? "Back.png" : "Front.png");
-        JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
-        panel.add(pokemonImage, BorderLayout.CENTER);
-    
-        JProgressBar healthBar = new JProgressBar(0, 100);
-        healthBar.setValue(100);
-        healthBar.setStringPainted(true);
-        healthBar.setForeground(Color.GREEN);
-        panel.add(healthBar, BorderLayout.SOUTH);
-    
-        panel.putClientProperty("healthBar", healthBar);
-        return panel;
-    }
-    
-    private JPanel createBattleActionPanel(List<String> player1Pokemon, List<String> player2Pokemon) {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
-        panel.setOpaque(false);
-    
-        JButton fightButton = createMenuButton("FIGHT", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton bagButton = createMenuButton("BAG", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton pokemonButton = createMenuButton("POKÉMON", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton runButton = createMenuButton("RUN", new Font(font, Font.BOLD, 18), true, 150, 50);
-    
-        fightButton.addActionListener(e -> handleFightAction());
-        bagButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Abrir la bolsa no está implementado aún.", "Información", JOptionPane.INFORMATION_MESSAGE));
-        pokemonButton.addActionListener(e -> handlePokemonSwitch(player1Pokemon));
-        runButton.addActionListener(e -> handleRunAction());
-    
-        panel.add(fightButton);
-        panel.add(bagButton);
-        panel.add(pokemonButton);
-        panel.add(runButton);
-    
-        return panel;
-    }
-    
-    private void handleFightAction() {
-        JOptionPane.showMessageDialog(this, "Ataque realizado.", "Información", JOptionPane.INFORMATION_MESSAGE);
-        // Aquí puedes actualizar las barras de vida y manejar el turno
-    }
-    
-    private void handlePokemonSwitch(List<String> playerPokemon) {
-        JDialog dialog = new JDialog(this, "Cambiar Pokémon", true);
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(this);
-    
-        JPanel panel = new JPanel(new GridLayout(2, 3, 10, 10));
-        for (String pokemon : playerPokemon) {
-            JButton button = new JButton(pokemon);
-            button.addActionListener(e -> {
-                JOptionPane.showMessageDialog(this, "Has cambiado a " + pokemon, "Información", JOptionPane.INFORMATION_MESSAGE);
-                dialog.dispose();
-            });
-            panel.add(button);
-        }
-    
-        dialog.add(panel);
-        dialog.setVisible(true);
-    }
-    
-    private void handleRunAction() {
-        JOptionPane.showMessageDialog(this, "Has huido de la batalla.", "Información", JOptionPane.INFORMATION_MESSAGE);
-        returnToGame();
-    }
-
-    private void showPokemonSummaryScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
-        getContentPane().removeAll();
-        fondo.setImagenFija(rutaImagen);
-        
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setOpaque(false);
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -1248,9 +1097,8 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JPanel playersPanel = new JPanel(new GridLayout(1, 2, 20, 0)); // Dos columnas, una para cada jugador
         playersPanel.setOpaque(false);
         
-        // Panel para Jugador 1
+        // Crear las secciones para cada jugador
         JPanel player1Section = createPlayerSection("Jugador 1", player1Pokemon);
-        // Panel para Jugador 2
         JPanel player2Section = createPlayerSection("Jugador 2", player2Pokemon);
         
         playersPanel.add(player1Section);
@@ -1261,7 +1109,16 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         buttonPanel.setOpaque(false);
     
         JButton nextButton = createMenuButton("FINALIZAR", new Font(font, Font.BOLD, 18), true, 200, 50);
-        nextButton.addActionListener(e -> printFinalSelection(player1Pokemon, player2Pokemon));
+        nextButton.addActionListener(e -> {
+            // Validar que todos los Pokémon tengan movimientos seleccionados
+            if (!areAllMovesSelected(player1Pokemon, "Jugador 1") || !areAllMovesSelected(player2Pokemon, "Jugador 2")) {
+                JOptionPane.showMessageDialog(this, "Todos los Pokémon deben tener 4 movimientos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            // Mostrar la pantalla de batalla
+            showBattleScreen(player1Pokemon, player2Pokemon);
+        });
     
         JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
         backButton.addActionListener(e -> showPokemonSelectionScreen()); // Regresa a la pantalla anterior
@@ -1276,6 +1133,17 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         fondo.add(mainPanel);
         revalidate();
         repaint();
+    }
+    
+    private boolean areAllMovesSelected(List<String> pokemons, String player) {
+        for (String pokemon : pokemons) {
+            String key = player + "_" + pokemon;
+            List<String> moves = selectedMoves.get(key);
+            if (moves == null || moves.size() < 4) {
+                return false; // Faltan movimientos para este Pokémon
+            }
+        }
+        return true; // Todos los Pokémon tienen movimientos seleccionados
     }
     
     private JPanel createPlayerSection(String playerName, List<String> pokemons) {
@@ -1423,6 +1291,163 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         dialog.add(mainPanel);
         dialog.setVisible(true);
+    }
+    
+    private void showBattleScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
+        getContentPane().removeAll();
+        fondo.setImagenFija(rutaImagen);
+    
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setOpaque(false);
+    
+        // Panel superior: Pokémon del oponente
+        JPanel opponentPanel = createBattlePokemonPanel(player2Pokemon.get(0), false);
+        mainPanel.add(opponentPanel, BorderLayout.NORTH);
+    
+        // Panel central: Pokémon del jugador
+        JPanel playerPanel = createBattlePokemonPanel(player1Pokemon.get(0), true);
+        mainPanel.add(playerPanel, BorderLayout.CENTER);
+    
+        // Panel inferior: Botones de acción
+        JPanel actionPanel = createBattleActionPanel(player1Pokemon, player2Pokemon, opponentPanel, playerPanel);
+        mainPanel.add(actionPanel, BorderLayout.SOUTH);
+    
+        fondo.add(mainPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+    
+    private JPanel createBattlePokemonPanel(String pokemonName, boolean isPlayer) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+    
+        String imagePath = "Poobkemon/mult/" + pokemonName.toLowerCase() + (isPlayer ? "Back.png" : "Front.png");
+        JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+        panel.add(pokemonImage, BorderLayout.CENTER);
+    
+        JProgressBar healthBar = new JProgressBar(0, 100);
+        healthBar.setValue(100);
+        healthBar.setStringPainted(true);
+        healthBar.setForeground(Color.GREEN);
+        panel.add(healthBar, BorderLayout.SOUTH);
+    
+        panel.putClientProperty("healthBar", healthBar);
+        return panel;
+    }
+    
+    private JPanel createBattleActionPanel(List<String> player1Pokemon, List<String> player2Pokemon, JPanel opponentPanel, JPanel playerPanel) {
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+        panel.setOpaque(false);
+    
+        JButton fightButton = createMenuButton("FIGHT", new Font(font, Font.BOLD, 18), true, 150, 50);
+        JButton bagButton = createMenuButton("BAG", new Font(font, Font.BOLD, 18), true, 150, 50);
+        JButton pokemonButton = createMenuButton("POKÉMON", new Font(font, Font.BOLD, 18), true, 150, 50);
+        JButton runButton = createMenuButton("RUN", new Font(font, Font.BOLD, 18), true, 150, 50);
+    
+        fightButton.addActionListener(e -> handleFightAction(player1Pokemon, player2Pokemon, opponentPanel, playerPanel));
+        bagButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Abrir la bolsa no está implementado aún.", "Información", JOptionPane.INFORMATION_MESSAGE));
+        pokemonButton.addActionListener(e -> handlePokemonSwitch(player1Pokemon));
+        runButton.addActionListener(e -> handleRunAction());
+    
+        panel.add(fightButton);
+        panel.add(bagButton);
+        panel.add(pokemonButton);
+        panel.add(runButton);
+    
+        return panel;
+    }
+    
+    private void handleFightAction(List<String> player1Pokemon, List<String> player2Pokemon, JPanel opponentPanel, JPanel playerPanel) {
+        // Obtener el Pokémon activo y sus movimientos
+        String currentPlayer = isPlayer1Turn ? "Jugador 1" : "Jugador 2";
+        String opponentPlayer = isPlayer1Turn ? "Jugador 2" : "Jugador 1";
+        List<String> currentPokemonList = isPlayer1Turn ? player1Pokemon : player2Pokemon;
+        List<String> opponentPokemonList = isPlayer1Turn ? player2Pokemon : player1Pokemon;
+    
+        String currentPokemon = currentPokemonList.get(0);
+        String opponentPokemon = opponentPokemonList.get(0);
+    
+        List<String> moves = selectedMoves.get(currentPlayer + "_" + currentPokemon);
+    
+        // Mostrar un diálogo para seleccionar un movimiento
+        String selectedMove = (String) JOptionPane.showInputDialog(
+            this,
+            "Selecciona un movimiento para " + currentPokemon,
+            "Movimientos Disponibles",
+            JOptionPane.PLAIN_MESSAGE,
+            null,
+            moves.toArray(),
+            moves.get(0)
+        );
+    
+        if (selectedMove == null) {
+            return; // El jugador canceló la selección
+        }
+    
+        // Calcular el daño (simulación básica)
+        int damage = (int) (Math.random() * 20) + 10; // Daño aleatorio entre 10 y 30
+    
+        // Actualizar la barra de vida del oponente
+        JProgressBar opponentHealthBar = (JProgressBar) opponentPanel.getClientProperty("healthBar");
+        int newHealth = Math.max(0, opponentHealthBar.getValue() - damage);
+        opponentHealthBar.setValue(newHealth);
+    
+        if (newHealth == 0) {
+            JOptionPane.showMessageDialog(this, opponentPokemon + " ha sido derrotado.", "Batalla", JOptionPane.INFORMATION_MESSAGE);
+            opponentPokemonList.remove(0); // Eliminar el Pokémon derrotado
+            if (opponentPokemonList.isEmpty()) {
+                JOptionPane.showMessageDialog(this, currentPlayer + " ha ganado la batalla.", "Fin de la Batalla", JOptionPane.INFORMATION_MESSAGE);
+                returnToGame();
+                return;
+            }
+            // Actualizar el panel del oponente con el siguiente Pokémon
+            updateBattlePokemonPanel(opponentPanel, opponentPokemonList.get(0), false);
+        }
+    
+        // Cambiar el turno al otro jugador
+        isPlayer1Turn = !isPlayer1Turn;
+    }
+    
+    private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {
+        panel.removeAll();
+    
+        String imagePath = "Poobkemon/mult/" + pokemonName.toLowerCase() + (isPlayer ? "Back.png" : "Front.png");
+        JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+        panel.add(pokemonImage, BorderLayout.CENTER);
+    
+        JProgressBar healthBar = new JProgressBar(0, 100);
+        healthBar.setValue(100);
+        healthBar.setStringPainted(true);
+        healthBar.setForeground(Color.GREEN);
+        panel.add(healthBar, BorderLayout.SOUTH);
+    
+        panel.putClientProperty("healthBar", healthBar);
+        panel.revalidate();
+        panel.repaint();
+    }
+    
+    private void handlePokemonSwitch(List<String> playerPokemon) {
+        JDialog dialog = new JDialog(this, "Cambiar Pokémon", true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+    
+        JPanel panel = new JPanel(new GridLayout(2, 3, 10, 10));
+        for (String pokemon : playerPokemon) {
+            JButton button = new JButton(pokemon);
+            button.addActionListener(e -> {
+                JOptionPane.showMessageDialog(this, "Has cambiado a " + pokemon, "Información", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+            });
+            panel.add(button);
+        }
+    
+        dialog.add(panel);
+        dialog.setVisible(true);
+    }
+    
+    private void handleRunAction() {
+        JOptionPane.showMessageDialog(this, "Has huido de la batalla.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        returnToGame();
     }
     
     private void printFinalSelection(List<String> player1Pokemon, List<String> player2Pokemon) {

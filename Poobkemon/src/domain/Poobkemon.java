@@ -10,7 +10,7 @@ public class Poobkemon {
 
     public static List<String> getAvailablePokemon() {
         // Implementación que retorna la lista de nombres
-        return Arrays.asList("Charizard", "Blastoise", "Venusaur","Gengar","Dragonite","Togetic","Tyranitar","Gardevoir", "Snorlax","Metagross","Donphan", "Machamp","Delibird", "Raichu" );
+        return Arrays.asList(PokemonFactory.POKEMON_REGISTRY.keySet().toArray(new String[0]));
     }
     
     // Métodos necesarios en el dominio
