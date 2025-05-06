@@ -35,15 +35,15 @@ public class PoobkemonTests {
         ArrayList<String> items2 = new ArrayList<>(List.of("Revive"));
 
         // Configurar entrenadores
-        coach1 = new HumanCoach("Ash", pokemons1, items1);
-        coach2 = new HumanCoach("Gary", pokemons2, items2);
+        //coach1 = new HumanCoach("Ash", pokemons1, items1);
+        //coach2 = new HumanCoach("Gary", pokemons2, items2);
 
-        coach1.setPokemonAttacks(attacks1);
-        coach2.setPokemonAttacks(attacks2);
+        //coach1.setPokemonAttacks(attacks1);
+        //coach2.setPokemonAttacks(attacks2);
 
         // Configurar arena de batalla
         battleArena = new BattleArenaNormal();
-        //battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
+        battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
     }
 
     @Test

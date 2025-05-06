@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 public class PokemonFactory {
     // Mapa que asocia nombres de Pokémon con sus constructores
-    private static final Map<String, Supplier<Pokemon>> POKEMON_REGISTRY = new HashMap<>();
+    public static final Map<String, Supplier<Pokemon>> POKEMON_REGISTRY = new HashMap<>();
 
     // Registramos todos los Pokémon disponibles
     static {

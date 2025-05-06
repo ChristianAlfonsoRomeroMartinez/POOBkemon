@@ -41,7 +41,7 @@ public abstract class BattleArena {
     /**
      * Configura los entrenadores y determina quién inicia.
      */
-    protected void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
+    public void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
     , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
     Attack[][] pokemAttacks1,Attack[][] pokemAttacks2 ) throws PoobkemonException {
         boolean firstStarts = rand.nextBoolean();
