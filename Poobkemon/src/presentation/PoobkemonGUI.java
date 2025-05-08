@@ -1300,16 +1300,20 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setOpaque(false);
     
-        // Panel superior: Pokémon del oponente
-        JPanel opponentPanel = createBattlePokemonPanel(player2Pokemon.get(0), false);
-        mainPanel.add(opponentPanel, BorderLayout.NORTH);
+        // Panel central: Pokémon de ambos jugadores
+        JPanel battlePanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        battlePanel.setOpaque(false);
     
-        // Panel central: Pokémon del jugador
-        JPanel playerPanel = createBattlePokemonPanel(player1Pokemon.get(0), true);
-        mainPanel.add(playerPanel, BorderLayout.CENTER);
+        JPanel player1Panel = createBattlePokemonPanel(player1Pokemon.get(0), true);
+        JPanel player2Panel = createBattlePokemonPanel(player2Pokemon.get(0), false);
     
-        // Panel inferior: Botones de acción
-        JPanel actionPanel = createBattleActionPanel(player1Pokemon, player2Pokemon, opponentPanel, playerPanel);
+        battlePanel.add(player1Panel);
+        battlePanel.add(player2Panel);
+    
+        // Panel inferior: Botones de acción y Pokébolas
+        JPanel actionPanel = createBattleActionPanel(player1Pokemon, player2Pokemon, player1Panel, player2Panel);
+    
+        mainPanel.add(battlePanel, BorderLayout.CENTER);
         mainPanel.add(actionPanel, BorderLayout.SOUTH);
     
         fondo.add(mainPanel, BorderLayout.CENTER);
@@ -1335,30 +1339,62 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         return panel;
     }
     
-    private JPanel createBattleActionPanel(List<String> player1Pokemon, List<String> player2Pokemon, JPanel opponentPanel, JPanel playerPanel) {
-        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+    private JPanel createBattleActionPanel(List<String> player1Pokemon, List<String> player2Pokemon, JPanel player1Panel, JPanel player2Panel) {
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
     
-        JButton fightButton = createMenuButton("FIGHT", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton bagButton = createMenuButton("BAG", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton pokemonButton = createMenuButton("POKÉMON", new Font(font, Font.BOLD, 18), true, 150, 50);
-        JButton runButton = createMenuButton("RUN", new Font(font, Font.BOLD, 18), true, 150, 50);
+        // Panel de movimientos
+        JPanel movesPanel = new JPanel(new GridLayout(1, 4, 10, 0));
+        movesPanel.setOpaque(false);
     
-        fightButton.addActionListener(e -> handleFightAction(player1Pokemon, player2Pokemon, opponentPanel, playerPanel));
-        bagButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Abrir la bolsa no está implementado aún.", "Información", JOptionPane.INFORMATION_MESSAGE));
-        pokemonButton.addActionListener(e -> handlePokemonSwitch(player1Pokemon));
-        runButton.addActionListener(e -> handleRunAction());
+        JButton move1Button = createMoveButton("P1", player1Pokemon, player2Pokemon, player1Panel, player2Panel);
+        JButton move2Button = createMoveButton("P2", player1Pokemon, player2Pokemon, player1Panel, player2Panel);
+        JButton move3Button = createMoveButton("P3", player1Pokemon, player2Pokemon, player1Panel, player2Panel);
+        JButton move4Button = createMoveButton("P4", player1Pokemon, player2Pokemon, player1Panel, player2Panel);
     
-        panel.add(fightButton);
-        panel.add(bagButton);
-        panel.add(pokemonButton);
-        panel.add(runButton);
+        movesPanel.add(move1Button);
+        movesPanel.add(move2Button);
+        movesPanel.add(move3Button);
+        movesPanel.add(move4Button);
+    
+        // Panel de Pokébolas
+        JPanel pokeballsPanel = new JPanel(new GridLayout(1, 6, 10, 0));
+        pokeballsPanel.setOpaque(false);
+    
+        for (int i = 0; i < player1Pokemon.size(); i++) {
+            JButton pokeballButton = createPokeballButton(player1Pokemon, i, player1Panel, true);
+            pokeballsPanel.add(pokeballButton);
+        }
+    
+        for (int i = 0; i < player2Pokemon.size(); i++) {
+            JButton pokeballButton = createPokeballButton(player2Pokemon, i, player2Panel, false);
+            pokeballsPanel.add(pokeballButton);
+        }
+    
+        panel.add(movesPanel, BorderLayout.NORTH);
+        panel.add(pokeballsPanel, BorderLayout.SOUTH);
     
         return panel;
     }
     
-    private void handleFightAction(List<String> player1Pokemon, List<String> player2Pokemon, JPanel opponentPanel, JPanel playerPanel) {
-        // Obtener el Pokémon activo y sus movimientos
+    private JButton createMoveButton(String label, List<String> player1Pokemon, List<String> player2Pokemon, JPanel player1Panel, JPanel player2Panel) {
+        JButton button = new JButton(label);
+        button.setFont(new Font(font, Font.BOLD, 14));
+        button.addActionListener(e -> handleFightAction(player1Pokemon, player2Pokemon, player1Panel, player2Panel));
+        return button;
+    }
+    
+    private JButton createPokeballButton(List<String> pokemonList, int index, JPanel playerPanel, boolean isPlayer1) {
+        JButton button = new JButton(new ImageIcon("Poobkemon/mult/pokeball.png"));
+        button.setPreferredSize(new Dimension(50, 50));
+        button.addActionListener(e -> {
+            String selectedPokemon = pokemonList.get(index);
+            updateBattlePokemonPanel(playerPanel, selectedPokemon, isPlayer1);
+        });
+        return button;
+    }
+    
+    private void handleFightAction(List<String> player1Pokemon, List<String> player2Pokemon, JPanel player1Panel, JPanel player2Panel) {
         String currentPlayer = isPlayer1Turn ? "Jugador 1" : "Jugador 2";
         String opponentPlayer = isPlayer1Turn ? "Jugador 2" : "Jugador 1";
         List<String> currentPokemonList = isPlayer1Turn ? player1Pokemon : player2Pokemon;
@@ -1369,7 +1405,6 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         List<String> moves = selectedMoves.get(currentPlayer + "_" + currentPokemon);
     
-        // Mostrar un diálogo para seleccionar un movimiento
         String selectedMove = (String) JOptionPane.showInputDialog(
             this,
             "Selecciona un movimiento para " + currentPokemon,
@@ -1381,30 +1416,27 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         );
     
         if (selectedMove == null) {
-            return; // El jugador canceló la selección
+            return;
         }
     
-        // Calcular el daño (simulación básica)
-        int damage = (int) (Math.random() * 20) + 10; // Daño aleatorio entre 10 y 30
+        int damage = (int) (Math.random() * 20) + 10;
     
-        // Actualizar la barra de vida del oponente
+        JPanel opponentPanel = isPlayer1Turn ? player2Panel : player1Panel;
         JProgressBar opponentHealthBar = (JProgressBar) opponentPanel.getClientProperty("healthBar");
         int newHealth = Math.max(0, opponentHealthBar.getValue() - damage);
         opponentHealthBar.setValue(newHealth);
     
         if (newHealth == 0) {
             JOptionPane.showMessageDialog(this, opponentPokemon + " ha sido derrotado.", "Batalla", JOptionPane.INFORMATION_MESSAGE);
-            opponentPokemonList.remove(0); // Eliminar el Pokémon derrotado
+            opponentPokemonList.remove(0);
             if (opponentPokemonList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, currentPlayer + " ha ganado la batalla.", "Fin de la Batalla", JOptionPane.INFORMATION_MESSAGE);
                 returnToGame();
                 return;
             }
-            // Actualizar el panel del oponente con el siguiente Pokémon
-            updateBattlePokemonPanel(opponentPanel, opponentPokemonList.get(0), false);
+            updateBattlePokemonPanel(opponentPanel, opponentPokemonList.get(0), !isPlayer1Turn);
         }
     
-        // Cambiar el turno al otro jugador
         isPlayer1Turn = !isPlayer1Turn;
     }
     
