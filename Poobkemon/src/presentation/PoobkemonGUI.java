@@ -22,7 +22,7 @@ import javax.swing.plaf.basic.BasicLabelUI;
 public class PoobkemonGUI extends JFrame {
     private FondoAnimado fondo;
     private String rutaImagen = "Poobkemon/mult/fondo2.jpeg";
-    private String rutaImagenBattle = "Poobkemon/mult/fondobatalla.jpg";
+    private String rutaImagenBattle = "Poobkemon/mult/fondo3.jpeg";
     private String font = "Times New Roman";
     private String rutaEffectAudio = "Poobkemon/mult/button_click.wav";
     private ReproductorMusica reproductor;
@@ -34,6 +34,9 @@ public class PoobkemonGUI extends JFrame {
     private List<String> player2Pokemon;
     private JPanel player1Panel;
     private JPanel player2Panel;
+    private Timer turnTimer; // Temporizador para el turno
+    private int turnTimeRemaining = 20; // Tiempo restante en segundos
+    private JLabel turnTimerLabel; // Etiqueta para mostrar el tiempo restante
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
@@ -1197,106 +1200,173 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     }
     
     private void showMoveSelectionDialog(String pokemon, String player) {
-        JDialog dialog = new JDialog(this, player + " - Seleccionar movimientos para " + pokemon, true);
-        dialog.setSize(500, 500);
-        dialog.setLocationRelativeTo(this);
-    
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
-        JLabel titleLabel = new JLabel("Selecciona hasta 4 movimientos para " + pokemon, SwingConstants.CENTER);
-        titleLabel.setFont(new Font(font, Font.BOLD, 16));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
-    
-        // Panel para botones de tipo de ataque
-        JPanel typePanel = new JPanel(new FlowLayout());
-        JButton physicalButton = new JButton("Ataque Físico");
-        JButton specialButton = new JButton("Ataque Especial");
-        JButton statusButton = new JButton("Status");
-    
-        DefaultListModel<String> moveModel = new DefaultListModel<>();
-        JList<String> moveList = new JList<>(moveModel);
-        moveList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        moveList.setVisibleRowCount(8);
-        JScrollPane scrollPane = new JScrollPane(moveList);
-    
-        // Listeners para cargar ataques según el tipo
-        physicalButton.addActionListener(e -> {
-            moveModel.clear();
-            Poobkemon.getPhysicalAttacks().forEach(moveModel::addElement);
-        });
-    
-        specialButton.addActionListener(e -> {
-            moveModel.clear();
-            Poobkemon.getSpecialAttacks().forEach(moveModel::addElement);
-        });
-    
-        statusButton.addActionListener(e -> {
-            moveModel.clear();
-            Poobkemon.getStatusAttacks().forEach(moveModel::addElement);
-        });
-    
-        typePanel.add(physicalButton);
-        typePanel.add(specialButton);
-        typePanel.add(statusButton);
-    
-        mainPanel.add(typePanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-    
-        // Lista temporal para mostrar los movimientos seleccionados
-        DefaultListModel<String> selectedMoveModel = new DefaultListModel<>();
-        JList<String> selectedMoveList = new JList<>(selectedMoveModel);
-        selectedMoveList.setVisibleRowCount(4);
-        JScrollPane selectedScrollPane = new JScrollPane(selectedMoveList);
-    
-        // Botón "Agregar"
-        JButton addButton = new JButton("Agregar");
-        addButton.addActionListener(e -> {
-            String selectedMove = moveList.getSelectedValue();
-            if (selectedMove != null) {
-                if (selectedMoveModel.size() < 4) {
-                    selectedMoveModel.addElement(selectedMove);
-                } else {
-                    JOptionPane.showMessageDialog(dialog, "No puedes agregar más de 4 movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(dialog, "Selecciona un movimiento para agregar.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-    
-        // Botón "Confirmar"
-        JButton confirmButton = new JButton("Confirmar");
-        confirmButton.addActionListener(e -> {
+    JDialog dialog = new JDialog(this, player + " - Seleccionar movimientos para " + pokemon, true);
+    dialog.setSize(500, 500);
+    dialog.setLocationRelativeTo(this);
+
+    // Panel principal con la imagen de fondo
+    JPanel mainPanel = new JPanel(new BorderLayout()) {
+        private final Image backgroundImage = new ImageIcon("Poobkemon/mult/fondoelecion.jpeg").getImage();
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Dibujar la imagen de fondo
+            g2.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            g2.dispose();
+        }
+    };
+    mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    JLabel titleLabel = new JLabel("Selecciona hasta 4 movimientos para " + pokemon, SwingConstants.CENTER);
+    titleLabel.setFont(new Font(font, Font.BOLD, 16));
+    titleLabel.setForeground(Color.WHITE);
+
+    // Panel para botones de tipo de ataque
+    JPanel typePanel = new JPanel(new FlowLayout());
+    typePanel.setOpaque(false);
+    JButton physicalButton = createCrystalButton("Ataque Físico");
+    JButton specialButton = createCrystalButton("Ataque Especial");
+    JButton statusButton = createCrystalButton("Status");
+
+    DefaultListModel<String> moveModel = new DefaultListModel<>();
+    JList<String> moveList = new JList<>(moveModel);
+    moveList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    moveList.setVisibleRowCount(8);
+    moveList.setFont(new Font(font, Font.PLAIN, 14));
+    moveList.setBackground(new Color(0, 51, 102, 150)); // Fondo azul translúcido
+    moveList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    moveList.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2));
+
+    JScrollPane scrollPane = new JScrollPane(moveList);
+    scrollPane.setOpaque(false);
+    scrollPane.getViewport().setOpaque(false);
+
+    // Listeners para cargar ataques según el tipo
+    physicalButton.addActionListener(e -> {
+        moveModel.clear();
+        Poobkemon.getPhysicalAttacks().forEach(moveModel::addElement);
+    });
+
+    specialButton.addActionListener(e -> {
+        moveModel.clear();
+        Poobkemon.getSpecialAttacks().forEach(moveModel::addElement);
+    });
+
+    statusButton.addActionListener(e -> {
+        moveModel.clear();
+        Poobkemon.getStatusAttacks().forEach(moveModel::addElement);
+    });
+
+    typePanel.add(physicalButton);
+    typePanel.add(specialButton);
+    typePanel.add(statusButton);
+
+    mainPanel.add(titleLabel, BorderLayout.NORTH);
+    mainPanel.add(typePanel, BorderLayout.NORTH);
+    mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+    // Lista temporal para mostrar los movimientos seleccionados
+    DefaultListModel<String> selectedMoveModel = new DefaultListModel<>();
+    JList<String> selectedMoveList = new JList<>(selectedMoveModel) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Fondo translúcido con gradiente
+            GradientPaint gradient = new GradientPaint(
+                0, 0, new Color(0, 51, 102, 150), // Azul translúcido
+                0, getHeight(), new Color(0, 102, 153, 150) // Azul más claro translúcido
+            );
+            g2.setPaint(gradient);
+            g2.fillRect(0, 0, getWidth(), getHeight());
+
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    };
+    selectedMoveList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    selectedMoveList.setVisibleRowCount(4);
+    selectedMoveList.setFont(new Font(font, Font.PLAIN, 14));
+    selectedMoveList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    selectedMoveList.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
+
+    // ScrollPane con estilo translúcido
+    JScrollPane selectedScrollPane = new JScrollPane(selectedMoveList) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Fondo translúcido con gradiente
+            GradientPaint gradient = new GradientPaint(
+                0, 0, new Color(0, 51, 102, 100), // Azul translúcido
+                0, getHeight(), new Color(0, 102, 153, 100) // Azul más claro translúcido
+            );
+            g2.setPaint(gradient);
+            g2.fillRect(0, 0, getWidth(), getHeight());
+
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    };
+    selectedScrollPane.setOpaque(false);
+    selectedScrollPane.getViewport().setOpaque(false);
+
+    // Botón "Agregar"
+    JButton addButton = createCrystalButton("Agregar");
+    addButton.addActionListener(e -> {
+        String selectedMove = moveList.getSelectedValue();
+        if (selectedMove != null) {
             if (selectedMoveModel.size() < 4) {
-                JOptionPane.showMessageDialog(dialog, "Debes seleccionar exactamente 4 movimientos para continuar.", "Error", JOptionPane.ERROR_MESSAGE);
-                return; // No permite continuar si no hay 4 movimientos seleccionados
+                selectedMoveModel.addElement(selectedMove);
+            } else {
+                JOptionPane.showMessageDialog(dialog, "No puedes agregar más de 4 movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        
-            List<String> selectedMovesList = new ArrayList<>();
-            for (int i = 0; i < selectedMoveModel.size(); i++) {
-                selectedMovesList.add(selectedMoveModel.getElementAt(i));
-            }
-        
-            // Guardar los movimientos seleccionados
-            selectedMoves.put(player + "_" + pokemon, selectedMovesList);
-            System.out.println(player + " seleccionó movimientos para " + pokemon + ": " + selectedMovesList);
-            dialog.dispose();
-        });
-    
-        // Panel para los botones y lista de movimientos seleccionados
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(addButton);
-        buttonPanel.add(confirmButton);
-    
-        bottomPanel.add(selectedScrollPane, BorderLayout.CENTER);
-        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
-    
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-    
-        dialog.add(mainPanel);
-        dialog.setVisible(true);
-    }
+        } else {
+            JOptionPane.showMessageDialog(dialog, "Selecciona un movimiento para agregar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    });
+
+    // Botón "Confirmar"
+    JButton confirmButton = createCrystalButton("Confirmar");
+    confirmButton.addActionListener(e -> {
+        if (selectedMoveModel.size() < 4) {
+            JOptionPane.showMessageDialog(dialog, "Debes seleccionar exactamente 4 movimientos para continuar.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; // No permite continuar si no hay 4 movimientos seleccionados
+        }
+
+        List<String> selectedMovesList = new ArrayList<>();
+        for (int i = 0; i < selectedMoveModel.size(); i++) {
+            selectedMovesList.add(selectedMoveModel.getElementAt(i));
+        }
+
+        // Guardar los movimientos seleccionados
+        selectedMoves.put(player + "_" + pokemon, selectedMovesList);
+        System.out.println(player + " seleccionó movimientos para " + pokemon + ": " + selectedMovesList);
+        dialog.dispose();
+    });
+
+    // Panel para los botones y lista de movimientos seleccionados
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+    bottomPanel.setOpaque(false);
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    buttonPanel.setOpaque(false);
+    buttonPanel.add(addButton);
+    buttonPanel.add(confirmButton);
+
+    bottomPanel.add(selectedScrollPane, BorderLayout.CENTER);
+    bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+    mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+    dialog.add(mainPanel);
+    dialog.setVisible(true);
+}
     
     private void showBattleScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
     this.player1Pokemon = player1Pokemon;
@@ -1321,12 +1391,20 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     // Panel inferior: Botones de acción y Pokébolas
     JPanel actionPanel = createBattleActionPanel();
 
+    // Etiqueta para mostrar el tiempo restante
+    turnTimerLabel = new JLabel("Tiempo restante: 20 segundos", SwingConstants.CENTER);
+    turnTimerLabel.setFont(new Font(font, Font.BOLD, 16));
+    turnTimerLabel.setForeground(Color.WHITE);
+
     mainPanel.add(battlePanel, BorderLayout.CENTER);
     mainPanel.add(actionPanel, BorderLayout.SOUTH);
+    mainPanel.add(turnTimerLabel, BorderLayout.NORTH);
 
     fondo.add(mainPanel, BorderLayout.CENTER);
     revalidate();
     repaint();
+
+    startTurnTimer(); // Iniciar el temporizador del turno
 }
     
     private JPanel createBattlePokemonPanel(String pokemonName, boolean isPlayer) {
@@ -1419,7 +1497,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         updateBattlePokemonPanel(opponentPanel, opponentPokemonList.get(0), !isPlayer1);
     }
 
-    isPlayer1Turn = !isPlayer1Turn;
+    switchTurn(); // Cambiar el turno después de realizar un movimiento
 }
     
     private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {
@@ -1509,5 +1587,94 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         return pokeballPanel;
     }
+    
+    private JButton createCrystalButton(String text) {
+    JButton button = new JButton(text) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // Fondo translúcido con gradiente
+            GradientPaint gradient = new GradientPaint(
+                0, 0, new Color(34, 139, 230, 180), // Azul translúcido
+                0, getHeight(), new Color(50, 205, 50, 180) // Verde translúcido
+            );
+            g2.setPaint(gradient);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+
+            // Borde brillante
+            g2.setColor(new Color(255, 255, 255, 150));
+            g2.setStroke(new BasicStroke(2));
+            g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 15, 15);
+
+            g2.dispose();
+            super.paintComponent(g);
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) {
+            // No pintar borde por defecto
+        }
+    };
+
+    button.setFont(new Font("Arial", Font.BOLD, 14));
+    button.setForeground(Color.WHITE);
+    button.setFocusPainted(false);
+    button.setContentAreaFilled(false);
+    button.setOpaque(false);
+
+    return button;
+}
+    
+    private void startTurnTimer() {
+    if (turnTimer != null) {
+        turnTimer.cancel();
+    }
+
+    turnTimer = new Timer();
+    turnTimeRemaining = 20; // Reiniciar el tiempo a 20 segundos
+
+    turnTimer.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+            SwingUtilities.invokeLater(() -> {
+                if (turnTimeRemaining > 0) {
+                    turnTimerLabel.setText("Tiempo restante: " + turnTimeRemaining + " segundos");
+                    turnTimeRemaining--;
+                } else {
+                    turnTimer.cancel();
+                    JOptionPane.showMessageDialog(PoobkemonGUI.this, "Tiempo agotado. Turno del siguiente jugador.", "Turno", JOptionPane.WARNING_MESSAGE);
+                    switchTurn();
+                }
+            });
+        }
+    }, 0, 1000); // Ejecutar cada segundo
+}
+    
+    private void switchTurn() {
+    isPlayer1Turn = !isPlayer1Turn; // Cambiar el turno
+    updateBattleButtons(); // Actualizar los botones según el turno
+    startTurnTimer(); // Reiniciar el temporizador para el nuevo turno
+}
+    
+    private void updateBattleButtons() {
+    Component[] player1Components = player1Panel.getComponents();
+    Component[] player2Components = player2Panel.getComponents();
+
+    for (Component component : player1Components) {
+        if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            button.setEnabled(isPlayer1Turn);
+        }
+    }
+
+    for (Component component : player2Components) {
+        if (component instanceof JButton) {
+            JButton button = (JButton) component;
+            button.setEnabled(!isPlayer1Turn);
+        }
+    }
+}
     
 }
