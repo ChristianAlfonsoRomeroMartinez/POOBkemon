@@ -1524,6 +1524,11 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         return;
     }
 
+    // Detén el temporizador porque el jugador realizó una acción
+    if (turnTimer != null) {
+        turnTimer.stop();
+    }
+
     // Lógica para manejar el ataque
     List<String> opponentPokemonList = isPlayer1 ? player2Pokemon : player1Pokemon;
     JPanel opponentPanel = isPlayer1 ? player2Panel : player1Panel;
@@ -1684,27 +1689,25 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
     private void startTurnTimer() {
     if (turnTimer != null) {
-        turnTimer.cancel();
+        turnTimer.stop(); // Detén el temporizador anterior si existe
     }
 
-    turnTimer = new Timer();
     turnTimeRemaining = 20; // Reiniciar el tiempo a 20 segundos
+    turnTimerLabel.setText("Tiempo restante: " + turnTimeRemaining + " segundos");
 
-    turnTimer.scheduleAtFixedRate(new TimerTask() {
-        @Override
-        public void run() {
-            SwingUtilities.invokeLater(() -> {
-                if (turnTimeRemaining > 0) {
-                    turnTimerLabel.setText("Tiempo restante: " + turnTimeRemaining + " segundos");
-                    turnTimeRemaining--;
-                } else {
-                    turnTimer.cancel();
-                    JOptionPane.showMessageDialog(PoobkemonGUI.this, "Tiempo agotado. Turno del siguiente jugador.", "Turno", JOptionPane.WARNING_MESSAGE);
-                    switchTurn();
-                }
-            });
+    // Crear un nuevo temporizador
+    turnTimer = new Timer(1000, e -> {
+        if (turnTimeRemaining > 0) {
+            turnTimeRemaining--;
+            turnTimerLabel.setText("Tiempo restante: " + turnTimeRemaining + " segundos");
+        } else {
+            turnTimer.stop(); // Detén el temporizador
+            JOptionPane.showMessageDialog(this, "Tiempo agotado. Turno del siguiente jugador.", "Turno", JOptionPane.WARNING_MESSAGE);
+            switchTurn(); // Cambia el turno automáticamente
         }
-    }, 0, 1000); // Ejecutar cada segundo
+    });
+
+    turnTimer.start(); // Inicia el temporizador
 }
     
     private void switchTurn() {
