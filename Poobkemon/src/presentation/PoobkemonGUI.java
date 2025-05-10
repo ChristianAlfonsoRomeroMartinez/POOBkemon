@@ -37,6 +37,10 @@ public class PoobkemonGUI extends JFrame {
     private Timer turnTimer; // Temporizador para el turno
     private int turnTimeRemaining = 20; // Tiempo restante en segundos
     private JLabel turnTimerLabel; // Etiqueta para mostrar el tiempo restante
+    private List<JButton> player1BattleMoveButtons = new ArrayList<>();
+    private List<JButton> player2BattleMoveButtons = new ArrayList<>();
+    private List<JButton> player1BattlePokeballButtons = new ArrayList<>();
+    private List<JButton> player2BattlePokeballButtons = new ArrayList<>();
 
     public PoobkemonGUI() {
         super("Poobkemon Garcia-Romero");
@@ -1457,19 +1461,22 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JPanel movesPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         movesPanel.setOpaque(false);
     
-        // Obtener el Pokémon activo y sus movimientos
+        // Solo limpiar y llenar las listas de botones en batalla
+        List<JButton> moveButtons = isPlayer1 ? player1BattleMoveButtons : player2BattleMoveButtons;
+        moveButtons.clear();
+    
         String currentPlayer = isPlayer1 ? "Jugador 1" : "Jugador 2";
         String currentPokemon = pokemonList.get(0); // Pokémon activo
         List<String> moves = selectedMoves.get(currentPlayer + "_" + currentPokemon);
     
-        // Crear botones para los movimientos
         for (int i = 0; i < 4; i++) {
             String moveName = (moves != null && i < moves.size()) ? moves.get(i) : "N/A";
             JButton moveButton = new JButton(moveName);
             moveButton.setFont(new Font(font, Font.BOLD, 14));
-            moveButton.setEnabled(!"N/A".equals(moveName)); // Deshabilitar si no hay movimiento
+            moveButton.setEnabled(isPlayer1Turn == isPlayer1 && !"N/A".equals(moveName));
             moveButton.addActionListener(e -> handleMoveAction(moveName, pokemonList, playerPanel, isPlayer1));
             movesPanel.add(moveButton);
+            moveButtons.add(moveButton);
         }
     
         return movesPanel;
@@ -1580,13 +1587,17 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JPanel pokeballPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         pokeballPanel.setOpaque(false);
     
+        List<JButton> pokeballButtons = isPlayer1 ? player1BattlePokeballButtons : player2BattlePokeballButtons;
+        pokeballButtons.clear();
+    
         for (int i = 0; i < pokemonList.size(); i++) {
             String pokemonName = pokemonList.get(i);
             JButton pokeballButton = new JButton(new ImageIcon("Poobkemon/mult/pokeball.jpeg"));
             pokeballButton.setPreferredSize(new Dimension(50, 50));
-            int index = i; // Necesario para usar en el lambda
+            pokeballButton.setEnabled(isPlayer1Turn == isPlayer1);
             pokeballButton.addActionListener(e -> updateBattlePokemonPanel(playerPanel, pokemonName, isPlayer1));
             pokeballPanel.add(pokeballButton);
+            pokeballButtons.add(pokeballButton);
         }
     
         return pokeballPanel;
@@ -1663,22 +1674,10 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 }
     
     private void updateBattleButtons() {
-    Component[] player1Components = player1Panel.getComponents();
-    Component[] player2Components = player2Panel.getComponents();
-
-    for (Component component : player1Components) {
-        if (component instanceof JButton) {
-            JButton button = (JButton) component;
-            button.setEnabled(isPlayer1Turn);
-        }
-    }
-
-    for (Component component : player2Components) {
-        if (component instanceof JButton) {
-            JButton button = (JButton) component;
-            button.setEnabled(!isPlayer1Turn);
-        }
-    }
+    for (JButton btn : player1BattleMoveButtons) btn.setEnabled(isPlayer1Turn);
+    for (JButton btn : player2BattleMoveButtons) btn.setEnabled(!isPlayer1Turn);
+    for (JButton btn : player1BattlePokeballButtons) btn.setEnabled(isPlayer1Turn);
+    for (JButton btn : player2BattlePokeballButtons) btn.setEnabled(!isPlayer1Turn);
 }
     
 }
