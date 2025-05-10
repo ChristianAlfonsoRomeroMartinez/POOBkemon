@@ -1171,7 +1171,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         
         for (String pokemon : pokemons) {
             // Construir la ruta relativa de la imagen
-            String imagePath = "Poobkemon/mult/" + pokemon.toLowerCase() + "Front.png";
+            String imagePath = "Poobkemon/mult/git/" + pokemon.toLowerCase() + "front.gif";
             File imageFile = new File(imagePath);
             
             if (imageFile.exists()) {
@@ -1180,13 +1180,10 @@ private List<String> getSelectedItems(JPanel playerPanel) {
                 JButton btn = new JButton(icon);
                 btn.setPreferredSize(new Dimension(100, 100));
                 btn.addActionListener(e -> showMoveSelectionDialog(pokemon, playerName));
-                
-                // Ajustar imagen al tamaño del botón
-                btn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(
-                    80, 80, Image.SCALE_SMOOTH)));
                 btn.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
                 btn.setContentAreaFilled(false);
                 
+                // NO escales el icono, solo ajusta el tamaño del botón
                 pokemonGrid.add(btn);
             } else {
                 System.err.println("Imagen no encontrada para: " + pokemon + " en " + imagePath);
@@ -1220,6 +1217,13 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         }
     };
     mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+    // --- NUEVO: Imagen del Pokémon (GIF animado) ---
+    String imagePath = "Poobkemon/mult/git/" + pokemon.toLowerCase() + "front.gif";
+    JLabel pokemonImage = new JLabel(new ImageIcon(imagePath));
+    pokemonImage.setHorizontalAlignment(SwingConstants.CENTER);
+    pokemonImage.setPreferredSize(new Dimension(120, 120));
+    mainPanel.add(pokemonImage, BorderLayout.WEST); // O NORTH si prefieres arriba
 
     JLabel titleLabel = new JLabel("Selecciona hasta 4 movimientos para " + pokemon, SwingConstants.CENTER);
     titleLabel.setFont(new Font(font, Font.BOLD, 16));
@@ -1419,7 +1423,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         panel.add(healthBar, BorderLayout.NORTH);
     
         // Imagen del Pokémon
-        String imagePath = "Poobkemon/mult/" + pokemonName.toLowerCase() + (isPlayer ? "Back.png" : "Front.png");
+        String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
         JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
         panel.add(pokemonImage, BorderLayout.CENTER);
     
@@ -1503,7 +1507,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {
         panel.removeAll();
     
-        String imagePath = "Poobkemon/mult/" + pokemonName.toLowerCase() + (isPlayer ? "Back.png" : "Front.png");
+        String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
         JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
         panel.add(pokemonImage, BorderLayout.CENTER);
     
@@ -1578,7 +1582,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     
         for (int i = 0; i < pokemonList.size(); i++) {
             String pokemonName = pokemonList.get(i);
-            JButton pokeballButton = new JButton(new ImageIcon("Poobkemon/mult/pokeball.png"));
+            JButton pokeballButton = new JButton(new ImageIcon("Poobkemon/mult/pokeball.jpeg"));
             pokeballButton.setPreferredSize(new Dimension(50, 50));
             int index = i; // Necesario para usar en el lambda
             pokeballButton.addActionListener(e -> updateBattlePokemonPanel(playerPanel, pokemonName, isPlayer1));
