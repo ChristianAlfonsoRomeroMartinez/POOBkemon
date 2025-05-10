@@ -623,9 +623,13 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
             showPokemonSelectionScreen();
         });
     
-        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true,220,55);
+        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true, 220, 55);
         humanVsMachineBtn.addActionListener(e -> {
-            System.out.println(gameMode + " mode - Human vs Machine selected");
+            buttonSound.play();
+            getContentPane().removeAll();
+            setContentPane(new MachineGameTypeSelectionScreen(this)); // Abre la nueva pantalla
+            revalidate();
+            repaint();
         });
     
         JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true,220,55);
