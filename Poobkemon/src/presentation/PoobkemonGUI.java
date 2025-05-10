@@ -1426,9 +1426,11 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         healthBar.setForeground(Color.GREEN);
         panel.add(healthBar, BorderLayout.NORTH);
     
-        // Imagen del Pokémon
+        // Imagen del Pokémon (GIF animado)
         String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
-        JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+        JLabel pokemonImage = new JLabel(new ImageIcon(imagePath));
+        pokemonImage.setHorizontalAlignment(SwingConstants.CENTER);
+        pokemonImage.setVerticalAlignment(SwingConstants.CENTER);
         panel.add(pokemonImage, BorderLayout.CENTER);
     
         panel.putClientProperty("healthBar", healthBar);
@@ -1512,22 +1514,26 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 }
     
     private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {
-        panel.removeAll();
-    
-        String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
-        JLabel pokemonImage = new JLabel(new ImageIcon(new ImageIcon(imagePath).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
-        panel.add(pokemonImage, BorderLayout.CENTER);
-    
-        JProgressBar healthBar = new JProgressBar(0, 100);
-        healthBar.setValue(100);
-        healthBar.setStringPainted(true);
-        healthBar.setForeground(Color.GREEN);
-        panel.add(healthBar, BorderLayout.SOUTH);
-    
-        panel.putClientProperty("healthBar", healthBar);
-        panel.revalidate();
-        panel.repaint();
-    }
+    panel.removeAll();
+
+    // Imagen del Pokémon (GIF animado)
+    String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
+    JLabel pokemonImage = new JLabel(new ImageIcon(imagePath));
+    pokemonImage.setHorizontalAlignment(SwingConstants.CENTER);
+    pokemonImage.setVerticalAlignment(SwingConstants.CENTER);
+    panel.add(pokemonImage, BorderLayout.CENTER);
+
+    // Barra de vida
+    JProgressBar healthBar = new JProgressBar(0, 100);
+    healthBar.setValue(100);
+    healthBar.setStringPainted(true);
+    healthBar.setForeground(Color.GREEN);
+    panel.add(healthBar, BorderLayout.SOUTH);
+
+    panel.putClientProperty("healthBar", healthBar);
+    panel.revalidate();
+    panel.repaint();
+}
     
     private void handlePokemonSwitch(List<String> playerPokemon) {
         JDialog dialog = new JDialog(this, "Cambiar Pokémon", true);
