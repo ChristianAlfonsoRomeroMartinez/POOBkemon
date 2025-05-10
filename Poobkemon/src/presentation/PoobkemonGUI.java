@@ -1553,7 +1553,15 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 }
     
     private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {
-    panel.removeAll();
+    // Obtener la barra de vida existente (si ya está configurada)
+    JProgressBar existingHealthBar = (JProgressBar) panel.getClientProperty("healthBar");
+    int currentHealth = 100; // Valor por defecto si no hay barra existente
+
+    if (existingHealthBar != null) {
+        currentHealth = existingHealthBar.getValue(); // Mantener la vida actual
+    }
+
+    panel.removeAll(); // Limpiar el panel
 
     // Imagen del Pokémon (GIF animado)
     String imagePath = "Poobkemon/mult/git/" + pokemonName.toLowerCase() + (isPlayer ? "back.gif" : "front.gif");
@@ -1564,12 +1572,14 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 
     // Barra de vida
     JProgressBar healthBar = new JProgressBar(0, 100);
-    healthBar.setValue(100);
+    healthBar.setValue(currentHealth); // Usar la vida actual del Pokémon
     healthBar.setStringPainted(true);
     healthBar.setForeground(Color.GREEN);
     panel.add(healthBar, BorderLayout.SOUTH);
 
+    // Guardar la barra de vida en las propiedades del panel
     panel.putClientProperty("healthBar", healthBar);
+
     panel.revalidate();
     panel.repaint();
 }
