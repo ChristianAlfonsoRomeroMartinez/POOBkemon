@@ -1338,7 +1338,8 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     selectedMoveList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     selectedMoveList.setVisibleRowCount(4);
     selectedMoveList.setFont(new Font(font, Font.PLAIN, 14));
-    selectedMoveList.setForeground(new Color(204, 255, 204)); // Texto verde claro
+    selectedMoveList.setBackground(new Color(0, 51, 102, 150)); // Fondo azul translúcido
+    selectedMoveList.setForeground(new Color(204, 255, 102)); // Texto verde claro
     selectedMoveList.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 153), 2)); // Borde azul
 
     // ScrollPane con estilo translúcido
