@@ -1161,42 +1161,76 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     private JPanel createPlayerSection(String playerName, List<String> pokemons) {
         JPanel section = new JPanel(new BorderLayout());
         section.setOpaque(false);
-        section.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2));
-        
+        section.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         // Título del jugador
         JLabel playerLabel = new JLabel(playerName, SwingConstants.CENTER);
         playerLabel.setFont(new Font(font, Font.BOLD, 20));
         playerLabel.setForeground(Color.YELLOW);
         playerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
-        
+
         // Panel para los Pokémon en formato de cuadrícula (2 filas x 3 columnas)
-        JPanel pokemonGrid = new JPanel(new GridLayout(2, 3, 10, 10)); 
+        JPanel pokemonGrid = new JPanel(new GridLayout(2, 3, 10, 10)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Dibujar bordes de cristal verde alrededor de cada celda
+                int rows = 2;
+                int cols = 3;
+                int cellWidth = getWidth() / cols;
+                int cellHeight = getHeight() / rows;
+
+                for (int row = 0; row < rows; row++) {
+                    for (int col = 0; col < cols; col++) {
+                        int x = col * cellWidth;
+                        int y = row * cellHeight;
+
+                        // Gradiente para el borde
+                        GradientPaint gradient = new GradientPaint(
+                            x, y, new Color(34, 139, 34, 180), // Verde translúcido
+                            x + cellWidth, y + cellHeight, new Color(50, 205, 50, 180) // Verde más claro
+                        );
+                        g2.setPaint(gradient);
+                        g2.setStroke(new BasicStroke(4)); // Grosor del borde
+                        g2.drawRoundRect(x + 5, y + 5, cellWidth - 10, cellHeight - 10, 15, 15); // Bordes redondeados
+                    }
+                }
+
+                g2.dispose();
+            }
+        };
         pokemonGrid.setOpaque(false);
-        
+
         for (String pokemon : pokemons) {
             // Construir la ruta relativa de la imagen
-            String imagePath = "Poobkemon/mult/git/" + pokemon.toLowerCase() + "front.gif";
+            String imagePath = "Poobkemon/mult/" + pokemon.toLowerCase() + "Front.png";
             File imageFile = new File(imagePath);
-            
+
             if (imageFile.exists()) {
                 ImageIcon icon = new ImageIcon(imagePath);
-                
+
                 JButton btn = new JButton(icon);
                 btn.setPreferredSize(new Dimension(100, 100));
                 btn.addActionListener(e -> showMoveSelectionDialog(pokemon, playerName));
-                btn.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+
+                // Ajustar imagen al tamaño del botón
+                btn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(
+                    80, 80, Image.SCALE_SMOOTH)));
+                btn.setBorder(BorderFactory.createEmptyBorder()); // Sin borde adicional
                 btn.setContentAreaFilled(false);
-                
-                // NO escales el icono, solo ajusta el tamaño del botón
+
                 pokemonGrid.add(btn);
             } else {
                 System.err.println("Imagen no encontrada para: " + pokemon + " en " + imagePath);
             }
         }
-        
+
         section.add(playerLabel, BorderLayout.NORTH);
         section.add(pokemonGrid, BorderLayout.CENTER);
-        
+
         return section;
     }
     
