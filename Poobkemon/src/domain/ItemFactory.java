@@ -3,6 +3,8 @@ package domain;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ItemFactory {
     // Mapa que asocia nombres de ítems con sus parámetros de construcción
@@ -52,5 +54,10 @@ public class ItemFactory {
             throw new IllegalArgumentException("Ítem no reconocido: " + name);
         }
         return new Item(name, data.description(), data.effectValue(), data.applyTo());
+    }
+
+    // Método para obtener los nombres de todos los ítems registrados
+    public static List<String> getItemNames() {
+        return new ArrayList<>(ITEM_REGISTRY.keySet());
     }
 }

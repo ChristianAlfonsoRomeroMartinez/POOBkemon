@@ -2,6 +2,7 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public abstract class Attack {
     protected String name;
@@ -81,5 +82,22 @@ public abstract class Attack {
     }
 
 
-    public abstract int calcDaño(Pokemon atacante, Pokemon defensor);
+    public int calcDaño(Pokemon atacante, Pokemon defensor) {
+        if (powerPoint <= 0) return 0;
+
+        Random rand = new Random();
+        if (rand.nextInt(100) + 1 > precision) {
+            System.out.println("El ataque falló debido a la precisión.");
+            return 0;
+        }
+
+        double efectividad = efectivity.efectividad(numberType.get(this.getType()), 
+                                                   numberType.get(defensor.getType()));
+        int danioBase = (int) ((atacante.getSpecialAttack() * baseDamage * efectividad) / defensor.getSpecialDefense());
+        danioBase = Math.max(danioBase, 1); // Mínimo 1 de daño
+
+        System.out.println("Efectividad: " + efectividad + ", Daño calculado: " + danioBase);
+        usarAtaque();
+        return danioBase;
+    }
 }

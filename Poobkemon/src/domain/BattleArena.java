@@ -20,25 +20,6 @@ public abstract class BattleArena {
     }
 
     /**
-     * Inicia una batalla Player vs Player.
-     */
-    public void startBattle(String coachName1, String coachName2, ArrayList<String> pokemons1
-    , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
-    Attack[][] pokemAttacks1,Attack[][] pokemAttacks2) throws PoobkemonException {
-        
-    }
-
-    /**
-     * Ejecuta la acción del entrenador en el índice dado.
-     */
-    private void coachAction(int index) throws PoobkemonException {
-        // Obtiene la acción (ataque, cambio, ítem o huir)
-        int action = coaches[index].selectAction();
-        // Realiza la acción
-        coaches[index].doAction(action);
-    }
-
-    /**
      * Configura los entrenadores y determina quién inicia.
      */
     public void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
@@ -141,7 +122,6 @@ public abstract class BattleArena {
      */
     public void endBattle() {
         cancelTurnTimer();
-        System.out.println("La batalla ha terminado.");
     }
 
     /**
@@ -177,5 +157,58 @@ public abstract class BattleArena {
      */
     protected Coach[] getCoaches() {
         return coaches;
+    }
+
+    public void attack(String moveName, String itself) throws PoobkemonException {
+        Coach currentCoach = getCurrentCoach();
+        Coach opponentCoach = getOpponentCoach();
+
+        Pokemon attacker = currentCoach.getActivePokemon();
+        Pokemon defender = opponentCoach.getActivePokemon();
+
+        // Encuentra el ataque por nombre
+        Attack attack = attacker.getAtaques().stream()
+            .filter(a -> a.getName().equals(moveName))
+            .findFirst()
+            .orElse(null); // Si no encuentra el ataque, devuelve null
+
+        if (attack.getPowerPoint() > 0){
+            if ("itself".equals(itself)) {
+            // Realiza el ataque sobre sí mismo
+            
+            attacker.attack(attacker, attack);
+            // Cambia el turno al siguiente entrenador
+            nextTurn();
+            } else {
+            // Realiza el ataque sobre el oponente
+            attacker.attack(defender, attack);
+            }
+        } else {
+            System.out.println("No puedes usar este ataque, no tienes PP.");
+        }
+    }
+
+    public void flee() {
+        getCurrentCoach().fleeBattle(); // Marca al entrenador actual como que ha huido
+        endBattle(); // Finaliza la batalla
+    }
+
+    public void useItem(String itemName) throws PoobkemonException {
+        // Obtener el entrenador actual
+        Coach currentCoach = getCurrentCoach();
+
+        // Buscar el ítem por su nombre
+        Item item = ItemFactory.createItem(itemName);
+
+        // Delegar el uso del ítem al entrenador actual
+        currentCoach.useItem(item);
+    }
+
+    public void switchToPokemon(int index) throws PoobkemonException {
+        // Obtener el entrenador actual
+        Coach currentCoach = getCurrentCoach();
+
+        // Cambiar al Pokémon activo
+        currentCoach.switchPokemon(index);
     }
 }
