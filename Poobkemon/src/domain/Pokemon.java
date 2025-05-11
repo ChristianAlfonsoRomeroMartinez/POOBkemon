@@ -112,9 +112,6 @@ public class Pokemon {
      * Ataca a otro Pokémon con un ataque específico.
      */
     public void attack(Pokemon defensor, Attack attack) {
-        if (!ataques.contains(attack)) {
-            throw new IllegalArgumentException("El Pokémon no conoce este ataque.");
-        }
         int daño = attack.calcDaño(this, defensor);
         if (daño > 0) {
             defensor.setPs(defensor.getPs() - daño);

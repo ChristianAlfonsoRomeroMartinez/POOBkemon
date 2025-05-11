@@ -10,6 +10,7 @@ public abstract class Coach {
     protected int activePokemonIndex; // Índice del Pokémon actualmente en batalla
     protected List<Item> items; // Lista de objetos del entrenador
     private int score;
+    private boolean fled = false;
 
     public Coach(ArrayList<String> pokemons, ArrayList<String> items) {
         createPokemons(pokemons);
@@ -84,6 +85,7 @@ public abstract class Coach {
             throw new PoobkemonException(PoobkemonException.FAINTED_POKEMON);
         }
         this.activePokemonIndex = index;
+        System.out.println("El entrenador ha cambiado al Pokémon activo a: " + selected.getName());
     }
 
 
@@ -139,8 +141,12 @@ public abstract class Coach {
         return pokemons.get(activePokemonIndex);
     }
 
-    public void switchPokemonWithExceptionHandling(int indexPokemonGUI) {
-            switchPokemon(indexPokemonGUI);
-
+    public boolean getHasFled() {
+        return fled;
     }
+
+    public void fleeBattle() {
+        this.fled = true;
+    }
+
 }

@@ -42,19 +42,4 @@ public class SpecialAttack extends Attack {
         super(name, type, baseDamage, powerPoint, precision);
     }
     
-    @Override
-    public int calcDaño(Pokemon atacante, Pokemon defensor) {
-        if (powerPoint <= 0) return 0;
-        
-        Random rand = new Random();
-        if (rand.nextInt(100) + 1 > precision) return 0;
-        
-        double efectividad = efectivity.efectividad(numberType.get(this.getType()), 
-                                                   numberType.get(defensor.getType()));
-        int danioBase = (int) ((atacante.getSpecialAttack() * baseDamage * efectividad) / defensor.getSpecialDefense());
-        danioBase = Math.max(danioBase, 1); // Mínimo 1 de daño
-        
-        usarAtaque();
-        return danioBase;
-    }
 }

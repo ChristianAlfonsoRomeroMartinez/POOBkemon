@@ -3,16 +3,15 @@ package test;
 import domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PoobkemonTests {
     private HumanCoach coach1;
     private HumanCoach coach2;
     private BattleArenaNormal battleArena;
+    private Poobkemon poobkemon;
 
     @BeforeEach
     public void setup() throws PoobkemonException {
@@ -35,15 +34,18 @@ public class PoobkemonTests {
         ArrayList<String> items2 = new ArrayList<>(List.of("Revive"));
 
         // Configurar entrenadores
-        //coach1 = new HumanCoach("Ash", pokemons1, items1);
-        //coach2 = new HumanCoach("Gary", pokemons2, items2);
+        coach1 = new HumanCoach("Ash", pokemons1, items1);
+        coach2 = new HumanCoach("Gary", pokemons2, items2);
 
-        //coach1.setPokemonAttacks(attacks1);
-        //coach2.setPokemonAttacks(attacks2);
+        coach1.setPokemonAttacks(attacks1);
+        coach2.setPokemonAttacks(attacks2);
 
         // Configurar arena de batalla
         battleArena = new BattleArenaNormal();
         battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
+    
+        poobkemon = new Poobkemon();
+        poobkemon.startBattleNormal("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
     }
 
     @Test
@@ -55,6 +57,13 @@ public class PoobkemonTests {
         coach1.useItem(potion);
 
         assertEquals(70, activePokemon.getPs(), "El PS del Pokémon debería haber aumentado en 20.");
+    }
+
+    @Test
+    public void shouldFleeBattle() {
+        poobkemon.flee();
+        // Verificar que la batalla haya terminado
+        assertTrue(battleArena.isBattleFinished(), "La batalla debería haber terminado después de huir.");
     }
 
     @Test
@@ -89,14 +98,6 @@ public class PoobkemonTests {
         attacker.attack(defender, attack);
 
         assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon defensor debería haber disminuido.");
-    }
-
-    @Test
-    public void shouldNotAttackWithInvalidMove() {
-        Pokemon attacker = coach1.getActivePokemon();
-        Attack invalidAttack = new PhysicalAttack("Ataque Inválido", "Normal", 50, 10, 100);
-
-        assertThrows(IllegalArgumentException.class, () -> attacker.attack(coach2.getActivePokemon(), invalidAttack), "No se puede usar un ataque que el Pokémon no conoce.");
     }
 
     @Test
@@ -141,6 +142,27 @@ public class PoobkemonTests {
         for (int i = 0; i < activePokemon.getAtaques().size(); i++) {
             assertTrue(activePokemon.getAtaques().get(i).getPowerPoint() < initialPP.get(i), "El PP del ataque debería haberse reducido.");
         }
+    }
+
+    @Test
+    public void shouldNotFinishBattleWhenPokemonAreStillAlive() {
+        // Asegurarse de que ambos entrenadores tienen Pokémon vivos
+        coach1.getPokemons().get(0).setPs(50);
+        coach2.getPokemons().get(0).setPs(50);
+
+        assertFalse(battleArena.isBattleFinished(), "La batalla no debería terminar si ambos entrenadores tienen Pokémon vivos.");
+    }
+
+    @Test
+    public void shouldMarkCoachAsFled() {
+        // Asegurarse de que el entrenador no haya huido inicialmente
+        assertFalse(coach1.getHasFled(), "El entrenador no debería haber huido inicialmente.");
+
+        // Hacer que el entrenador huya
+        coach1.fleeBattle();
+
+        // Verificar que el entrenador haya sido marcado como que ha huido
+        assertTrue(coach1.getHasFled(), "El entrenador debería haber huido de la batalla.");
     }
 }
 

@@ -33,11 +33,12 @@ public class Item {
     }
 
     public void applyItemEffect(Pokemon pokemon) {
+        System.out.println("Aplicando " + name + " a " + pokemon.getName());
         applyTo.apply(pokemon, effectValue);
     }
 
     public enum AttributeType {
-        HP((p, v) -> p.setPs(p.getPs() + v), p -> p.getPs() > 0),
+        HP((p, v) -> p.setPs(Math.min(p.getPs() + v, p.getTotalPs())), p -> p.getPs() > 0),
         REVIVE((p, v) -> p.setPs(v), p -> p.getPs() == 0),
         PHYSICAL_ATTACK((p, v) -> p.setPhysicalAttack(p.getPhysicalAttack() + v), p -> true),
         PHYSICAL_DEFENSE((p, v) -> p.setPhysicalDefense(p.getPhysicalDefense() + v), p -> true),

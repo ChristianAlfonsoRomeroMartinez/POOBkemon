@@ -5,23 +5,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Poobkemon {
-    private BattleArena battleArena;
+    private BattleArenaNormal battleArenaNormal;
+    private ArrayList<BattleArena> battleArenas;
 
-
+    //Metodo que envia informacion de los pokemones disponibles a la GUI
     public static List<String> getAvailablePokemon() {
-        // Implementación que retorna la lista de nombres
         return Arrays.asList(PokemonFactory.POKEMON_REGISTRY.keySet().toArray(new String[0]));
     }
     
-    // Métodos necesarios en el dominio
+    // Metodo que envia informacion de los items disponibles a la GUI
     public static List<String> getAvailableItems() {
-        // Retorna lista de ítems disponibles
-        return Arrays.asList("Poción", "Superpoción", "Elixir");
-    }
-    
-    public static List<String> getAvailableAttacks() {
-        // Lógica para obtener ataques según Pokémon
-        return Arrays.asList("Ataque 1", "Ataque 2", "Ataque especial");
+        // Obtiene las claves del mapa ITEM_REGISTRY de ItemFactory
+        return new ArrayList<>(ItemFactory.getItemNames());
     }
 
     /**
@@ -45,7 +40,9 @@ public class Poobkemon {
         return StatusAttack.ataquesStatus.stream().map(Attack::getName).toList();
     }
 
-    public void attack(String moveName){
+    public void attack(String moveName, String itself) throws PoobkemonException {
+        // Delegar la lógica del ataque a la arena de batalla
+        battleArenaNormal.attack(moveName, itself);
 
     }
 
@@ -55,59 +52,27 @@ public class Poobkemon {
      * @param coachName2 Nombre del segundo entrenador.
      * @throws PoobkemonException Si ocurre un error al configurar la batalla.
      */
-    public void startBattle(String coachName1, String coachName2, ArrayList<String> pokemons1,
+    public void startBattleNormal(String coachName1, String coachName2, ArrayList<String> pokemons1,
                             ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
                             Attack[][] pokemAttacks1, Attack[][] pokemAttacks2) throws PoobkemonException {
-        battleArena = new BattleArenaNormal(); // Crear la arena de batalla
-        battleArena.startBattle(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
+        battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
+        battleArenaNormal.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
     }
 
-    /**
-     * Ejecuta una acción seleccionada por el usuario.
-     * @param action La acción seleccionada (ATTACK, USE_ITEM, SWITCH_POKEMON, RUN).
-     * @throws PoobkemonException Si ocurre un error durante la ejecución de la acción.
-     */
-    public void performAction(BattleAction action) throws PoobkemonException {
-        if (battleArena == null) {
-            throw new PoobkemonException("No hay una batalla en curso.");
-        }
-        battleArena.handleAction(action, battleArena.getCurrentCoach(), battleArena.getOpponentCoach());
+    public void flee(){
+        battleArenaNormal.flee();
+    }
+    
+    public void useItem(String itemName) throws PoobkemonException {
+        // Delegar la lógica del uso de ítem a la arena de batalla
+        battleArenaNormal.useItem(itemName);
     }
 
-
-
-    /**
-     * Cambia al siguiente Pokémon disponible del entrenador actual.
-     * @throws PoobkemonException Si no hay más Pokémon disponibles.
-     */
-    public void switchToNextPokemon() throws PoobkemonException {
-        if (battleArena == null) {
-            throw new PoobkemonException("No hay una batalla en curso.");
-        }
-        battleArena.getCurrentCoach().switchToNextPokemon();
+    public void switchToPokemon(int index) throws PoobkemonException {
+        // Delegar la lógica del cambio de Pokémon a la arena de batalla
+        battleArenaNormal.switchToPokemon(index);
     }
 
-    /**
-     * Usa un ítem en el Pokémon activo del entrenador actual.
-     * @param item El ítem a usar.
-     * @throws PoobkemonException Si ocurre un error al usar el ítem.
-     */
-    public void useItem(Item item) throws PoobkemonException {
-        if (battleArena == null) {
-            throw new PoobkemonException("No hay una batalla en curso.");
-        }
-        battleArena.getCurrentCoach().useItem(item);
-    }
-
-    /**
-     * Finaliza la batalla actual.
-     */
-    public void endBattle() {
-        if (battleArena != null) {
-            battleArena.endBattle();
-            battleArena = null;
-        }
-    }
 }
 
 
