@@ -1,8 +1,8 @@
 package domain;
 
-public class BattleArenaSurvivival extends BattleArena {
+public class BattleArenaSurvival extends BattleArena {
     
-    public BattleArenaSurvivival() {
+    public BattleArenaSurvival() {
         super();
     }
 
