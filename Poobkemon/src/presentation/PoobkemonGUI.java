@@ -1480,25 +1480,17 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     JPanel panel = new JPanel(new GridLayout(1, 2, 20, 0));
     panel.setOpaque(false);
 
-    // Panel de acciones para el jugador 1
+    // Panel de movimientos y Pokébolas para el jugador 1
     JPanel player1Actions = new JPanel(new BorderLayout());
     player1Actions.setOpaque(false);
     player1Actions.add(createMovesPanel(player1Pokemon, player1Panel, true), BorderLayout.CENTER);
     player1Actions.add(createPokeballPanel(player1Pokemon, player1Panel, true), BorderLayout.SOUTH);
 
-    // Agregar botones adicionales para el jugador 1
-    JPanel player1ExtraButtons = createExtraButtonsPanel(true);
-    player1Actions.add(player1ExtraButtons, BorderLayout.EAST);
-
-    // Panel de acciones para el jugador 2
+    // Panel de movimientos y Pokébolas para el jugador 2
     JPanel player2Actions = new JPanel(new BorderLayout());
     player2Actions.setOpaque(false);
     player2Actions.add(createMovesPanel(player2Pokemon, player2Panel, false), BorderLayout.CENTER);
     player2Actions.add(createPokeballPanel(player2Pokemon, player2Panel, false), BorderLayout.SOUTH);
-
-    // Agregar botones adicionales para el jugador 2
-    JPanel player2ExtraButtons = createExtraButtonsPanel(false);
-    player2Actions.add(player2ExtraButtons, BorderLayout.EAST);
 
     panel.add(player1Actions);
     panel.add(player2Actions);
@@ -1598,37 +1590,28 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 }
     
     private void handlePokemonSwitch(List<String> playerPokemon) {
-    JDialog dialog = new JDialog(this, "Cambiar Pokémon", true);
-    dialog.setSize(400, 300);
-    dialog.setLocationRelativeTo(this);
-
-    JPanel panel = new JPanel(new GridLayout(2, 3, 10, 10));
-    for (String pokemon : playerPokemon) {
-        JButton button = new JButton(pokemon);
-        button.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Has cambiado a " + pokemon, "Información", JOptionPane.INFORMATION_MESSAGE);
-            dialog.dispose();
-        });
-        panel.add(button);
+        JDialog dialog = new JDialog(this, "Cambiar Pokémon", true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+    
+        JPanel panel = new JPanel(new GridLayout(2, 3, 10, 10));
+        for (String pokemon : playerPokemon) {
+            JButton button = new JButton(pokemon);
+            button.addActionListener(e -> {
+                JOptionPane.showMessageDialog(this, "Has cambiado a " + pokemon, "Información", JOptionPane.INFORMATION_MESSAGE);
+                dialog.dispose();
+            });
+            panel.add(button);
+        }
+    
+        dialog.add(panel);
+        dialog.setVisible(true);
     }
-
-    dialog.add(panel);
-    dialog.setVisible(true);
-}
     
     private void handleRunAction() {
-    // Detener el temporizador
-    if (turnTimer != null) {
-        turnTimer.stop();
-        turnTimer = null; // Eliminar la referencia al temporizador
+        JOptionPane.showMessageDialog(this, "Has huido de la batalla.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        returnToGame();
     }
-
-    // Mostrar mensaje de huida
-    JOptionPane.showMessageDialog(this, "Has huido de la batalla.", "Información", JOptionPane.INFORMATION_MESSAGE);
-
-    // Lógica para finalizar la batalla y regresar al menú principal
-    returnToGame();
-}
     
     private void printFinalSelection(List<String> player1Pokemon, List<String> player2Pokemon) {
         System.out.println("\n=== Selección Final ===");
@@ -1753,32 +1736,6 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     for (JButton btn : player2BattleMoveButtons) btn.setEnabled(!isPlayer1Turn);
     for (JButton btn : player1BattlePokeballButtons) btn.setEnabled(isPlayer1Turn);
     for (JButton btn : player2BattlePokeballButtons) btn.setEnabled(!isPlayer1Turn);
-}
-    
-private JPanel createExtraButtonsPanel(boolean isPlayer1) {
-    JPanel extraButtonsPanel = new JPanel(new GridLayout(2, 1, 5, 5)); // Cambiar a 2 filas
-    extraButtonsPanel.setOpaque(false);
-
-    // Botón "Item"
-    JButton itemButton = new JButton("Item");
-    itemButton.setFont(new Font(font, Font.BOLD, 14));
-    itemButton.setEnabled(isPlayer1Turn == isPlayer1);
-    itemButton.addActionListener(e -> handleItemAction(isPlayer1));
-    extraButtonsPanel.add(itemButton);
-
-    // Botón "Huir"
-    JButton fleeButton = new JButton("Huir");
-    fleeButton.setFont(new Font(font, Font.BOLD, 14));
-    fleeButton.setEnabled(isPlayer1Turn == isPlayer1);
-    fleeButton.addActionListener(e -> handleRunAction());
-    extraButtonsPanel.add(fleeButton);
-
-    return extraButtonsPanel;
-}
-
-private void handleItemAction(boolean isPlayer1) {
-    JOptionPane.showMessageDialog(this, (isPlayer1 ? "Jugador 1" : "Jugador 2") + " seleccionó usar un ítem.", "Item", JOptionPane.INFORMATION_MESSAGE);
-    // Aquí puedes abrir un diálogo para seleccionar y usar un ítem
 }
     
 }
