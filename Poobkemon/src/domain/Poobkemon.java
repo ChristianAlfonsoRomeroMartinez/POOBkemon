@@ -69,20 +69,20 @@ public class Poobkemon {
         battleArenaNormal.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
     }
 
+    /**
+     * Inicia una batalla en modo supervivencia con Pokémon aleatorios.
+     * @param coachName1 Nombre del primer entrenador
+     * @param coachName2 Nombre del segundo entrenador
+     * @throws PoobkemonException Si ocurre un error al configurar la batalla
+     */
     public void startBattleSurvival(String coachName1, String coachName2) throws PoobkemonException {
-        // Obtener 6 Pokémon aleatorios para cada jugador
-        List<String> allPokemon = getAvailablePokemon();
-        if (allPokemon.size() < 12) {
-            throw new PoobkemonException("No hay suficientes Pokémon disponibles para el modo Survival.");
-        }
-        ArrayList<String> pokemons1 = new ArrayList<>(allPokemon.subList(0, 6));
-        ArrayList<String> pokemons2 = new ArrayList<>(allPokemon.subList(6, 12));
-
-        // Crear la arena de batalla survival
+        // Crear la arena de batalla para modo supervivencia
         BattleArenaSurvival battleArenaSurvival = new BattleArenaSurvival();
-        battleArenaSurvival.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, new ArrayList<>(), new ArrayList<>(), new String[6][4], new String[6][4]);
-
-        // Guardar la arena survival como la actual
+        
+        // Configurar la batalla con Pokémon aleatorios
+        battleArenaSurvival.setupSurvivalBattle(coachName1, coachName2);
+        
+        // Guardar la arena como la actual
         this.battleArenaNormal = battleArenaSurvival;
     }
 

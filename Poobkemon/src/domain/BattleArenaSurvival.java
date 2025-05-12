@@ -1,5 +1,9 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class BattleArenaSurvival extends BattleArena {
     
     public BattleArenaSurvival() {
@@ -32,5 +36,32 @@ public class BattleArenaSurvival extends BattleArena {
         } else {
             System.out.println("No puedes usar este ataque, no tienes PP.");
         }
+    }
+
+    /**
+     * Configura una batalla en modo supervivencia con Pokémon aleatorios.
+     * @param coachName1 Nombre del primer entrenador
+     * @param coachName2 Nombre del segundo entrenador
+     * @throws PoobkemonException Si no hay suficientes Pokémon disponibles
+     */
+    public void setupSurvivalBattle(String coachName1, String coachName2) throws PoobkemonException {
+        // Obtener todos los Pokémon disponibles
+        List<String> allPokemon = Poobkemon.getAvailablePokemon();
+        
+        // Verificar que hay suficientes Pokémon
+        if (allPokemon.size() < 12) {
+            throw new PoobkemonException("No hay suficientes Pokémon disponibles para el modo Survival.");
+        }
+        
+        // Mezclar la lista para obtener Pokémon aleatorios
+        Collections.shuffle(allPokemon);
+        
+        // Seleccionar 6 Pokémon para cada jugador
+        ArrayList<String> pokemons1 = new ArrayList<>(allPokemon.subList(0, 6));
+        ArrayList<String> pokemons2 = new ArrayList<>(allPokemon.subList(6, 12));
+        
+        // Configurar los entrenadores con los Pokémon aleatorios
+        setupCoaches(coachName1, coachName2, pokemons1, pokemons2, 
+                    new ArrayList<>(), new ArrayList<>(), new String[6][4], new String[6][4]);
     }
 }

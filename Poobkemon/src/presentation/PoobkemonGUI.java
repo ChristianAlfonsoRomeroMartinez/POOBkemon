@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -620,7 +621,32 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true,220,55);
         humanVsHumanBtn.addActionListener(e -> {
             buttonSound.play();
-            showPokemonSelectionScreen();
+            if ("SURVIVAL".equals(gameMode)) {
+                try {
+                    Poobkemon poobkemon = new Poobkemon();
+                    // Iniciar una batalla en modo supervivencia
+                    poobkemon.startBattleSurvival("Player 1", "Player 2");
+                    
+                    // Obtener la lista de todos los Pokémon disponibles
+                    List<String> allPokemon = Poobkemon.getAvailablePokemon();
+                    
+                    // Aleatorizar la lista
+                    Collections.shuffle(allPokemon);
+                    
+                    // Seleccionar 6 Pokémon para cada jugador
+                    List<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
+                    List<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
+                    
+                    // Mostrar la pantalla de batalla
+                    showBattleScreen(player1Pokemon, player2Pokemon);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + ex.getMessage(), 
+                                                 "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                // En modo NORMAL, mostrar la pantalla de selección de Pokémon
+                showPokemonSelectionScreen();
+            }
         });
     
         JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true, 220, 55);
