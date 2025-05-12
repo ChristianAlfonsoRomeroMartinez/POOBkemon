@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Poobkemon {
-    private BattleArenaNormal battleArenaNormal;
+    private BattleArena battleArenaNormal;
     private ArrayList<BattleArena> battleArenas;
 
     //Metodo que envia informacion de los pokemones disponibles a la GUI
@@ -67,6 +67,23 @@ public class Poobkemon {
                             String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
         battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
         battleArenaNormal.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
+    }
+
+    public void startBattleSurvival(String coachName1, String coachName2) throws PoobkemonException {
+        // Obtener 6 Pokémon aleatorios para cada jugador
+        List<String> allPokemon = getAvailablePokemon();
+        if (allPokemon.size() < 12) {
+            throw new PoobkemonException("No hay suficientes Pokémon disponibles para el modo Survival.");
+        }
+        ArrayList<String> pokemons1 = new ArrayList<>(allPokemon.subList(0, 6));
+        ArrayList<String> pokemons2 = new ArrayList<>(allPokemon.subList(6, 12));
+
+        // Crear la arena de batalla survival
+        BattleArenaSurvival battleArenaSurvival = new BattleArenaSurvival();
+        battleArenaSurvival.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, new ArrayList<>(), new ArrayList<>(), new String[6][4], new String[6][4]);
+
+        // Guardar la arena survival como la actual
+        this.battleArenaNormal = battleArenaSurvival;
     }
 
     public void flee(){

@@ -1,6 +1,7 @@
 package presentation;
 
 import domain.Poobkemon;
+import domain.PoobkemonException;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -620,7 +621,15 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true,220,55);
         humanVsHumanBtn.addActionListener(e -> {
             buttonSound.play();
-            showPokemonSelectionScreen();
+            if ("SURVIVAL".equals(gameMode)) {
+                try {
+                    Poobkemon poobkemon = new Poobkemon();
+                    poobkemon.startBattleSurvival("Player 1", "Player 2");
+                    showBattleScreen(poobkemon.getAvailablePokemon().subList(0, 6), poobkemon.getAvailablePokemon().subList(6, 12));
+                } catch (PoobkemonException ex) {
+                    JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
     
         JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true, 220, 55);
