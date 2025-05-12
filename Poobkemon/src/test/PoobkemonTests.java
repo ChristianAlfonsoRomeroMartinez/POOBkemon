@@ -19,42 +19,36 @@ public class PoobkemonTests {
         ArrayList<String> pokemons1 = new ArrayList<>(List.of("Charizard", "Blastoise"));
         ArrayList<String> pokemons2 = new ArrayList<>(List.of("Venusaur", "Gengar"));
 
-        Attack[][] attacks1 = {
-            {new PhysicalAttack("Garra Dragón", "Dragon", 80, 10, 100)},
-            {new SpecialAttack("Hidrobomba", "Agua", 110, 5, 80)}
+        String[][] attacks1 = {
+            {"Garra Dragón"},
+            {"Hidrobomba"}
         };
 
-        Attack[][] attacks2 = {
-            {new SpecialAttack("Hoja Mágica", "Planta", 60, 10, 100)},
-            {new StatusAttack("Fuego Fatuo", "Fuego", 0, 5, 85, "Burn", 5)}
+        String[][] attacks2 = {
+            {"Hoja Mágica"},
+            {"Fuego Fatuo"}
         };
 
         // Crear ítems
         ArrayList<String> items1 = new ArrayList<>(List.of("Poción", "Superpoción"));
         ArrayList<String> items2 = new ArrayList<>(List.of("Revive"));
 
-        // Configurar entrenadores
-        coach1 = new HumanCoach("Ash", pokemons1, items1);
-        coach2 = new HumanCoach("Gary", pokemons2, items2);
-
-        coach1.setPokemonAttacks(attacks1);
-        coach2.setPokemonAttacks(attacks2);
-
         // Configurar arena de batalla
         battleArena = new BattleArenaNormal();
         battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
-    
+
         poobkemon = new Poobkemon();
         poobkemon.startBattleNormal("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
+
+        coach1 = (HumanCoach) battleArena.getCoaches()[0];
+        coach2 = (HumanCoach) battleArena.getCoaches()[1];
     }
 
     @Test
     public void shouldApplyItemOnDamagedPokemon() throws PoobkemonException {
         Pokemon activePokemon = coach1.getActivePokemon();
         activePokemon.setPs(50); // Reducir PS del Pokémon activo
-        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
-
-        coach1.useItem(potion);
+        coach1.useItem("Poción");
 
         assertEquals(70, activePokemon.getPs(), "El PS del Pokémon debería haber aumentado en 20.");
     }
@@ -70,9 +64,8 @@ public class PoobkemonTests {
     public void shouldNotApplyItemOnFaintedPokemon() {
         Pokemon activePokemon = coach1.getActivePokemon();
         activePokemon.setPs(0); // Pokémon debilitado
-        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
 
-        assertThrows(IllegalStateException.class, () -> coach1.useItem(potion), "No se puede usar un ítem en un Pokémon debilitado.");
+        assertThrows(PoobkemonException.class, () -> coach1.useItem("Poción"), "No se puede usar un ítem en un Pokémon debilitado.");
     }
 
     @Test
@@ -90,7 +83,7 @@ public class PoobkemonTests {
     }
 
     @Test
-    public void shouldAttackOpponentPokemon() {
+    public void shouldAttackOpponentPokemon() throws PoobkemonException {
         Pokemon attacker = coach1.getActivePokemon();
         Pokemon defender = coach2.getActivePokemon();
         Attack attack = attacker.getAtaques().get(0);
@@ -103,21 +96,17 @@ public class PoobkemonTests {
     @Test
     public void shouldApplyStatusEffectOnPokemon() {
         Pokemon defender = coach2.getActivePokemon();
-        Attack statusAttack = coach1.getActivePokemon().getAtaques().get(0);
-
         defender.setStatus(3); // Quemado
         defender.applyEffectDamage();
 
         assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
     }
-    
+
     @Test
     public void shouldNotAllowItemOnPokemonWithFullHealth() {
-        Item potion = new Item("Poción", "Restaura 20 PS", 20, Item.AttributeType.HP);
-
-        assertThrows(PoobkemonException.class, () -> coach1.useItem(potion), "");
+        assertThrows(PoobkemonException.class, () -> coach1.useItem("Poción"), "No se puede usar un ítem en un Pokémon con PS completos.");
     }
-    
+
     @Test
     public void shouldNotAllowMoreThanMaxHealth() {
         Pokemon activePokemon = coach1.getActivePokemon();

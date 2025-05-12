@@ -1,9 +1,33 @@
 package domain;
 
+import java.util.HashMap;
+
 public class efectivity {
     private static double[][] matriz = new double[18][18];
+    protected static HashMap<String, Integer> numberType = new HashMap<>(); // Efectos del ataque (ej. "paralizado", "quemado", etc.)
 
     static {
+        // Inicializar el mapa de tipos
+        numberType.put("Acero", 0);
+        numberType.put("Agua", 1);
+        numberType.put("Bicho", 2);
+        numberType.put("Dragon", 3);
+        numberType.put("Electrico", 4);
+        numberType.put("Fantasma", 5);
+        numberType.put("Fuego", 6);
+        numberType.put("Hada", 7);
+        numberType.put("Hielo", 8);
+        numberType.put("Lucha", 9);
+        numberType.put("Normal", 10);
+        numberType.put("Planta", 11);
+        numberType.put("Psíquico", 12);
+        numberType.put("Roca", 13);
+        numberType.put("Siniestro", 14);
+        numberType.put("Tierra", 15);
+        numberType.put("Veneno", 16);
+        numberType.put("Volador", 17);
+
+        // Inicializar la matriz de efectividad
         valores();
     }
 

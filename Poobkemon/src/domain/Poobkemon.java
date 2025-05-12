@@ -3,6 +3,7 @@ package domain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Poobkemon {
     private BattleArenaNormal battleArenaNormal;
@@ -23,21 +24,30 @@ public class Poobkemon {
      * Obtiene la lista de ataques físicos disponibles.
      */
     public static List<String> getPhysicalAttacks() {
-        return PhysicalAttack.ataquesFisicos.stream().map(Attack::getName).toList();
+        return AttackFactory.getAllAttacks().values().stream()
+            .filter(attack -> "Physical".equals(attack.getAttackType()))
+            .map(Attack::getName)
+            .collect(Collectors.toList());
     }
 
     /**
      * Obtiene la lista de ataques especiales disponibles.
      */
     public static List<String> getSpecialAttacks() {
-        return SpecialAttack.ataquesEspeciales.stream().map(Attack::getName).toList();
+        return AttackFactory.getAllAttacks().values().stream()
+            .filter(attack -> "Special".equals(attack.getAttackType()))
+            .map(Attack::getName)
+            .collect(Collectors.toList());
     }
 
     /**
      * Obtiene la lista de ataques de estado disponibles.
      */
     public static List<String> getStatusAttacks() {
-        return StatusAttack.ataquesStatus.stream().map(Attack::getName).toList();
+        return AttackFactory.getAllAttacks().values().stream()
+            .filter(attack -> "Status".equals(attack.getAttackType()))
+            .map(Attack::getName)
+            .collect(Collectors.toList());
     }
 
     public void attack(String moveName, String itself) throws PoobkemonException {

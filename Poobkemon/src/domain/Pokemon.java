@@ -60,6 +60,15 @@ public class Pokemon {
     public void setStatus(int status) { this.status = status; }
     public void setTurnStatus(int turnStatus) { this.turnStatus = turnStatus; }
 
+
+    public void addAttack(Attack attack) {
+        if (ataques.size() < 4) { // Máximo 4 ataques
+            ataques.add(attack);
+        } else {
+            throw new IllegalStateException("El Pokémon ya tiene 4 ataques.");
+        }
+    }
+
     public void setPs(int ps) { 
     	if(ps > total_ps) {
     		this.ps = total_ps;

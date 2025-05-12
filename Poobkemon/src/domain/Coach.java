@@ -12,8 +12,8 @@ public abstract class Coach {
     private int score;
     private boolean fled = false;
 
-    public Coach(ArrayList<String> pokemons, ArrayList<String> items) {
-        createPokemons(pokemons);
+    public Coach(ArrayList<Pokemon> pokemons, ArrayList<String> items) {
+        this.pokemons = new ArrayList<>(pokemons);
         createItems(items);
         this.activePokemonIndex = 0; // Por defecto, el primer Pokémon es el activo
         this.score = 0;
@@ -33,14 +33,6 @@ public abstract class Coach {
         }
     }
 
-
-    private void createPokemons(ArrayList<String> pokemons) {
-        this.pokemons = new ArrayList<>();
-        for (String nombrePokemon : pokemons) {
-            Pokemon pokemon = PokemonFactory.createPokemon(nombrePokemon);
-            this.pokemons.add(pokemon);
-        }
-    }
 
     public void agregarPokemon(String nombrePokemon) {
         Pokemon pokemon = PokemonFactory.createPokemon(nombrePokemon);

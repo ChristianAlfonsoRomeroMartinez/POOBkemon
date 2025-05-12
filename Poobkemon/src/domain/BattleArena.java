@@ -22,28 +22,20 @@ public abstract class BattleArena {
     /**
      * Configura los entrenadores y determina quién inicia.
      */
-    public void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
-    , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
-    String[][] pokemAttacks1,String[][] pokemAttacks2 ) throws PoobkemonException {
+    public void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1,
+                             ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
+                             String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
         boolean firstStarts = rand.nextBoolean();
+
+        // Crear y asignar entrenadores
         if (firstStarts) {
-            coaches[0] = new HumanCoach(coachName1, pokemons1, items1);
-
-            coaches[0].setPokemonAttacks(pokemAttacks1);
-
-            coaches[1] = new HumanCoach(coachName2, pokemons2, items2);
-
-            coaches[1].setPokemonAttacks(pokemAttacks2);
+            coaches[0] = new HumanCoach(coachName1, createPokemonList(pokemons1, pokemAttacks1), items1);
+            coaches[1] = new HumanCoach(coachName2, createPokemonList(pokemons2, pokemAttacks2), items2);
         } else {
-            coaches[0] = new HumanCoach(coachName2, pokemons2, items2);
-
-            coaches[0].setPokemonAttacks(pokemAttacks2);
-
-            coaches[1] = new HumanCoach(coachName1, pokemons1, items1);
-            
-            coaches[1].setPokemonAttacks(pokemAttacks1);
-
+            coaches[0] = new HumanCoach(coachName2, createPokemonList(pokemons2, pokemAttacks2), items2);
+            coaches[1] = new HumanCoach(coachName1, createPokemonList(pokemons1, pokemAttacks1), items1);
         }
+
         currentTurn = 0;
     }
 
@@ -159,7 +151,7 @@ public abstract class BattleArena {
     /**
      * Obtiene los entrenadores.
      */
-    protected Coach[] getCoaches() {
+    public Coach[] getCoaches() {
         return coaches;
     }
 
@@ -214,5 +206,29 @@ public abstract class BattleArena {
 
         // Cambiar al Pokémon activo
         currentCoach.switchPokemon(index);
+    }
+
+    private ArrayList<Pokemon> createPokemonList(ArrayList<String> pokemonNames, String[][] pokemAttacks) {
+        ArrayList<Pokemon> pokemonList = new ArrayList<>();
+
+        for (int i = 0; i < pokemonNames.size(); i++) {
+            String pokemonName = pokemonNames.get(i);
+
+            // Crear el Pokémon
+            Pokemon pokemon = PokemonFactory.createPokemon(pokemonName);
+
+            // Asignar ataques al Pokémon
+            for (String attackName : pokemAttacks[i]) {
+                if (attackName != null) {
+                    Attack attack = AttackFactory.createAttack(attackName);
+                    pokemon.addAttack(attack);
+                }
+            }
+
+            // Agregar el Pokémon a la lista
+            pokemonList.add(pokemon);
+        }
+
+        return pokemonList;
     }
 }

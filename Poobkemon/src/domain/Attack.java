@@ -10,42 +10,16 @@ public abstract class Attack {
     protected int baseDamage;
     protected int precision;
     protected int powerPoint;
-    protected static HashMap<String, Integer> numberType = new HashMap<>(); // Efectos del ataque (ej. "paralizado", "quemado", etc.)
-    static {
-        numberType.put("Acero", 0);
-        numberType.put("Agua", 1);
-        numberType.put("Bicho", 2);
-        numberType.put("Dragon", 3);
-        numberType.put("Electrico", 4);
-        numberType.put("Fantasma", 5);
-        numberType.put("Fuego", 6);
-        numberType.put("Hada", 7);
-        numberType.put("Hielo", 8);
-        numberType.put("Lucha", 9);
-        numberType.put("Normal", 10);
-        numberType.put("Planta", 11);
-        numberType.put("Psíquico", 12);
-        numberType.put("Roca", 13);
-        numberType.put("Siniestro", 14);
-        numberType.put("Tierra", 15);
-        numberType.put("Veneno", 16);
-        numberType.put("Volador", 17);
-    }
+    private String attackType;
+    
 
-    protected static ArrayList<String> attackTypes = new ArrayList<>(); // Lista de ataques que puede usar el Pokémon
-    // 0 PyhsicalAttack, 1 SpecialAttack, 2 StatusAttack
-    static {
-        attackTypes.add("PhysicalAttack");
-        attackTypes.add("SpecialAttack");
-        attackTypes.add("StatusAttack");
-    }
-
-    public Attack(String name, String type, int baseDamage, int powerPoint, int precision) {
+    public Attack(String name, String type, int baseDamage, int powerPoint, int precision, String attackType) {
         this.name = name;
         this.type = type;
         this.baseDamage = baseDamage;
         this.powerPoint = powerPoint;
         this.precision = precision;
+        this.attackType = attackType;
     }
 
     public String getName() {
@@ -77,8 +51,8 @@ public abstract class Attack {
         this.powerPoint = Math.max(this.powerPoint - 1, 0);
     }
 
-    public int getAttackType() {
-        return numberType.get(type);
+    public String getAttackType() {
+        return this.attackType;
     }
 
 
@@ -91,8 +65,8 @@ public abstract class Attack {
             return 0;
         }
 
-        double efectividad = efectivity.efectividad(numberType.get(this.getType()), 
-                                                   numberType.get(defensor.getType()));
+        double efectividad = efectivity.efectividad(efectivity.numberType.get(this.getType()), 
+                                                   efectivity.numberType.get(defensor.getType()));
         int danioBase = (int) ((atacante.getSpecialAttack() * baseDamage * efectividad) / defensor.getSpecialDefense());
         danioBase = Math.max(danioBase, 1); // Mínimo 1 de daño
 
@@ -100,4 +74,7 @@ public abstract class Attack {
         usarAtaque();
         return danioBase;
     }
+
+    @Override
+    public abstract Attack clone();
 }

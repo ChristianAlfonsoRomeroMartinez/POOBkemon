@@ -10,7 +10,7 @@ public class HumanCoach extends Coach {
     private String name;
     private Coach opponent;
 
-    public HumanCoach(String name, ArrayList<String> pokemons, ArrayList<String> items) {
+    public HumanCoach(String name, ArrayList<Pokemon> pokemons, ArrayList<String> items) {
         super(pokemons, items);
         this.name = name;
 
