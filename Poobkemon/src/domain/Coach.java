@@ -69,6 +69,7 @@ public abstract class Coach {
      * @throws PoobkemonException si el índice es inválido o el Pokémon está debilitado.
      */
     public void switchToPokemon(int index) throws PoobkemonException {
+        System.out.println(3);
         if (index < 0 || index >= pokemons.size()) {
             throw new PoobkemonException(PoobkemonException.INVALID_POKEMON_INDEX);
         }

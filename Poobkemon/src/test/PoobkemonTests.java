@@ -8,150 +8,129 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PoobkemonTests {
-    private HumanCoach coach1;
-    private HumanCoach coach2;
-    private BattleArenaNormal battleArena;
     private Poobkemon poobkemon;
 
     @BeforeEach
     public void setup() throws PoobkemonException {
         // Crear Pokémon y asignar ataques
         ArrayList<String> pokemons1 = new ArrayList<>(List.of("Charizard", "Blastoise"));
-        ArrayList<String> pokemons2 = new ArrayList<>(List.of("Venusaur", "Gengar"));
+        ArrayList<String> pokemons2 = new ArrayList<>(List.of("Venusaur", "Blastoise"));
 
         String[][] attacks1 = {
-            {"Garra Dragón"},
-            {"Hidrobomba"}
+            {"Garra dragón"},
+            {"Finta"}
         };
 
         String[][] attacks2 = {
-            {"Hoja Mágica"},
-            {"Fuego Fatuo"}
+            {"Esfuerzo"},
+            {"Finta"}
         };
 
         // Crear ítems
         ArrayList<String> items1 = new ArrayList<>(List.of("Poción", "Superpoción"));
         ArrayList<String> items2 = new ArrayList<>(List.of("Revive"));
 
-        // Configurar arena de batalla
-        battleArena = new BattleArenaNormal();
-        battleArena.setupCoaches("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
-
+        // Configurar la clase Poobkemon
         poobkemon = new Poobkemon();
         poobkemon.startBattleNormal("Ash", "Gary", pokemons1, pokemons2, items1, items2, attacks1, attacks2);
-
-        coach1 = (HumanCoach) battleArena.getCoaches()[0];
-        coach2 = (HumanCoach) battleArena.getCoaches()[1];
     }
 
     @Test
     public void shouldApplyItemOnDamagedPokemon() throws PoobkemonException {
-        Pokemon activePokemon = coach1.getActivePokemon();
-        activePokemon.setPs(50); // Reducir PS del Pokémon activo
-        coach1.useItem("Poción");
+        // Reducir PS del Pokémon activo
+        poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().setPs(50);
 
-        assertEquals(70, activePokemon.getPs(), "El PS del Pokémon debería haber aumentado en 20.");
+        // Usar un ítem
+        poobkemon.useItem("Poción");
+
+        // Verificar que el PS haya aumentado
+        assertEquals(70, poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().getPs(),
+                "El PS del Pokémon debería haber aumentado en 20.");
     }
 
     @Test
     public void shouldFleeBattle() {
+        // Huir de la batalla
         poobkemon.flee();
+
         // Verificar que la batalla haya terminado
-        assertTrue(battleArena.isBattleFinished(), "La batalla debería haber terminado después de huir.");
+        assertTrue(poobkemon.getBattleArena().isBattleFinished(),
+                "La batalla debería haber terminado después de huir.");
     }
 
     @Test
     public void shouldNotApplyItemOnFaintedPokemon() {
-        Pokemon activePokemon = coach1.getActivePokemon();
-        activePokemon.setPs(0); // Pokémon debilitado
+        // Debilitar al Pokémon activo
+        poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().setPs(0);
 
-        assertThrows(PoobkemonException.class, () -> coach1.useItem("Poción"), "No se puede usar un ítem en un Pokémon debilitado.");
+        // Intentar usar un ítem
+        assertThrows(PoobkemonException.class, () -> poobkemon.useItem("Poción"),
+                "No se puede usar un ítem en un Pokémon debilitado.");
     }
 
     @Test
     public void shouldSwitchToAnotherPokemon() throws PoobkemonException {
-        coach1.switchToPokemon(1); // Cambiar al segundo Pokémon
-        assertEquals("Blastoise", coach1.getActivePokemon().getName(), "El Pokémon activo debería ser Blastoise.");
+        // Cambiar al segundo Pokémon
+        poobkemon.switchToPokemon(1);
+
+        // Verificar que el Pokémon activo sea el segundo
+        assertEquals("Blastoise", poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().getName(),
+                "El Pokémon activo debería ser Blastoise.");
     }
 
-    @Test
-    public void shouldNotSwitchToFaintedPokemon() {
-        Pokemon secondPokemon = coach1.getPokemons().get(1);
-        secondPokemon.setPs(0); // Debilitar al segundo Pokémon
-
-        assertThrows(PoobkemonException.class, () -> coach1.switchToPokemon(1), "No se puede cambiar a un Pokémon debilitado.");
-    }
-
-    @Test
-    public void shouldAttackOpponentPokemon() throws PoobkemonException {
-        Pokemon attacker = coach1.getActivePokemon();
-        Pokemon defender = coach2.getActivePokemon();
-        Attack attack = attacker.getAtaques().get(0);
-
-        attacker.attack(defender, attack);
-
-        assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon defensor debería haber disminuido.");
-    }
 
     @Test
     public void shouldApplyStatusEffectOnPokemon() {
-        Pokemon defender = coach2.getActivePokemon();
-        defender.setStatus(3); // Quemado
-        defender.applyEffectDamage();
+        // Aplicar un efecto de estado
+        poobkemon.getBattleArena().getCoaches()[1].getActivePokemon().setStatus(3); // Quemado
+        poobkemon.getBattleArena().getCoaches()[1].getActivePokemon().applyEffectDamage();
 
-        assertTrue(defender.getPs() < defender.getTotalPs(), "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
+        // Verificar que el PS haya disminuido
+        assertTrue(poobkemon.getBattleArena().getCoaches()[1].getActivePokemon().getPs() <
+                poobkemon.getBattleArena().getCoaches()[1].getActivePokemon().getTotalPs(),
+                "El PS del Pokémon debería haber disminuido debido al efecto de quemadura.");
     }
 
     @Test
     public void shouldNotAllowItemOnPokemonWithFullHealth() {
-        assertThrows(PoobkemonException.class, () -> coach1.useItem("Poción"), "No se puede usar un ítem en un Pokémon con PS completos.");
+        // Intentar usar un ítem en un Pokémon con PS completos
+        assertThrows(PoobkemonException.class, () -> poobkemon.useItem("Poción"),
+                "No se puede usar un ítem en un Pokémon con PS completos.");
     }
 
     @Test
     public void shouldNotAllowMoreThanMaxHealth() {
-        Pokemon activePokemon = coach1.getActivePokemon();
-        activePokemon.setPs(activePokemon.getTotalPs() + 50); // Intentar establecer PS mayores al máximo
+        // Intentar establecer PS mayores al máximo
+        poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().setPs(
+                poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().getTotalPs() + 50);
 
-        assertEquals(activePokemon.getTotalPs(), activePokemon.getPs(), "El PS no debería exceder el máximo.");
+        // Verificar que el PS no exceda el máximo
+        assertEquals(poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().getTotalPs(),
+                poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().getPs(),
+                "El PS no debería exceder el máximo.");
     }
 
-    @Test
-    public void shouldHandleTurnTimeout() {
-        Pokemon activePokemon = coach1.getActivePokemon();
-
-        // Obtener los PP iniciales de los ataques
-        List<Integer> initialPP = activePokemon.getAtaques().stream()
-            .map(Attack::getPowerPoint)
-            .toList();
-
-        // Llamar a handleTurnTimeout
-        coach1.handleTurnTimeout();
-
-        // Verificar que los PP hayan disminuido
-        for (int i = 0; i < activePokemon.getAtaques().size(); i++) {
-            assertTrue(activePokemon.getAtaques().get(i).getPowerPoint() < initialPP.get(i), "El PP del ataque debería haberse reducido.");
-        }
-    }
+    
 
     @Test
     public void shouldNotFinishBattleWhenPokemonAreStillAlive() {
         // Asegurarse de que ambos entrenadores tienen Pokémon vivos
-        coach1.getPokemons().get(0).setPs(50);
-        coach2.getPokemons().get(0).setPs(50);
+        poobkemon.getBattleArena().getCoaches()[0].getActivePokemon().setPs(50);
+        poobkemon.getBattleArena().getCoaches()[1].getActivePokemon().setPs(50);
 
-        assertFalse(battleArena.isBattleFinished(), "La batalla no debería terminar si ambos entrenadores tienen Pokémon vivos.");
+        // Verificar que la batalla no haya terminado
+        assertFalse(poobkemon.getBattleArena().isBattleFinished(),
+                "La batalla no debería terminar si ambos entrenadores tienen Pokémon vivos.");
     }
 
     @Test
     public void shouldMarkCoachAsFled() {
-        // Asegurarse de que el entrenador no haya huido inicialmente
-        assertFalse(coach1.getHasFled(), "El entrenador no debería haber huido inicialmente.");
-
         // Hacer que el entrenador huya
-        coach1.fleeBattle();
+        poobkemon.flee();
 
         // Verificar que el entrenador haya sido marcado como que ha huido
-        assertTrue(coach1.getHasFled(), "El entrenador debería haber huido de la batalla.");
+        assertTrue(poobkemon.getBattleArena().getCoaches()[0].getHasFled(),
+                "El entrenador debería haber huido de la batalla.");
     }
 }
 

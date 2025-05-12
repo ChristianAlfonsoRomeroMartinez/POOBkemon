@@ -32,7 +32,10 @@ public class Item {
         return applyTo;
     }
 
-    public void applyItemEffect(Pokemon pokemon) {
+    public void applyItemEffect(Pokemon pokemon) throws PoobkemonException {
+        if (pokemon.getPs() == 0 && this.name != "Revive") {
+            throw new PoobkemonException(PoobkemonException.CANT_USE_ITEM_ON_POKEMON_FAINTED);
+        }
         System.out.println("Aplicando " + name + " a " + pokemon.getName());
         applyTo.apply(pokemon, effectValue);
     }

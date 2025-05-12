@@ -96,8 +96,13 @@ public class Poobkemon {
     }
 
     public void switchToPokemon(int index) throws PoobkemonException {
+        System.out.println(1);
         // Delegar la lógica del cambio de Pokémon a la arena de batalla
         battleArenaNormal.switchToPokemon(index);
+    }
+
+    public BattleArena getBattleArena() {
+        return battleArenaNormal;
     }
 
 }

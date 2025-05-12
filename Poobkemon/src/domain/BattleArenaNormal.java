@@ -22,4 +22,6 @@ public class BattleArenaNormal extends BattleArena {
         }
     }
 
+
+    
 }

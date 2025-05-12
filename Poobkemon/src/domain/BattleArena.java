@@ -14,9 +14,12 @@ public abstract class BattleArena {
     private Random rand = new Random();
     private long timeRemaining = MAX_TIME_SECONDS * 1000L; // Tiempo restante en milisegundos
     private long pauseStartTime; // Momento en que se pausó el juego
+    protected boolean battleFinished;
+
 
     public BattleArena() {
         this.isPaused = false;
+        this.battleFinished = false;
     }
 
     /**
@@ -44,7 +47,7 @@ public abstract class BattleArena {
      */
     public boolean isBattleFinished() {
     	System.out.println(coaches[0].areAllPokemonFainted() || coaches[1].areAllPokemonFainted());
-        return coaches[0].areAllPokemonFainted() || coaches[1].areAllPokemonFainted();
+        return this.battleFinished||coaches[0].areAllPokemonFainted() || coaches[1].areAllPokemonFainted();
     }
 
     /**
@@ -184,10 +187,6 @@ public abstract class BattleArena {
         }
     }
 
-    public void flee() {
-        getCurrentCoach().fleeBattle(); // Marca al entrenador actual como que ha huido
-        endBattle(); // Finaliza la batalla
-    }
 
     public void useItem(String itemName) throws PoobkemonException {
         // Obtener el entrenador actual
@@ -201,9 +200,9 @@ public abstract class BattleArena {
     }
 
     public void switchToPokemon(int index) throws PoobkemonException {
+        System.out.println(2);
         // Obtener el entrenador actual
         Coach currentCoach = getCurrentCoach();
-
         // Cambiar al Pokémon activo
         currentCoach.switchPokemon(index);
     }
@@ -231,4 +230,15 @@ public abstract class BattleArena {
 
         return pokemonList;
     }
+
+    public void flee() {
+        getCurrentCoach().fleeBattle(); // Marca al entrenador actual como que ha huido
+        setbattleFinished(true); // Marca la batalla como terminada
+        endBattle(); // Finaliza la batalla
+    }
+
+    public void setbattleFinished(boolean battleFinished) {
+        this.battleFinished = battleFinished;
+    }
+
 }
