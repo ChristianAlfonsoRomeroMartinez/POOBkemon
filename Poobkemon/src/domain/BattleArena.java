@@ -24,19 +24,23 @@ public abstract class BattleArena {
      */
     public void setupCoaches(String coachName1, String coachName2, ArrayList<String> pokemons1
     , ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
-    Attack[][] pokemAttacks1,Attack[][] pokemAttacks2 ) throws PoobkemonException {
+    String[][] pokemAttacks1,String[][] pokemAttacks2 ) throws PoobkemonException {
         boolean firstStarts = rand.nextBoolean();
         if (firstStarts) {
             coaches[0] = new HumanCoach(coachName1, pokemons1, items1);
+
             coaches[0].setPokemonAttacks(pokemAttacks1);
 
             coaches[1] = new HumanCoach(coachName2, pokemons2, items2);
+
             coaches[1].setPokemonAttacks(pokemAttacks2);
         } else {
             coaches[0] = new HumanCoach(coachName2, pokemons2, items2);
+
             coaches[0].setPokemonAttacks(pokemAttacks2);
 
             coaches[1] = new HumanCoach(coachName1, pokemons1, items1);
+            
             coaches[1].setPokemonAttacks(pokemAttacks1);
 
         }

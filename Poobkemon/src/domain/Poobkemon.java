@@ -54,7 +54,7 @@ public class Poobkemon {
      */
     public void startBattleNormal(String coachName1, String coachName2, ArrayList<String> pokemons1,
                             ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
-                            Attack[][] pokemAttacks1, Attack[][] pokemAttacks2) throws PoobkemonException {
+                            String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
         battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
         battleArenaNormal.setupCoaches(coachName1, coachName2, pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
     }
