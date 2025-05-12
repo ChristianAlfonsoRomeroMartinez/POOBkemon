@@ -619,8 +619,23 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         // 7. Botones (usarán tu estilo createMenuButton)
         JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true,220,55);
         humanVsHumanBtn.addActionListener(e -> {
-            buttonSound.play();
-            showPokemonSelectionScreen();
+            if ("SURVIVAL".equals(gameMode)) {
+                // Generar Pokémon y movimientos aleatorios para ambos jugadores
+                List<String> player1Pokemon = Poobkemon.getRandomPokemon();
+                List<String> player2Pokemon = Poobkemon.getRandomPokemon();
+    
+                Map<String, List<String>> player1Moves = Poobkemon.getRandomMovesForPokemon(player1Pokemon);
+                Map<String, List<String>> player2Moves = Poobkemon.getRandomMovesForPokemon(player2Pokemon);
+    
+                // Combinar los movimientos en el mapa global
+                player1Moves.forEach((pokemon, moves) -> selectedMoves.put("Player 1_" + pokemon, moves));
+                player2Moves.forEach((pokemon, moves) -> selectedMoves.put("Player 2_" + pokemon, moves));
+    
+                // Iniciar la batalla con los parámetros generados
+                showBattleScreen(player1Pokemon, player2Pokemon);
+            } else {
+                showPokemonSelectionScreen(); // Flujo normal para otros modos
+            }
         });
     
         JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true, 220, 55);
