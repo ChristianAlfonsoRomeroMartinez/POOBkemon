@@ -76,8 +76,11 @@ public class MachineGameTypeSelectionScreen extends JPanel {
         // Imprimir en consola la elección del usuario
         System.out.println("Modo de juego seleccionado para la máquina: " + gameType);
 
-        // Aquí puedes implementar la lógica para iniciar el juego con la estrategia seleccionada
-        JOptionPane.showMessageDialog(this, "Has seleccionado la estrategia: " + gameType, "Estrategia Seleccionada", JOptionPane.INFORMATION_MESSAGE);
+        // Navegar a la pantalla de selección de Pokémon
+        parentFrame.getContentPane().removeAll();
+        parentFrame.setContentPane(new SinglePlayerPokemonSelectionScreen(parentFrame, gameType));
+        parentFrame.revalidate();
+        parentFrame.repaint();
     }
 
     private void returnToPreviousScreen() {
