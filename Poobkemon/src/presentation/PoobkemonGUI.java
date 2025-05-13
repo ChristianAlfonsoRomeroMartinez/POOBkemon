@@ -513,11 +513,110 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         getContentPane().removeAll();
         setContentPane(fondo); // Vuelve a establecer el fondo animado
         
+        // Mostrar directamente la pantalla de tipo de juego
+        showGameTypeSelectionFirst();
+    }
+    
+    private void showGameTypeSelectionFirst() {
+        // 1. Establecer la imagen de fondo (la misma que en el menú principal)
+        fondo.setImagenFija(rutaImagen);
+        getContentPane().removeAll();
+        setContentPane(fondo);
+    
+        // 2. Crear el panel principal (transparente)
+        JPanel typeGamePanel = new JPanel(new BorderLayout());
+        typeGamePanel.setOpaque(false);
+        typeGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    
+        // 3. Título con estilo mejorado
+        JLabel titleLabel = new JLabel("SELECT GAME TYPE", SwingConstants.CENTER);
+        titleLabel.setForeground(Color.YELLOW);
+        titleLabel.setFont(new Font(font, Font.BOLD, 28));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 30, 0));
+    
+        // 4. Panel de contenido (transparente)
+        JPanel contentPanel = new JPanel(new BorderLayout(20, 0));
+        contentPanel.setOpaque(false);
+    
+        // 5. Paneles de imágenes
+        JPanel leftImagesPanel = createImagePanel("human.png", "human.png", "porygon.png");
+        leftImagesPanel.setOpaque(false);
+        leftImagesPanel.setPreferredSize(new Dimension(getWidth()/6, getHeight()));
+    
+        JPanel rightImagesPanel = createImagePanel("human.png", "porygon.png", "porygon.png");
+        rightImagesPanel.setOpaque(false);
+        rightImagesPanel.setPreferredSize(new Dimension(getWidth()/6, getHeight()));
+    
+        // 6. Panel de botones (transparente)
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 0, 20));
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+    
+        Font buttonFont = new Font("Arial", Font.BOLD, 18);
+    
+        // 7. Botones
+        JButton humanVsHumanBtn = createMenuButton("HUMAN vs HUMAN", buttonFont, true, 220, 55);
+        humanVsHumanBtn.addActionListener(e -> {
+            buttonSound.play();
+            // Al hacer clic en HUMAN vs HUMAN, mostrar la pantalla de selección de modo
+            showGameModeSelection();
+        });
+    
+        JButton humanVsMachineBtn = createMenuButton("HUMAN vs MACHINE", buttonFont, true, 220, 55);
+        humanVsMachineBtn.addActionListener(e -> {
+            buttonSound.play();
+            getContentPane().removeAll();
+            setContentPane(new MachineGameTypeSelectionScreen(this)); // Mantener la funcionalidad original
+            revalidate();
+            repaint();
+        });
+    
+        JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true, 220, 55);
+        machineVsMachineBtn.addActionListener(e -> {
+            System.out.println("Machine vs Machine selected");
+        });
+    
+        buttonPanel.add(humanVsHumanBtn);
+        buttonPanel.add(humanVsMachineBtn);
+        buttonPanel.add(machineVsMachineBtn);
+    
+        // 8. Ensamblar componentes
+        contentPanel.add(leftImagesPanel, BorderLayout.WEST);
+        contentPanel.add(rightImagesPanel, BorderLayout.EAST);
+        contentPanel.add(buttonPanel, BorderLayout.CENTER);
+    
+        // 9. Botón BACK (derecha inferior)
+        JButton backBtn = createMenuButton("BACK", buttonFont, true, 200, 55);
+        backBtn.addActionListener(e -> start()); // Volver al menú principal
+        
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(backBtn);
+    
+        // 10. Agregar todo al panel principal
+        typeGamePanel.add(titleLabel, BorderLayout.NORTH);
+        typeGamePanel.add(contentPanel, BorderLayout.CENTER);
+        typeGamePanel.add(bottomPanel, BorderLayout.SOUTH);
+    
+        // 11. Agregar al contenedor principal
+        fondo.add(typeGamePanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+    
+    private void showGameModeSelection() {
+        // Restaurar el fondo animado original
+        fondo.setImagenFija(rutaImagen);
+        
+        // Limpiar el contenido actual
+        getContentPane().removeAll();
+        setContentPane(fondo); // Vuelve a establecer el fondo animado
+        
         // Crear el panel de selección de modo (con fondo transparente)
         JPanel modeSelectionPanel = new JPanel(new BorderLayout());
         modeSelectionPanel.setOpaque(false); // ¡Importante! Para que se vea el fondo
         modeSelectionPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
-
+    
         // Título (con sombra para mejor legibilidad)
         JLabel titleLabel = new JLabel("SELECT GAME MODE", SwingConstants.CENTER);
         titleLabel.setForeground(Color.YELLOW);
@@ -542,38 +641,56 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
                 g2.dispose();
             }
         });
-
+    
         // Panel de botones (transparente)
         JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 20, 20));
         buttonPanel.setOpaque(false);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 150, 20, 150));
-
+    
         Font buttonFont = new Font(font, Font.BOLD, 20);
-
+    
         // Botón para modo Normal
-        JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true,300,55);
-        normalModeBtn.addActionListener(e -> showGameTypeSelection("NORMAL"));
-
+        JButton normalModeBtn = createMenuButton("NORMAL MODE", buttonFont, true, 300, 55);
+        normalModeBtn.addActionListener(e -> showPokemonSelectionScreen()); // Ir a selección de Pokémon
+    
         // Botón para modo Survival
-        JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true,300,55);
-        survivalModeBtn.addActionListener(e -> showGameTypeSelection("SURVIVAL"));
-
+        JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true, 300, 55);
+        survivalModeBtn.addActionListener(e -> {
+            try {
+                // Iniciar directamente una batalla en modo supervivencia
+                Poobkemon poobkemon = new Poobkemon();
+                poobkemon.startBattleSurvival("Player 1", "Player 2");
+                
+                // Obtener Pokémon aleatorios
+                List<String> allPokemon = Poobkemon.getAvailablePokemon();
+                Collections.shuffle(allPokemon);
+                List<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
+                List<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
+                
+                // Mostrar la pantalla de batalla
+                showBattleScreen(player1Pokemon, player2Pokemon);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + ex.getMessage(), 
+                                             "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    
         buttonPanel.add(normalModeBtn);
         buttonPanel.add(survivalModeBtn);
-
+    
         // Botón Back (alineado a la derecha)
-        JButton backBtn = createMenuButton("BACK", buttonFont, true, 200,55);
-        backBtn.addActionListener(e -> start()); // Volver al menú principal
+        JButton backBtn = createMenuButton("BACK", buttonFont, true, 200, 55);
+        backBtn.addActionListener(e -> showGameTypeSelectionFirst()); // Volver a la pantalla de tipo de juego
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
         bottomPanel.add(backBtn);
-
+    
         // Ensamblar componentes
         modeSelectionPanel.add(titleLabel, BorderLayout.NORTH);
         modeSelectionPanel.add(buttonPanel, BorderLayout.CENTER);
         modeSelectionPanel.add(bottomPanel, BorderLayout.SOUTH);
-
+    
         // Agregar al fondo animado
         fondo.add(modeSelectionPanel, BorderLayout.CENTER);
         revalidate();
