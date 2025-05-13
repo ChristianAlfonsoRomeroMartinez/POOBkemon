@@ -881,7 +881,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
 
     // Botón BACK
     JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
-    backButton.addActionListener(e -> showGameTypeSelection("NORMAL"));
+    backButton.addActionListener(e -> startNewGame());
 
     // Panel inferior con los botones
     JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // Espaciado entre botones
