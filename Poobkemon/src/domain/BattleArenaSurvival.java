@@ -38,12 +38,7 @@ public class BattleArenaSurvival extends BattleArena {
         }
     }
 
-    /**
-     * Configura una batalla en modo supervivencia con Pokémon aleatorios.
-     * @param coachName1 Nombre del primer entrenador
-     * @param coachName2 Nombre del segundo entrenador
-     * @throws PoobkemonException Si no hay suficientes Pokémon disponibles
-     */
+    
     public void setupSurvivalBattle(String coachName1, String coachName2) throws PoobkemonException {
         // Obtener todos los Pokémon disponibles
         List<String> allPokemon = Poobkemon.getAvailablePokemon();
@@ -60,8 +55,39 @@ public class BattleArenaSurvival extends BattleArena {
         ArrayList<String> pokemons1 = new ArrayList<>(allPokemon.subList(0, 6));
         ArrayList<String> pokemons2 = new ArrayList<>(allPokemon.subList(6, 12));
         
-        // Configurar los entrenadores con los Pokémon aleatorios
+        // Asignar 4 movimientos aleatorios a cada Pokémon
+        String[][] pokemAttacks1 = assignRandomMoves(pokemons1);
+        String[][] pokemAttacks2 = assignRandomMoves(pokemons2);
+        
+        // Configurar los entrenadores con los Pokémon y movimientos asignados
         setupCoaches(coachName1, coachName2, pokemons1, pokemons2, 
-                    new ArrayList<>(), new ArrayList<>(), new String[6][4], new String[6][4]);
+                    new ArrayList<>(), new ArrayList<>(), pokemAttacks1, pokemAttacks2);
+    }
+
+    // Método auxiliar para asignar 4 movimientos aleatorios a cada Pokémon
+    private String[][] assignRandomMoves(List<String> pokemons) throws PoobkemonException {
+        // Combinar todos los tipos de ataques disponibles
+        List<String> allMoves = new ArrayList<>();
+        allMoves.addAll(Poobkemon.getPhysicalAttacks());
+        allMoves.addAll(Poobkemon.getSpecialAttacks());
+        allMoves.addAll(Poobkemon.getStatusAttacks());
+
+        // Verificar que hay suficientes movimientos disponibles
+        if (allMoves.size() < 4) {
+            throw new PoobkemonException("No hay suficientes movimientos disponibles para asignar a los Pokémon.");
+        }
+
+        String[][] pokemAttacks = new String[pokemons.size()][4];
+
+        for (int i = 0; i < pokemons.size(); i++) {
+            Collections.shuffle(allMoves); // Mezclar los movimientos
+            for (int j = 0; j < 4; j++) {
+                pokemAttacks[i][j] = allMoves.get(j); // Asignar los primeros 4 movimientos
+            }
+            // Mostrar los movimientos asignados en consola
+            System.out.println("Pokémon: " + pokemons.get(i) + " - Movimientos: " + 
+                String.join(", ", pokemAttacks[i]));
+        }
+        return pokemAttacks;
     }
 }
