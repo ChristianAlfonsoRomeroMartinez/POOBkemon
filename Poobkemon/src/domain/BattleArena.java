@@ -241,4 +241,14 @@ public abstract class BattleArena {
         this.battleFinished = battleFinished;
     }
 
+    public void statusEffect(){
+        coaches[1].getActivePokemon().getStatus();
+        if (coaches[0].getActivePokemon().getStatus() != 0 && coaches[0].getActivePokemon().getTurnStatus() > 0) {
+            coaches[0].getActivePokemon().setTurnStatus(coaches[0].getActivePokemon().getTurnStatus() - 1);
+            
+            coaches[0].getActivePokemon().setPs(coaches[0].getActivePokemon().getPs() - 10);
+        }
+            
+    }
 }
+

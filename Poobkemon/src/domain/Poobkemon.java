@@ -105,6 +105,11 @@ public class Poobkemon {
         return battleArenaNormal;
     }
 
+    public void statusEffect(){
+        // Delegar la lógica del efecto de estado a la arena de batalla
+        battleArenaNormal.statusEffect();
+    }
+
 }
 
 
