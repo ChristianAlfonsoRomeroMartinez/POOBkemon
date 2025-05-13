@@ -70,20 +70,14 @@ public class Poobkemon {
     }
 
     /**
-     * Inicia una batalla en modo supervivencia con Pokémon aleatorios.
-     * @param coachName1 Nombre del primer entrenador
-     * @param coachName2 Nombre del segundo entrenador
-     * @throws PoobkemonException Si ocurre un error al configurar la batalla
+     * Inicia una nueva batalla entre dos entrenadores.
+     * @throws PoobkemonException Si ocurre un error al configurar la batalla.
      */
-    public void startBattleSurvival(String coachName1, String coachName2) throws PoobkemonException {
-        // Crear la arena de batalla para modo supervivencia
-        BattleArenaSurvival battleArenaSurvival = new BattleArenaSurvival();
-        
-        // Configurar la batalla con Pokémon aleatorios
-        battleArenaSurvival.setupSurvivalBattle(coachName1, coachName2);
-        
-        // Guardar la arena como la actual
-        this.battleArenaNormal = battleArenaSurvival;
+    public void startBattleSurvival( ArrayList<String> pokemons1,
+                            ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
+                            String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
+        battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
+        battleArenaNormal.setupCoaches("Player 1", "Player 2", pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
     }
 
     public void flee(){
