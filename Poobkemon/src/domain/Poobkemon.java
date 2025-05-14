@@ -2,12 +2,15 @@ package domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Poobkemon {
     private BattleArena battleArenaNormal;
     private ArrayList<BattleArena> battleArenas;
+    private Map<String, String[][]> survivalMoves = new HashMap<>();
 
     //Metodo que envia informacion de los pokemones disponibles a la GUI
     public static List<String> getAvailablePokemon() {
@@ -86,6 +89,15 @@ public class Poobkemon {
                             String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
         battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
         battleArenaNormal.setupCoaches("Player 1", "Player 2", pokemons1, pokemons2, new ArrayList<>(),  new ArrayList<>() , pokemAttacks1, pokemAttacks2);
+
+        // Guardar los movimientos asignados para cada jugador
+        survivalMoves.put("Player 1", pokemAttacks1);
+        survivalMoves.put("Player 2", pokemAttacks2);
+    }
+
+    // Método para obtener los movimientos asignados en modo Survival
+    public Map<String, String[][]> getSurvivalMoves() {
+        return survivalMoves;
     }
 
     public void flee(){
