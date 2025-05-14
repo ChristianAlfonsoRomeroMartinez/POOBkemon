@@ -50,6 +50,14 @@ public class Poobkemon {
             .collect(Collectors.toList());
     }
 
+    public static ArrayList<String> getAvailableAttacks() {
+        ArrayList<String> allAttacks = new ArrayList<>();
+        allAttacks.addAll(getPhysicalAttacks());
+        allAttacks.addAll(getSpecialAttacks());
+        allAttacks.addAll(getStatusAttacks());
+        return allAttacks;
+    } 
+
     public void attack(String moveName, String itself) throws PoobkemonException {
         // Delegar la lógica del ataque a la arena de batalla
         battleArenaNormal.attack(moveName, itself);
@@ -74,10 +82,10 @@ public class Poobkemon {
      * @throws PoobkemonException Si ocurre un error al configurar la batalla.
      */
     public void startBattleSurvival( ArrayList<String> pokemons1,
-                            ArrayList<String> pokemons2, ArrayList<String> items1, ArrayList<String> items2,
+                            ArrayList<String> pokemons2,
                             String[][] pokemAttacks1, String[][] pokemAttacks2) throws PoobkemonException {
         battleArenaNormal = new BattleArenaNormal(); // Crear la arena de batalla
-        battleArenaNormal.setupCoaches("Player 1", "Player 2", pokemons1, pokemons2, items1, items2, pokemAttacks1, pokemAttacks2);
+        battleArenaNormal.setupCoaches("Player 1", "Player 2", pokemons1, pokemons2, null, null, pokemAttacks1, pokemAttacks2);
     }
 
     public void flee(){

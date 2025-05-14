@@ -657,22 +657,53 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         JButton survivalModeBtn = createMenuButton("SURVIVAL MODE", buttonFont, true, 300, 55);
         survivalModeBtn.addActionListener(e -> {
             try {
-                // Iniciar directamente una batalla en modo supervivencia
-                Poobkemon poobkemon = new Poobkemon();
-                poobkemon.startBattleSurvival("Player 1", "Player 2");
-                
-                // Obtener Pokémon aleatorios
-                List<String> allPokemon = Poobkemon.getAvailablePokemon();
-                Collections.shuffle(allPokemon);
-                List<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
-                List<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
-                
-                // Mostrar la pantalla de batalla
-                showBattleScreen(player1Pokemon, player2Pokemon);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + ex.getMessage(), 
-                                             "Error", JOptionPane.ERROR_MESSAGE);
-            }
+                    Poobkemon poobkemon = new Poobkemon();
+                    // Iniciar una batalla en modo supervivencia
+                    
+                    
+                    // Obtener la lista de todos los Pokémon disponibles
+                    List<String> allPokemon = Poobkemon.getAvailablePokemon();
+                    
+                    // Aleatorizar la lista
+                    Collections.shuffle(allPokemon);
+                    
+                    // Seleccionar 6 Pokémon para cada jugador
+                    ArrayList<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
+                    ArrayList<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
+
+                    ArrayList<String> allAttacks = Poobkemon.getAvailableAttacks();
+                    Collections.shuffle(allAttacks);
+                    String[][] player1Attacks = new String[6][4];
+                    String[][] player2Attacks = new String[6][4];
+
+                    // Verificar que haya suficientes ataques disponibles
+                    if (allAttacks.size() < 48) {
+                        throw new IllegalArgumentException("No hay suficientes ataques disponibles para los jugadores.");
+                    }
+
+                    // Llenar los arreglos bidimensionales con ataques aleatorios
+                    for (int i = 0; i < 6; i++) {
+                        // Verificar índices para player1Attacks
+                        if ((i * 4) + 4 > allAttacks.size()) {
+                            throw new IndexOutOfBoundsException("Índices fuera de los límites para player1Attacks.");
+                        }
+                        player1Attacks[i] = allAttacks.subList(i * 4, (i + 1) * 4).toArray(new String[0]);
+
+                        // Verificar índices para player2Attacks
+                        if (((i + 6) * 4) + 4 > allAttacks.size()) {
+                            throw new IndexOutOfBoundsException("Índices fuera de los límites para player2Attacks.");
+                        }
+                        player2Attacks[i] = allAttacks.subList((i + 6) * 4, (i + 7) * 4).toArray(new String[0]);
+                    }
+
+                    poobkemon.startBattleSurvival(player1Pokemon, player2Pokemon, player1Attacks, player2Attacks);
+                    
+                    // Mostrar la pantalla de batalla
+                    showBattleScreen(player1Pokemon, player2Pokemon);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + ex.getMessage(), 
+                                                 "Error", JOptionPane.ERROR_MESSAGE);
+                }
         });
     
         buttonPanel.add(normalModeBtn);
@@ -742,7 +773,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
                 try {
                     Poobkemon poobkemon = new Poobkemon();
                     // Iniciar una batalla en modo supervivencia
-                    poobkemon.startBattleSurvival("Player 1", "Player 2");
+                    
                     
                     // Obtener la lista de todos los Pokémon disponibles
                     List<String> allPokemon = Poobkemon.getAvailablePokemon();
@@ -751,8 +782,35 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
                     Collections.shuffle(allPokemon);
                     
                     // Seleccionar 6 Pokémon para cada jugador
-                    List<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
-                    List<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
+                    ArrayList<String> player1Pokemon = new ArrayList<>(allPokemon.subList(0, 6));
+                    ArrayList<String> player2Pokemon = new ArrayList<>(allPokemon.subList(6, 12));
+
+                    ArrayList<String> allAttacks = Poobkemon.getAvailableAttacks();
+                    Collections.shuffle(allAttacks);
+                    String[][] player1Attacks = new String[6][4];
+                    String[][] player2Attacks = new String[6][4];
+
+                    // Verificar que haya suficientes ataques disponibles
+                    if (allAttacks.size() < 48) {
+                        throw new IllegalArgumentException("No hay suficientes ataques disponibles para los jugadores.");
+                    }
+
+                    // Llenar los arreglos bidimensionales con ataques aleatorios
+                    for (int i = 0; i < 6; i++) {
+                        // Verificar índices para player1Attacks
+                        if ((i * 4) + 4 > allAttacks.size()) {
+                            throw new IndexOutOfBoundsException("Índices fuera de los límites para player1Attacks.");
+                        }
+                        player1Attacks[i] = allAttacks.subList(i * 4, (i + 1) * 4).toArray(new String[0]);
+
+                        // Verificar índices para player2Attacks
+                        if (((i + 6) * 4) + 4 > allAttacks.size()) {
+                            throw new IndexOutOfBoundsException("Índices fuera de los límites para player2Attacks.");
+                        }
+                        player2Attacks[i] = allAttacks.subList((i + 6) * 4, (i + 7) * 4).toArray(new String[0]);
+                    }
+
+                    poobkemon.startBattleSurvival(player1Pokemon, player2Pokemon, player1Attacks, player2Attacks);
                     
                     // Mostrar la pantalla de batalla
                     showBattleScreen(player1Pokemon, player2Pokemon);
