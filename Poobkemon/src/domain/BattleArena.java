@@ -79,19 +79,6 @@ public abstract class BattleArena {
     }
 
     /**
-     * Anuncia el ganador de la batalla.
-     */
-    protected void announceWinner() {
-        if (coaches[0].areAllPokemonFainted()) {
-            //System.out.println("Ganador: " + coaches[1].getName());
-        } else if (coaches[1].areAllPokemonFainted()) {
-            //System.out.println("Ganador: " + coaches[0].getName());
-        } else {
-            System.out.println("La batalla terminó en empate.");
-        }
-    }
-
-    /**
      * Pausa la batalla.
      */
     public void pauseBattle() {

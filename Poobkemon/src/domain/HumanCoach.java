@@ -46,13 +46,6 @@ public class HumanCoach extends Coach {
         this.name = name;
     }
 
-    @Override
-    public void doAction(int actionIndex) throws PoobkemonException {
-        if (!actionMap.containsKey(actionIndex)) {
-            //throw new PoobkemonException(PoobkemonException.INVALID_ACTION);
-        }
-        actionMap.get(actionIndex).accept(this);
-    }
 
     @Override
     public void handleTurnTimeout() {

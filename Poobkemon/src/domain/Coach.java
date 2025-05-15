@@ -20,8 +20,8 @@ public abstract class Coach {
     }
 
 
-    public void agregarItem(String nombrePokemon) {
-        Item item = ItemFactory.createItem(nombrePokemon);
+    public void agregarItem(String nombreItem) {
+        Item item = ItemFactory.createItem(nombreItem);
         items.add(item);
     }
 
@@ -113,13 +113,6 @@ public abstract class Coach {
     public void addScore(int points) {
         this.score += points;
     }
-
-    /**
-     * Ejecuta la acción del turno del entrenador.
-     * Este método debe ser implementado por las subclases (HumanCoach o MachineCoach).
-     * @param actionIndex el índice de la acción seleccionada (por ejemplo: 0=ataque, 1=cambiar, etc.)
-     */
-    public abstract void doAction(int actionIndex) throws PoobkemonException;
 
     /**
      * Maneja el tiempo agotado del turno.
