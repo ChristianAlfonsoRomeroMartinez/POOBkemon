@@ -1,5 +1,6 @@
 package domain;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -8,17 +9,17 @@ import java.util.Random;
 public class AttackingMachine extends Machine {
     private Random random = new Random();
     
-    public AttackingTrainer(String name) {
-        super(name, "Attacking");
+    public AttackingMachine(String name, ArrayList<Pokemon> pokemons, ArrayList<String> items) {
+        super(name, "Attacking", pokemons, items);
     }
 
     @Override
     public String selectMove() {
-        if (activePokemon == null || activePokemon.getAtaques().isEmpty()) {
+        if (getActivePokemon() == null || getActivePokemon().getAtaques().isEmpty()) {
             return null;
         }
         
-        List<Attack> availableAttacks = activePokemon.getAtaques();
+        List<Attack> availableAttacks = getActivePokemon().getAtaques();
         
         // Primero busca ataques de estado que mejoren ataques
         Optional<Attack> offensiveStatusMove = availableAttacks.stream()
@@ -63,8 +64,8 @@ public class AttackingMachine extends Machine {
         int bestIndex = 0;
         int bestAttack = 0;
         
-        for (int i = 0; i < pokemonTeam.size(); i++) {
-            Pokemon pokemon = pokemonTeam.get(i);
+        for (int i = 0; i < pokemons.size(); i++) {
+            Pokemon pokemon = pokemons.get(i);
             if (pokemon.getPs() <= 0) continue; // Ignora Pokémon debilitados
             
             int combinedAttack = pokemon.getPhysicalAttack() + pokemon.getSpecialAttack();

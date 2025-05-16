@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
-    private Trainer humanTrainer;
-    private Trainer machineTrainer;
+    private Coach humanTrainer;
+    private Coach machineTrainer;
     private boolean gameOver;
     private boolean playerTurn;
 
@@ -26,9 +26,11 @@ public class GameController {
      */
     public void initializeGame(String playerName, String machineType, 
                               List<String> playerPokemons, List<String> machinePokemons) {
-        // Crear entrenadores
-        humanTrainer = new humancoach(playerName);
-       // machineTrainer = TrainerFactory.createTrainer(machineType, "CPU");
+        // Crear entrenador humano
+        humanTrainer = new HumanCoach(playerName, new ArrayList<>(), new ArrayList<>());
+        
+        // Crear máquina con una lista vacía de pokémon y items (se poblarán después)
+        machineTrainer = MachineFactory.createMachine(machineType, "CPU " + machineType, new ArrayList<>(), new ArrayList<>());
         
         // Añadir Pokémon a cada entrenador
         setupPokemonTeams(playerPokemons, machinePokemons);
@@ -45,8 +47,7 @@ public class GameController {
         // Configurar el equipo del jugador humano
         for (String pokemonName : playerPokemonNames) {
             try {
-                Pokemon pokemon = PokemonFactory.POKEMON_REGISTRY.get(pokemonName).get();
-                humanTrainer.getPokemonTeam().add(pokemon);
+                ((HumanCoach)humanTrainer).agregarPokemon(pokemonName);
             } catch (Exception e) {
                 System.err.println("Error al agregar Pokémon al jugador: " + e.getMessage());
             }
@@ -55,10 +56,10 @@ public class GameController {
         // Configurar el equipo de la máquina
         for (String pokemonName : machinePokemonNames) {
             try {
-                Pokemon pokemon = PokemonFactory.POKEMON_REGISTRY.get(pokemonName).get();
+                Pokemon pokemon = PokemonFactory.createPokemon(pokemonName);
                 // Asignar movimientos según el tipo de máquina
-                assignMovesBasedOnStrategy(pokemon, machineTrainer.getType());
-                machineTrainer.getPokemonTeam().add(pokemon);
+                assignMovesBasedOnStrategy(pokemon, ((Machine)machineTrainer).getMachineType());
+                machineTrainer.getPokemons().add(pokemon);
             } catch (Exception e) {
                 System.err.println("Error al agregar Pokémon a la máquina: " + e.getMessage());
             }
@@ -71,7 +72,7 @@ public class GameController {
     private void assignMovesBasedOnStrategy(Pokemon pokemon, String strategyType) {
         List<Attack> availableAttacks = new ArrayList<>();
         
-        if (strategyType.equalsIgnoreCase("defensive")) {
+        if (strategyType.equalsIgnoreCase("Defensive")) {
             // Priorizar ataques defensivos y de estado
             availableAttacks.addAll(getDefensiveAttacks());
         } else {
@@ -82,28 +83,8 @@ public class GameController {
         // Asignar hasta 4 ataques al Pokémon
         int attackCount = Math.min(4, availableAttacks.size());
         for (int i = 0; i < attackCount; i++) {
-            pokemon.getAtaques().add(availableAttacks.get(i));
+            pokemon.addAttack(availableAttacks.get(i));
         }
-    }
-    
-    /**
-     * Obtiene una lista de ataques defensivos
-     */
-    private List<Attack> getDefensiveAttacks() {
-        List<Attack> defensiveAttacks = new ArrayList<>();
-        // Aquí se agregarían ataques defensivos desde AttackFactory
-        // Este método tendría que implementarse según los ataques disponibles
-        return defensiveAttacks;
-    }
-    
-    /**
-     * Obtiene una lista de ataques ofensivos
-     */
-    private List<Attack> getOffensiveAttacks() {
-        List<Attack> offensiveAttacks = new ArrayList<>();
-        // Aquí se agregarían ataques ofensivos desde AttackFactory
-        // Este método tendría que implementarse según los ataques disponibles
-        return offensiveAttacks;
     }
     
     /**
@@ -157,7 +138,7 @@ public class GameController {
      * Procesa el turno de la máquina automáticamente
      * @return Resultado de la acción como un mensaje
      */
-    private String processMachineTurn() {
+    public String processMachineTurn() {
         if (gameOver) {
             return "El juego ha terminado";
         }
@@ -165,14 +146,16 @@ public class GameController {
         String result = "";
         
         try {
+            Machine machine = (Machine)machineTrainer;
+            
             // Si el Pokémon activo está debilitado, seleccionar otro
             if (machineTrainer.getActivePokemon().getPs() <= 0) {
-                int bestPokemonIndex = ((DefensiveTrainer)machineTrainer).selectBestPokemon();
+                int bestPokemonIndex = machine.selectBestPokemon();
                 machineTrainer.switchPokemon(bestPokemonIndex);
                 result = "La máquina cambió a " + machineTrainer.getActivePokemon().getName();
             } else {
                 // Seleccionar movimiento según la estrategia
-                String moveName = machineTrainer.selectMove();
+                String moveName = machine.selectMove();
                 result = "La máquina usó " + moveName;
                 
                 // Aquí iría la lógica para aplicar el movimiento
@@ -192,10 +175,30 @@ public class GameController {
     }
     
     /**
+     * Obtiene una lista de ataques defensivos
+     */
+    private List<Attack> getDefensiveAttacks() {
+        List<Attack> defensiveAttacks = new ArrayList<>();
+        // Aquí se agregarían ataques defensivos desde AttackFactory
+        // Este método tendría que implementarse según los ataques disponibles
+        return defensiveAttacks;
+    }
+    
+    /**
+     * Obtiene una lista de ataques ofensivos
+     */
+    private List<Attack> getOffensiveAttacks() {
+        List<Attack> offensiveAttacks = new ArrayList<>();
+        // Aquí se agregarían ataques ofensivos desde AttackFactory
+        // Este método tendría que implementarse según los ataques disponibles
+        return offensiveAttacks;
+    }
+    
+    /**
      * Verifica si el juego ha terminado
      */
     private void checkGameOver() {
-        if (!humanTrainer.isAlive() || !machineTrainer.isAlive()) {
+        if (humanTrainer.areAllPokemonFainted() || machineTrainer.areAllPokemonFainted()) {
             gameOver = true;
         }
     }
@@ -209,20 +212,20 @@ public class GameController {
             return "El juego aún está en curso";
         }
         
-        if (humanTrainer.isAlive()) {
+        if (!humanTrainer.areAllPokemonFainted()) {
             return "¡Felicidades! Has ganado la batalla.";
         } else {
             return "Has perdido la batalla. Mejor suerte la próxima vez.";
         }
     }
     
-    // Getters para acceder al estado actual del juego
+    // Getters adaptados para trabajar con Coach en lugar de Trainer
     
-    public Trainer getHumanTrainer() {
+    public Coach getHumanTrainer() {
         return humanTrainer;
     }
     
-    public Trainer getMachineTrainer() {
+    public Coach getMachineTrainer() {
         return machineTrainer;
     }
     

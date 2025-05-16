@@ -1,24 +1,54 @@
 package domain;
 
-public class Machine {
-    private String name;
-    private String type;
+import java.util.ArrayList;
+import java.util.Random;
 
-    public Machine(String name, String type) {
-        this.name = name;
-        this.type = type;
+public abstract class Machine extends Coach {
+    protected String machineName;
+    protected String machineType;
+    protected Random random = new Random();
+
+    public Machine(String name, String type, ArrayList<Pokemon> pokemons, ArrayList<String> items) {
+        super(pokemons, items);
+        this.machineName = name;
+        this.machineType = type;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void handleTurnTimeout() {
+        // Implementación por defecto para las máquinas
+        Pokemon active = getActivePokemon();
+        if (active != null) {
+            active.reducePP();
+        }
     }
 
-    public String getType() {
-        return type;
+    /**
+     * Selecciona un movimiento basado en la estrategia de la máquina
+     * @return El nombre del movimiento seleccionado
+     */
+    public abstract String selectMove();
+    
+    /**
+     * Evalúa los pokémon del equipo y selecciona el mejor para la batalla
+     * según la estrategia de la máquina.
+     * @return El índice del pokémon seleccionado
+     */
+    public abstract int selectBestPokemon();
+
+    /**
+     * Obtiene el nombre de la máquina
+     * @return Nombre de la máquina
+     */
+    public String getMachineName() {
+        return machineName;
     }
 
-    public String selectMove() {
-        // Implementar lógica para seleccionar un movimiento
-        return null;
+    /**
+     * Obtiene el tipo de estrategia de la máquina
+     * @return Tipo de la máquina
+     */
+    public String getMachineType() {
+        return machineType;
     }
 }
