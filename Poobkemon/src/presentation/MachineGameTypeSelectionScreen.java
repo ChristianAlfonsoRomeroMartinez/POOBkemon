@@ -76,13 +76,9 @@ public class MachineGameTypeSelectionScreen extends JPanel {
         // Imprimir en consola la elección del usuario
         System.out.println("Modo de juego seleccionado para la máquina: " + gameType);
 
-        // Adaptar el tipo de juego al formato esperado por TrainerFactory
-        // En TrainerFactory se espera "defensive" o "attacking"
-        String machineType = gameType.equals("defensiveTrainer") ? "defensive" : "attacking";
-
         // Navegar a la pantalla de selección de Pokémon
         parentFrame.getContentPane().removeAll();
-        parentFrame.setContentPane(new SinglePlayerPokemonSelectionScreen(parentFrame, machineType));
+        parentFrame.setContentPane(new SinglePlayerPokemonSelectionScreen(parentFrame, gameType));
         parentFrame.revalidate();
         parentFrame.repaint();
     }

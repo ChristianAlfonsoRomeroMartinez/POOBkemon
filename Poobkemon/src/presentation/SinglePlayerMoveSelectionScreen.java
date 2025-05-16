@@ -89,8 +89,7 @@ public class SinglePlayerMoveSelectionScreen extends JPanel {
                 "¡Selección completada! Estás listo para jugar contra la máquina.",
                 "Listo para jugar", JOptionPane.INFORMATION_MESSAGE);
                 
-            // Iniciar la batalla contra la máquina
-            startBattleAgainstMachine();
+            // Aquí se puede implementar la lógica para iniciar la batalla
         });
 
         JButton backButton = createMenuButton("Atrás", e -> {
@@ -352,27 +351,6 @@ public class SinglePlayerMoveSelectionScreen extends JPanel {
         }
         
         System.out.println("\n=== CONFIGURACIÓN COMPLETA ===");
-    }
-
-    /**
-     * Inicia la batalla contra la máquina
-     */
-    private void startBattleAgainstMachine() {
-        // Preparar los movimientos para cada Pokémon en formato adecuado para GameController
-        Map<String, List<String>> pokemonMovesMap = new HashMap<>(selectedMoves);
-        
-        // Iniciar la batalla mostrando la pantalla de batalla
-        parentFrame.getContentPane().removeAll();
-        parentFrame.setContentPane(new HumanVsMachineScreen(
-            parentFrame, 
-            playerName, 
-            selectedPokemon, 
-            selectedItems,
-            pokemonMovesMap,
-            gameType
-        ));
-        parentFrame.revalidate();
-        parentFrame.repaint();
     }
 
     @Override
