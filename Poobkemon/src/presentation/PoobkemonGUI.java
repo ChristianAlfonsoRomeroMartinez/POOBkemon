@@ -197,7 +197,7 @@ public class PoobkemonGUI extends JFrame {
         JButton survivalModeBtn = new JButton("SURVIVAL MODE");
         survivalModeBtn.addActionListener(e -> startSurvivalMode());
     
-
+        
         fondo.add(panel, BorderLayout.SOUTH);
     }
     
