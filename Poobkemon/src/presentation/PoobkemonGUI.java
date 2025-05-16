@@ -43,6 +43,8 @@ public class PoobkemonGUI extends JFrame {
     private List<JButton> player2BattleMoveButtons = new ArrayList<>();
     private List<JButton> player1BattlePokeballButtons = new ArrayList<>();
     private List<JButton> player2BattlePokeballButtons = new ArrayList<>();
+    private String player1Name;
+    private String player2Name;
     private Poobkemon poobkemon;
 
     public PoobkemonGUI() {
@@ -816,6 +818,8 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
 
         String player1Name = player1NameField.getText().trim();
         String player2Name = player2NameField.getText().trim();
+        this.player1Name = player1Name;
+        this.player2Name = player2Name;
 
         List<String> selectedPlayer1 = getSelectedPokemon(player1Panel);
         List<String> selectedPlayer2 = getSelectedPokemon(player2Panel);
@@ -874,12 +878,12 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
 /**
  * Crea un panel de selección de Pokémon para un jugador.
  */
-private JPanel createPlayerSelectionPanel(String playerName) {
+private JPanel createPlayerSelectionPanel(String player1Name) {
     JPanel playerPanel = new JPanel(new BorderLayout());
     playerPanel.setOpaque(false);
 
     // Campo de texto para el nombre del jugador
-    JTextField nameField = new JTextField(playerName);
+    JTextField nameField = new JTextField(player1Name);
     nameField.setFont(new Font(font, Font.PLAIN, 17));
     nameField.setHorizontalAlignment(SwingConstants.CENTER);
     nameField.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
@@ -1102,7 +1106,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
             return;
         }
 
-        playerItems.put("Player 1", selectedItemsPlayer1);
+        playerItems.put("Player", selectedItemsPlayer1);
         playerItems.put("Player 2", selectedItemsPlayer2);
 
         showPokemonSelectionScreen();
@@ -1227,8 +1231,8 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         playersPanel.setOpaque(false);
         
         // Crear las secciones para cada jugador
-        JPanel player1Section = createPlayerSection("Jugador 1", player1Pokemon);
-        JPanel player2Section = createPlayerSection("Jugador 2", player2Pokemon);
+        JPanel player1Section = createPlayerSection(player1Name, player1Pokemon);
+        JPanel player2Section = createPlayerSection(player2Name, player2Pokemon);
         
         playersPanel.add(player1Section);
         playersPanel.add(player2Section);
@@ -1240,7 +1244,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JButton nextButton = createMenuButton("FINALIZAR", new Font(font, Font.BOLD, 18), true, 200, 50);
         nextButton.addActionListener(e -> {
             // Validar que todos los Pokémon tengan movimientos seleccionados
-            if (!areAllMovesSelected(player1Pokemon, "Jugador 1") || !areAllMovesSelected(player2Pokemon, "Jugador 2")) {
+            if (!areAllMovesSelected(player1Pokemon, player1Name) || !areAllMovesSelected(player2Pokemon, player2Name)) {
                 JOptionPane.showMessageDialog(this, "Todos los Pokémon deben tener 4 movimientos seleccionados.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -1275,13 +1279,13 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         return true; // Todos los Pokémon tienen movimientos seleccionados
     }
     
-    private JPanel createPlayerSection(String playerName, List<String> pokemons) {
+    private JPanel createPlayerSection(String player1Name, List<String> pokemons) {
         JPanel section = new JPanel(new BorderLayout());
         section.setOpaque(false);
         section.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Título del jugador
-        JLabel playerLabel = new JLabel(playerName, SwingConstants.CENTER);
+        JLabel playerLabel = new JLabel(player1Name, SwingConstants.CENTER);
         playerLabel.setFont(new Font(font, Font.BOLD, 20));
         playerLabel.setForeground(Color.YELLOW);
         playerLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
@@ -1331,7 +1335,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 
                 JButton btn = new JButton(icon);
                 btn.setPreferredSize(new Dimension(100, 100));
-                btn.addActionListener(e -> showMoveSelectionDialog(pokemon, playerName));
+                btn.addActionListener(e -> showMoveSelectionDialog(pokemon, player1Name));
 
                 // Ajustar imagen al tamaño del botón
                 btn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(
@@ -1531,6 +1535,38 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     private void showBattleScreen(List<String> player1Pokemon, List<String> player2Pokemon) {
     this.player1Pokemon = player1Pokemon;
     this.player2Pokemon = player2Pokemon;
+    poobkemon = new Poobkemon();
+
+    // --- AGREGADO: Enviar la selección a Poobkemon ---
+    try {
+
+        // Obtener los ítems seleccionados
+        ArrayList<String> items1 = new ArrayList<>(playerItems.getOrDefault(player1Name, new ArrayList<>()));
+        ArrayList<String> items2 = new ArrayList<>(playerItems.getOrDefault(player2Name, new ArrayList<>()));
+        // Obtener los movimientos seleccionados para cada Pokémon
+        String[][] pokemAttacks1 = new String[player1Pokemon.size()][4];
+        String[][] pokemAttacks2 = new String[player2Pokemon.size()][4];
+        for (int i = 0; i < player1Pokemon.size(); i++) {
+            List<String> moves = selectedMoves.getOrDefault(player1Name + "_" + player1Pokemon.get(i), new ArrayList<>());
+            pokemAttacks1[i] = moves.toArray(new String[0]);
+        }
+        for (int i = 0; i < player2Pokemon.size(); i++) {
+            List<String> moves = selectedMoves.getOrDefault(player2Name + "_" + player2Pokemon.get(i), new ArrayList<>());
+            pokemAttacks2[i] = moves.toArray(new String[0]);
+        }
+        // Llamar al método del dominio
+        poobkemon.startBattleNormal(
+            player1Name, player2Name,
+            new ArrayList<>(player1Pokemon),
+            new ArrayList<>(player2Pokemon),
+            items1, items2,
+            pokemAttacks1, pokemAttacks2
+        );
+    } catch (PoobkemonException e) {
+        JOptionPane.showMessageDialog(this, "Error al iniciar la batalla: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    // --- FIN AGREGADO ---
 
     getContentPane().removeAll();
     fondo.setImagenFija(rutaImagenBattle);
@@ -1611,30 +1647,29 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     return panel;
 }
     
-    private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, boolean isPlayer1) {
-        JPanel movesPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        movesPanel.setOpaque(false);
-    
-        // Solo limpiar y llenar las listas de botones en batalla
-        List<JButton> moveButtons = isPlayer1 ? player1BattleMoveButtons : player2BattleMoveButtons;
-        moveButtons.clear();
-    
-        String currentPlayer = isPlayer1 ? "Jugador 1" : "Jugador 2";
-        String currentPokemon = pokemonList.get(0); // Pokémon activo
-        List<String> moves = selectedMoves.get(currentPlayer + "_" + currentPokemon);
-    
-        for (int i = 0; i < 4; i++) {
-            String moveName = (moves != null && i < moves.size()) ? moves.get(i) : "N/A";
-            JButton moveButton = new JButton(moveName);
-            moveButton.setFont(new Font(font, Font.BOLD, 14));
-            moveButton.setEnabled(isPlayer1Turn == isPlayer1 && !"N/A".equals(moveName));
-            moveButton.addActionListener(e -> handleMoveAction(moveName, pokemonList, playerPanel, isPlayer1));
-            movesPanel.add(moveButton);
-            moveButtons.add(moveButton);
-        }
-    
-        return movesPanel;
+private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, boolean isPlayer1) {
+    JPanel movesPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+    movesPanel.setOpaque(false);
+
+    List<JButton> moveButtons = isPlayer1 ? player1BattleMoveButtons : player2BattleMoveButtons;
+    moveButtons.clear();
+
+    String currentPlayer = isPlayer1 ? player1Name : player2Name;
+    String currentPokemon = pokemonList.get(0);
+    List<String> moves = selectedMoves.get(currentPlayer + "_" + currentPokemon);
+
+    for (int i = 0; i < 4; i++) {
+        String moveName = (moves != null && i < moves.size()) ? moves.get(i) : "N/A";
+        JButton moveButton = new JButton(moveName);
+        moveButton.setFont(new Font(font, Font.BOLD, 14));
+        moveButton.setEnabled(isPlayer1Turn == isPlayer1 && !"N/A".equals(moveName));
+        moveButton.addActionListener(e -> handleMoveAction(moveName, pokemonList, playerPanel, isPlayer1));
+        movesPanel.add(moveButton);
+        moveButtons.add(moveButton);
     }
+
+    return movesPanel;
+}
     
     private void handleMoveAction(String moveName, List<String> pokemonList, JPanel playerPanel, boolean isPlayer1) {
     if ("N/A".equals(moveName)) {
@@ -1660,7 +1695,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         JOptionPane.showMessageDialog(this, opponentPokemonList.get(0) + " ha sido derrotado.", "Batalla", JOptionPane.INFORMATION_MESSAGE);
         opponentPokemonList.remove(0);
         if (opponentPokemonList.isEmpty()) {
-            JOptionPane.showMessageDialog(this, (isPlayer1 ? "Jugador 1" : "Jugador 2") + " ha ganado la batalla.", "Fin de la Batalla", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, (isPlayer1 ? player1Name : player2Name) + " ha ganado la batalla.", "Fin de la Batalla", JOptionPane.INFORMATION_MESSAGE);
             returnToGame();
             return;
         }
@@ -1700,6 +1735,8 @@ private List<String> getSelectedItems(JPanel playerPanel) {
 
     panel.revalidate();
     panel.repaint();
+    //poobkemon.setCurrentPokemon();
+    switchTurn();
 }
     
     private void handlePokemonSwitch(List<String> playerPokemon) {
@@ -1757,24 +1794,36 @@ private List<String> getSelectedItems(JPanel playerPanel) {
     }
     
     private JPanel createPokeballPanel(List<String> pokemonList, JPanel playerPanel, boolean isPlayer1) {
-        JPanel pokeballPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        pokeballPanel.setOpaque(false);
-    
-        List<JButton> pokeballButtons = isPlayer1 ? player1BattlePokeballButtons : player2BattlePokeballButtons;
-        pokeballButtons.clear();
-    
-        for (int i = 0; i < pokemonList.size(); i++) {
-            String pokemonName = pokemonList.get(i);
-            JButton pokeballButton = new JButton(new ImageIcon("Poobkemon/mult/pokeball.jpeg"));
-            pokeballButton.setPreferredSize(new Dimension(50, 50));
-            pokeballButton.setEnabled(isPlayer1Turn == isPlayer1);
-            pokeballButton.addActionListener(e -> updateBattlePokemonPanel(playerPanel, pokemonName, isPlayer1));
-            pokeballPanel.add(pokeballButton);
-            pokeballButtons.add(pokeballButton);
-        }
-    
-        return pokeballPanel;
+    JPanel pokeballPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+    pokeballPanel.setOpaque(false);
+
+    List<JButton> pokeballButtons = isPlayer1 ? player1BattlePokeballButtons : player2BattlePokeballButtons;
+    pokeballButtons.clear();
+
+    for (int i = 0; i < pokemonList.size(); i++) {
+        String pokemonName = pokemonList.get(i);
+        int index = i; // Necesario para usar en el listener
+        JButton pokeballButton = new JButton(new ImageIcon("Poobkemon/mult/pokeball.jpeg"));
+        pokeballButton.setPreferredSize(new Dimension(50, 50));
+        pokeballButton.setEnabled(isPlayer1Turn == isPlayer1);
+        pokeballButton.addActionListener(e -> {
+            try {
+                // Enviar el índice al dominio para cambiar el Pokémon activo
+                poobkemon.setCurrentPokemon(index);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al cambiar de Pokémon: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            // Actualizar el panel del Pokémon activo
+            updateBattlePokemonPanel(playerPanel, pokemonName, isPlayer1);
+            // Cambiar el turno
+            switchTurn();
+        });
+        pokeballPanel.add(pokeballButton);
+        pokeballButtons.add(pokeballButton);
     }
+
+    return pokeballPanel;
+}
     
     private JButton createCrystalButton(String text) {
     JButton button = new JButton(text) {
@@ -1896,15 +1945,15 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         Map<String, String[][]> survivalMoves = poobkemon.getSurvivalMoves();
 
         // Integrar movimientos del jugador 1
-        String[][] player1Moves = survivalMoves.get("Player 1");
+        String[][] player1Moves = survivalMoves.get(player1Name);
         for (int i = 0; i < player1Pokemon.size(); i++) {
-            selectedMoves.put("Jugador 1_" + player1Pokemon.get(i), List.of(player1Moves[i]));
+            selectedMoves.put(player1Name + "_" + player1Pokemon.get(i), List.of(player1Moves[i]));
         }
 
         // Integrar movimientos del jugador 2
-        String[][] player2Moves = survivalMoves.get("Player 2");
+        String[][] player2Moves = survivalMoves.get(player2Name);
         for (int i = 0; i < player2Pokemon.size(); i++) {
-            selectedMoves.put("Jugador 2_" + player2Pokemon.get(i), List.of(player2Moves[i]));
+            selectedMoves.put(player2Name + "_" + player2Pokemon.get(i), List.of(player2Moves[i]));
         }
     }
 }

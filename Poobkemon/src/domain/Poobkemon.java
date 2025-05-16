@@ -124,6 +124,16 @@ public class Poobkemon {
         battleArenaNormal.statusEffect();
     }
 
+    public void changeTurn() {
+        // Delegar el cambio de turno a la arena de batalla
+        battleArenaNormal.changeTurn();
+    }
+
+    public void setCurrentPokemon(int index) throws PoobkemonException {
+        // Delegar la lógica del cambio de Pokémon a la arena de batalla
+        battleArenaNormal.setCurrentPokemon(index);
+    }
+
 }
 
 

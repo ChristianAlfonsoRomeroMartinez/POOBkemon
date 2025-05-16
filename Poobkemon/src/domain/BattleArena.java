@@ -237,5 +237,16 @@ public abstract class BattleArena {
         }
             
     }
+
+    public void changeTurn() {
+        currentTurn = 1 - currentTurn;
+        //startTurnTimer(currentTurn);
+    }   
+
+    public void setCurrentPokemon(int index) throws PoobkemonException {
+        // Cambia el Pokémon activo al indicado por el jugador
+        Coach currentCoach = getCurrentCoach();
+        currentCoach.switchToPokemon(index);
+    }
 }
 
