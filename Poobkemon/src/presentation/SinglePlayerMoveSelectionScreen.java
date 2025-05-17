@@ -88,8 +88,16 @@ public class SinglePlayerMoveSelectionScreen extends JPanel {
             JOptionPane.showMessageDialog(this, 
                 "¡Selección completada! Estás listo para jugar contra la máquina.",
                 "Listo para jugar", JOptionPane.INFORMATION_MESSAGE);
-                
-            // Aquí se puede implementar la lógica para iniciar la batalla
+    
+            // Iniciar la batalla - NO usamos instanceof
+            PoobkemonGUI gui = (PoobkemonGUI) parentFrame;
+            gui.startHumanVsMachineBattle(
+                playerName, 
+                selectedPokemon, 
+                selectedMoves, 
+                selectedItems, 
+                gameType
+            );
         });
 
         JButton backButton = createMenuButton("Atrás", e -> {

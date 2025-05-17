@@ -1546,6 +1546,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         // Obtener los movimientos seleccionados para cada Pokémon
         String[][] pokemAttacks1 = new String[player1Pokemon.size()][4];
         String[][] pokemAttacks2 = new String[player2Pokemon.size()][4];
+
         for (int i = 0; i < player1Pokemon.size(); i++) {
             List<String> moves = selectedMoves.getOrDefault(player1Name + "_" + player1Pokemon.get(i), new ArrayList<>());
             pokemAttacks1[i] = moves.toArray(new String[0]);
@@ -1964,4 +1965,92 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
             selectedMoves.put(player2Name + "_" + player2Pokemon.get(i), List.of(player2Moves[i]));
         }
     }
+
+    /**
+     * Inicia una batalla contra la máquina con las selecciones del jugador humano
+     */
+    public void startHumanVsMachineBattle(String humanName, List<String> humanPokemon, 
+                                     Map<String, List<String>> selectedMoves, 
+                                     List<String> selectedItems, String machineType) {
+    try {
+        // Preparar datos de la máquina
+        String machineName = machineType + "Machine";
+        List<String> machinePokemon = new ArrayList<>(Poobkemon.getAvailablePokemon().subList(0, 6));
+        
+        // Guardar movimientos en el mapa global
+        for (String pokemon : humanPokemon) {
+            List<String> moves = selectedMoves.get(pokemon);
+            if (moves != null) {
+                this.selectedMoves.put(humanName + "_" + pokemon, moves);
+            }
+        }
+        
+        // Guardar ítems en el mapa global
+        this.playerItems.put(humanName, selectedItems);
+        
+        // Preparar arrays para el dominio
+        ArrayList<String> humanItems = new ArrayList<>(selectedItems);
+        String[][] humanAttacks = new String[humanPokemon.size()][4];
+        
+        for (int i = 0; i < humanPokemon.size(); i++) {
+            List<String> moves = selectedMoves.get(humanPokemon.get(i));
+            if (moves != null) {
+                humanAttacks[i] = moves.toArray(new String[0]);
+            }
+        }
+        
+        // Inicializar el dominio
+        poobkemon = new Poobkemon();
+        poobkemon.startBattleHumanVsMachine(
+            humanName, machineName,
+            new ArrayList<>(humanPokemon),
+            new ArrayList<>(machinePokemon),
+            humanItems, humanAttacks, machineType
+        );
+        
+        // Configurar la UI
+        player1Name = humanName;
+        player2Name = machineName;
+        player1Pokemon = humanPokemon;
+        player2Pokemon = machinePokemon;
+        
+        // Mostrar la pantalla de batalla
+        fondo.setImagenFija(rutaImagenBattle);
+        getContentPane().removeAll();
+        setContentPane(fondo);
+        
+        ShowBattle battleScreen = new BattleHumanVsMachine(
+            humanPokemon, machinePokemon,
+            humanName, machineName,
+            true, poobkemon, this
+        );
+        
+        fondo.add(battleScreen, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, 
+            "Error al iniciar la batalla: " + e.getMessage(), 
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+/**
+ * Obtiene el mapa de movimientos seleccionados para los Pokémon
+ * @return Mapa con los movimientos seleccionados
+ */
+public Map<String, List<String>> getSelectedMoves() {
+    return selectedMoves;
+}
+
+/**
+ * Regresa al menú principal después de terminar una batalla
+ */
+public void returnToMainMenu() {
+    getContentPane().removeAll();
+    fondo.resetToGif(); // Vuelve al GIF animado
+    start(); // Muestra el menú principal
+    revalidate();
+    repaint();
+}
 }

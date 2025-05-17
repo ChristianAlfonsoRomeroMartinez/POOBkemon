@@ -2,13 +2,12 @@ package presentation;
 
 import domain.Poobkemon;
 import domain.PoobkemonException;
-
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.*;
 
 public abstract class ShowBattle extends JPanel {
     // Datos básicos de la batalla
@@ -37,47 +36,51 @@ public abstract class ShowBattle extends JPanel {
     /**
      * Constructor para la pantalla de batalla
      */
-    public ShowBattle(List<String> player1Pokemon, List<String> player2Pokemon, 
-                      String player1Name, String player2Name,
+    public ShowBattle(List<String> p1PokemonList, List<String> p2PokemonList,
+                      String p1NameArg, String p2NameArg,
                       Poobkemon poobkemon, PoobkemonGUI gui) {
-        this.player1Pokemon = new ArrayList<>(player1Pokemon);
-        this.player2Pokemon = new ArrayList<>(player2Pokemon);
-        this.player1Name = player1Name;
-        this.player2Name = player2Name;
+        System.out.println("[ShowBattle Constructor] Args: p1NameArg=" + p1NameArg + ", p2NameArg=" + p2NameArg +
+                           ", p1PokemonList size=" + (p1PokemonList != null ? p1PokemonList.size() : "null") +
+                           ", p2PokemonList size=" + (p2PokemonList != null ? p2PokemonList.size() : "null"));
+        this.player1Pokemon = new ArrayList<>(p1PokemonList);
+        this.player2Pokemon = new ArrayList<>(p2PokemonList);
+        this.player1Name = p1NameArg;
+        this.player2Name = p2NameArg;
         this.poobkemon = poobkemon;
         this.gui = gui;
-        
-        // Inicializa los movimientos desde el dominio
+        System.out.println("[ShowBattle Constructor] Fields set: this.player1Name=" + this.player1Name +
+                           ", this.player2Name=" + this.player2Name);
+
         initializeSelectedMoves();
-        
-        // Configura la pantalla
-        setupBattleScreen();
+        // setupBattleScreen(); // Moved to completeInitialization
+        System.out.println("Constructor ShowBattle (base part) completado");
     }
     
+    /**
+     * Completes the initialization of the ShowBattle screen, including UI setup.
+     * This should be called by subclasses after their own specific initialization is done.
+     */
+    protected void completeInitialization() {
+        setupBattleScreen();
+        System.out.println("[ShowBattle] completeInitialization finished.");
+    }
+
     /**
      * Inicializa los movimientos desde el dominio
      */
     protected void initializeSelectedMoves() {
-        if (poobkemon != null) {
-            // Obtener los movimientos de Survival si estamos en ese modo
-            Map<String, String[][]> survivalMoves = poobkemon.getSurvivalMoves();
-            if (!survivalMoves.isEmpty()) {
-                processSurvivalMoves(survivalMoves);
-                return;
+        if (gui != null && gui.getSelectedMoves() != null) {
+            // Clear local selectedMoves and copy from GUI's map
+            this.selectedMoves.clear();
+            for (Map.Entry<String, List<String>> entry : gui.getSelectedMoves().entrySet()) {
+                this.selectedMoves.put(entry.getKey(), new ArrayList<>(entry.getValue()));
             }
-            
-            // Si no es survival, intentar obtener los movimientos del dominio
-            try {
-                // Aquí deberías obtener los movimientos del BattleArena
-                // Esto varía según cómo esté estructurado tu dominio
-                if (gui != null) {
-                    // Recuperar los movimientos ya seleccionados en la GUI
-                    selectedMoves = new HashMap<>(gui.getSelectedMoves());
-                }
-            } catch (Exception e) {
-                System.err.println("Error al inicializar movimientos: " + e.getMessage());
-            }
+            System.out.println("[ShowBattle.initializeSelectedMoves] Moves copied from GUI. Total keys: " + this.selectedMoves.size());
+            // this.selectedMoves.forEach((key, value) -> System.out.println("  Key: " + key + ", Moves: " + value)); // Optional detailed log
+        } else {
+            System.out.println("[ShowBattle.initializeSelectedMoves] GUI or GUI's selectedMoves is null. Cannot initialize moves.");
         }
+        // ... (keep survival mode logic if needed)
     }
     
     /**
@@ -337,8 +340,10 @@ public abstract class ShowBattle extends JPanel {
      */
     protected void switchTurn() {
         isPlayer1Turn = !isPlayer1Turn;
-        updateBattleButtons();
-        startTurnTimer();
+        if (poobkemon != null) {
+            poobkemon.changeTurn(); // Synchronize with domain layer
+        }
+        // updateBattleButtons(); // This will be called by the concrete class's switchTurn override
     }
     
     /**

@@ -138,15 +138,14 @@ public class Poobkemon {
      * Inicia una batalla entre un humano y una máquina (humano como player 1)
      */
     public void startBattleHumanVsMachine(String humanName, String machineName, 
-                               ArrayList<String> humanPokemon, ArrayList<String> machinePokemon,
-                               ArrayList<String> humanItems, String[][] humanAttacks, 
-                               String machineType) throws PoobkemonException {
-        // Crear una arena de batalla apropiada
-        battleArenaNormal = new BattleArenaNormal();
+                           ArrayList<String> humanPokemon, ArrayList<String> machinePokemon,
+                           ArrayList<String> humanItems, String[][] humanAttacks, 
+                           String machineType) throws PoobkemonException {
+        // Crear una arena de batalla para máquinas
+        battleArenaNormal = new BattleArenaMachine();
         
-        // Configurar los entrenadores (humano y máquina)
-        // La máquina necesita una configuración especial basada en su tipo
-        battleArenaNormal.setupHumanVsMachine(humanName, machineName, 
+        // Usar el método específico de BattleArenaMachine
+        ((BattleArenaMachine) battleArenaNormal).setupHumanVsMachine(humanName, machineName, 
             humanPokemon, machinePokemon, 
             humanItems, humanAttacks, machineType);
     }
@@ -155,14 +154,14 @@ public class Poobkemon {
      * Inicia una batalla entre una máquina y un humano (máquina como player 1)
      */
     public void startBattleMachineVsHuman(String machineName, String humanName, 
-                               ArrayList<String> machinePokemon, ArrayList<String> humanPokemon,
-                               ArrayList<String> humanItems, String[][] humanAttacks, 
-                               String machineType) throws PoobkemonException {
-        // Crear una arena de batalla apropiada
-        battleArenaNormal = new BattleArenaNormal();
+                           ArrayList<String> machinePokemon, ArrayList<String> humanPokemon,
+                           ArrayList<String> humanItems, String[][] humanAttacks, 
+                           String machineType) throws PoobkemonException {
+        // Crear una arena de batalla para máquinas
+        battleArenaNormal = new BattleArenaMachine();
         
-        // Configurar los entrenadores (máquina y humano)
-        battleArenaNormal.setupMachineVsHuman(machineName, humanName, 
+        // Usar el método específico de BattleArenaMachine
+        ((BattleArenaMachine) battleArenaNormal).setupMachineVsHuman(machineName, humanName, 
             machinePokemon, humanPokemon, 
             humanItems, humanAttacks, machineType);
     }
@@ -171,13 +170,13 @@ public class Poobkemon {
      * Inicia una batalla entre dos máquinas
      */
     public void startBattleMachineVsMachine(String machine1Name, String machine2Name, 
-                                ArrayList<String> machine1Pokemon, ArrayList<String> machine2Pokemon,
-                                String machine1Type, String machine2Type) throws PoobkemonException {
-        // Crear una arena de batalla apropiada
-        battleArenaNormal = new BattleArenaNormal();
+                            ArrayList<String> machine1Pokemon, ArrayList<String> machine2Pokemon,
+                            String machine1Type, String machine2Type) throws PoobkemonException {
+        // Crear una arena de batalla para máquinas
+        battleArenaNormal = new BattleArenaMachine();
         
-        // Configurar las dos máquinas
-        battleArenaNormal.setupMachineVsMachine(machine1Name, machine2Name, 
+        // Usar el método específico de BattleArenaMachine
+        ((BattleArenaMachine) battleArenaNormal).setupMachineVsMachine(machine1Name, machine2Name, 
             machine1Pokemon, machine2Pokemon, 
             machine1Type, machine2Type);
     }

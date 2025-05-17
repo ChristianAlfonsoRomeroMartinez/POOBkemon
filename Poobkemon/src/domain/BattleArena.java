@@ -8,7 +8,7 @@ import java.util.TimerTask;
 public abstract class BattleArena {
     private int currentTurn = 0;
     private static final int MAX_TIME_SECONDS = 20;
-    private Coach[] coaches = new Coach[2];
+    protected  Coach[] coaches = new Coach[2];
     private boolean isPaused;
     private Timer turnTimer;
     private Random rand = new Random();

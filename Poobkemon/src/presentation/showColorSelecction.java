@@ -1,5 +1,5 @@
 package presentation;
 
-public class showColorSelecction {
+public class ShowColorSelecction {
 
 }
