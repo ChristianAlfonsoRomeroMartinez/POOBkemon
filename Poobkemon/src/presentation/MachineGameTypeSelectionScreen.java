@@ -73,12 +73,32 @@ public class MachineGameTypeSelectionScreen extends JPanel {
     }
 
     private void handleGameTypeSelection(String gameType) {
-        // Imprimir en consola la elección del usuario
         System.out.println("Modo de juego seleccionado para la máquina: " + gameType);
-
-        // Navegar a la pantalla de selección de Pokémon
+        
+        // Convertir el tipo de juego al formato esperado por las nuevas clases
+        String machineType;
+        switch(gameType) {
+            case "defensiveTrainer":
+                machineType = "Defensive";
+                break;
+            case "attackingTrainer":
+                machineType = "Attacking";
+                break;
+            case "changingTrainer":
+                machineType = "Strategic";  // Suponiendo que "Changing" corresponde a "Strategic"
+                break;
+            case "expertTrainer":
+                machineType = "Expert";
+                break;
+            default:
+                machineType = "Defensive";  // Default por si acaso
+        }
+        
+        // Navegar a la pantalla de selección de Pokémon para el humano
         parentFrame.getContentPane().removeAll();
-        parentFrame.setContentPane(new SinglePlayerPokemonSelectionScreen(parentFrame, gameType));
+        
+        // Pasamos el tipo de máquina para que pueda ser usado al iniciar la batalla
+        parentFrame.setContentPane(new SinglePlayerPokemonSelectionScreen(parentFrame, machineType));
         parentFrame.revalidate();
         parentFrame.repaint();
     }

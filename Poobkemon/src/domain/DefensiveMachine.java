@@ -1,80 +1,106 @@
 package domain;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 public class DefensiveMachine extends Machine {
-    private Random random = new Random();
-
+    
     public DefensiveMachine(String name, ArrayList<Pokemon> pokemons, ArrayList<String> items) {
-        super(name, "Defensive", pokemons, items);
+        super(name, pokemons, items);
     }
-
+    
     @Override
-    public String selectMove() {
-        if (getActivePokemon() == null || getActivePokemon().getAtaques().isEmpty()) {
-            return null;
+    public int selectMove() {
+        Pokemon currentPokemon = getActivePokemon();
+        
+        // Si el Pokémon tiene poca vida, prioriza ataques de estado o defensivos
+        if (currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.3) {
+            // Buscar ataques que aumenten defensa o modifiquen estado
+            for (int i = 0; i < currentPokemon.getAtaques().size(); i++) {
+                Attack attack = currentPokemon.getAtaques().get(i);
+                if (attack.getCategory().equals("Status")) {
+                    return i;
+                }
+            }
         }
         
-        List<Attack> availableAttacks = getActivePokemon().getAtaques();
-        
-        // Primero busca ataques de estado que mejoren defensas
-        Optional<Attack> defensiveStatusMove = availableAttacks.stream()
-            .filter(attack -> attack instanceof StatusAttack)
-            .filter(attack -> {
-                StatusAttack statusAttack = (StatusAttack) attack;
-                String effect = statusAttack.getEffect();
-                return effect.contains("PhysicalDefense") || 
-                       effect.contains("SpecialDefense") || 
-                       effect.contains("Evasion");
-            })
-            .findFirst();
-        
-        if (defensiveStatusMove.isPresent()) {
-            return defensiveStatusMove.get().getName();
+        // Si el oponente tiene ventaja de tipo, usa ataques que sean efectivos
+        if (opponentHasTypeAdvantage()) {
+            return getBestEffectivenessMove();
         }
         
-        // Luego busca ataques que bajen las estadísticas de ataque del oponente
-        Optional<Attack> debuffAttackMove = availableAttacks.stream()
-            .filter(attack -> attack instanceof StatusAttack)
-            .filter(attack -> {
-                StatusAttack statusAttack = (StatusAttack) attack;
-                String effect = statusAttack.getEffect();
-                return effect.contains("PhysicalAttack") || effect.contains("SpecialAttack");
-            })
-            .findFirst();
+        // Por defecto, selecciona un ataque basado en la efectividad
+        int effectiveMove = getBestEffectivenessMove();
         
-        if (debuffAttackMove.isPresent()) {
-            return debuffAttackMove.get().getName();
+        // Si no hay ataques particularmente efectivos, selecciona uno aleatorio
+        if (effectiveMove == 0 && currentPokemon.getAtaques().size() > 1) {
+            return random.nextInt(currentPokemon.getAtaques().size());
         }
         
-        // Si no hay ataques defensivos, selecciona el ataque más fuerte
-        return availableAttacks.stream()
-            .max(Comparator.comparing(Attack::getBaseDamage))
-            .orElse(availableAttacks.get(random.nextInt(availableAttacks.size())))
-            .getName();
+        return effectiveMove;
     }
     
     @Override
     public int selectBestPokemon() {
-        // Selecciona el Pokémon con mejores estadísticas defensivas
-        int bestIndex = 0;
-        int bestDefense = 0;
-        
-        for (int i = 0; i < pokemons.size(); i++) {
-            Pokemon pokemon = pokemons.get(i);
-            if (pokemon.getPs() <= 0) continue; // Ignora Pokémon debilitados
+        // Si el Pokémon actual tiene baja vida, cambia a otro con más resistencia
+        Pokemon currentPokemon = getActivePokemon();
+        if (currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.25) {
+            // Buscar Pokémon con más vida y mejores estadísticas defensivas
+            int bestDefensiveIndex = activePokemonIndex;
+            double bestDefensiveRatio = 0;
             
-            int combinedDefense = pokemon.getPhysicalDefense() + pokemon.getSpecialDefense();
-            if (combinedDefense > bestDefense) {
-                bestDefense = combinedDefense;
-                bestIndex = i;
+            for (int i = 0; i < pokemons.size(); i++) {
+                Pokemon pokemon = pokemons.get(i);
+                
+                // Saltar el Pokémon actual y los debilitados
+                if (i == activePokemonIndex || pokemon.getPs() <= 0) {
+                    continue;
+                }
+                
+                // Calcular ratio defensivo (PS * Defensa / 100)
+                double defensiveRatio = (pokemon.getPs() * pokemon.getDefense()) / 100.0;
+                
+                if (defensiveRatio > bestDefensiveRatio) {
+                    bestDefensiveRatio = defensiveRatio;
+                    bestDefensiveIndex = i;
+                }
+            }
+            
+            return bestDefensiveIndex;
+        }
+        
+        // Si el oponente tiene ventaja de tipo, busca un Pokémon con ventaja
+        if (opponentHasTypeAdvantage()) {
+            int advantageIndex = getPokemonWithTypeAdvantage();
+            if (advantageIndex != activePokemonIndex && pokemons.get(advantageIndex).getPs() > 0) {
+                return advantageIndex;
             }
         }
         
-        return bestIndex;
+        // Si no hay necesidad de cambio, mantén el Pokémon actual
+        return activePokemonIndex;
+    }
+    
+    @Override
+    public boolean shouldUseItem() {
+        Pokemon currentPokemon = getActivePokemon();
+        
+        // Usar item si el Pokémon está por debajo del 40% de salud
+        return currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.4 && !items.isEmpty();
+    }
+    
+    @Override
+    public int selectItem() {
+        Pokemon currentPokemon = getActivePokemon();
+        
+        // Buscar poción o item curativo
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            if (item.getName().contains("Poción") || item.getName().contains("Restaurar")) {
+                return i;
+            }
+        }
+        
+        // Si no hay pociones, usar cualquier item
+        return !items.isEmpty() ? 0 : -1;
     }
 }
