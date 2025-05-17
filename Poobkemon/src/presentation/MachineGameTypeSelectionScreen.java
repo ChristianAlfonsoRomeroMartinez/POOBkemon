@@ -102,13 +102,11 @@ public class MachineGameTypeSelectionScreen extends JPanel {
         parentFrame.revalidate();
         parentFrame.repaint();
     }
-
     private void returnToPreviousScreen() {
-        // Regresa al menú principal configurando un nuevo panel
-        parentFrame.getContentPane().removeAll();
-        parentFrame.setContentPane(new PoobkemonMainMenu(parentFrame)); // Cambia a un JPanel válido
-        parentFrame.revalidate();
-        parentFrame.repaint();
+        ((PoobkemonGUI) parentFrame).getContentPane().removeAll();
+        ((PoobkemonGUI) parentFrame).start(); // Muestra la pantalla principal
+        ((PoobkemonGUI) parentFrame).revalidate();
+        ((PoobkemonGUI) parentFrame).repaint();
     }
 
     @Override

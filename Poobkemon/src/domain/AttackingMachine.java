@@ -22,13 +22,13 @@ public class AttackingMachine extends Machine {
             Attack attack = attacks.get(i);
             
             // Ignorar ataques de estado, prefiere ataques físicos o especiales
-            if (attack.getCategory().equals("Status")) {
+            if (attack.getAttackType().equals("Status")) {
                 continue;
             }
             
             // Calcular daño potencial (potencia * efectividad)
             double effectiveness = calculateEffectiveness(attack, opponent.getActivePokemon());
-            double potentialDamage = attack.getPower() * effectiveness;
+            double potentialDamage = attack.getPowerPoint() * effectiveness;
             
             if (potentialDamage > bestDamage) {
                 bestDamage = potentialDamage;
@@ -68,7 +68,7 @@ public class AttackingMachine extends Machine {
             }
             
             // Calcular ratio ofensivo (Ataque * Velocidad / 100)
-            double offensiveRatio = (pokemon.getAttack() * pokemon.getSpeed()) / 100.0;
+            double offensiveRatio = (pokemon.getPhysicalAttack() * pokemon.getSpeed()) / 100.0;
             
             if (offensiveRatio > bestOffensiveRatio) {
                 bestOffensiveRatio = offensiveRatio;

@@ -21,7 +21,7 @@ public class ExpertMachine extends Machine {
         if (turnsInBattle <= 2) {
             for (int i = 0; i < currentPokemon.getAtaques().size(); i++) {
                 Attack attack = currentPokemon.getAtaques().get(i);
-                if (attack.getCategory().equals("Status")) {
+                if (attack.getAttackType().equals("Status")) {
                     return i;
                 }
             }
@@ -39,9 +39,9 @@ public class ExpertMachine extends Machine {
             for (int i = 0; i < currentPokemon.getAtaques().size(); i++) {
                 Attack attack = currentPokemon.getAtaques().get(i);
                 
-                if (!attack.getCategory().equals("Status")) {
+                if (!attack.getAttackType().equals("Status")) {
                     double effectiveness = calculateEffectiveness(attack, opponentPokemon);
-                    double power = attack.getPower() * effectiveness;
+                    double power = attack.getPowerPoint() * effectiveness;
                     
                     if (power > bestPower) {
                         bestPower = power;
@@ -61,7 +61,7 @@ public class ExpertMachine extends Machine {
             // Buscar ataques que reduzcan estadísticas del oponente
             for (int i = 0; i < currentPokemon.getAtaques().size(); i++) {
                 Attack attack = currentPokemon.getAtaques().get(i);
-                if (attack.getCategory().equals("Status")) {
+                if (attack.getType().equals("Status")) {
                     return i;
                 }
             }
@@ -81,13 +81,13 @@ public class ExpertMachine extends Machine {
             }
             
             double effectiveness = calculateEffectiveness(attack, opponentPokemon);
-            double power = attack.getPower();
+            double power = attack.getPowerPoint();
             
             // Calcular una puntuación combinada
             double overallScore = effectiveness * power * (attack.getAccuracy() / 100.0);
             
             // Para ataques de estado, evaluar de forma diferente
-            if (attack.getCategory().equals("Status")) {
+            if (attack.getType().equals("Status")) {
                 overallScore = 50 * effectiveness;
             }
             

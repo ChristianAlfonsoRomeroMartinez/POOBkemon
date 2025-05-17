@@ -17,7 +17,7 @@ public class DefensiveMachine extends Machine {
             // Buscar ataques que aumenten defensa o modifiquen estado
             for (int i = 0; i < currentPokemon.getAtaques().size(); i++) {
                 Attack attack = currentPokemon.getAtaques().get(i);
-                if (attack.getCategory().equals("Status")) {
+                if (attack.getType().equals("Status")) {
                     return i;
                 }
             }
@@ -57,7 +57,7 @@ public class DefensiveMachine extends Machine {
                 }
                 
                 // Calcular ratio defensivo (PS * Defensa / 100)
-                double defensiveRatio = (pokemon.getPs() * pokemon.getDefense()) / 100.0;
+                double defensiveRatio = (pokemon.getPs() * pokemon.getPhysicalDefense()) / 100.0;
                 
                 if (defensiveRatio > bestDefensiveRatio) {
                     bestDefensiveRatio = defensiveRatio;

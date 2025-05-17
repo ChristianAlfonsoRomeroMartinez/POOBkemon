@@ -337,7 +337,7 @@ public class SoundEffect {
 }
 
 
-    private void start() {
+    public void start() {
         // Cambia a imagen fija para la segunda pantalla
         fondo.setImagenFija(rutaImagen); // Cambia por tu ruta de imagen
         
@@ -1973,6 +1973,7 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
                                      Map<String, List<String>> selectedMoves, 
                                      List<String> selectedItems, String machineType) {
     try {
+         fondo.setImagenFija(rutaImagenBattle);
         // Preparar datos de la máquina
         String machineName = machineType + "Machine";
         List<String> machinePokemon = new ArrayList<>(Poobkemon.getAvailablePokemon().subList(0, 6));

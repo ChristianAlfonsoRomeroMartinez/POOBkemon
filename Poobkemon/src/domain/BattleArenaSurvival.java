@@ -11,7 +11,7 @@ public class BattleArenaSurvival extends BattleArena {
     }
 
     @Override
-    public void attack(String moveName, String itself) throws PoobkemonException {
+    public int attack(String moveName, String itself) throws PoobkemonException {
         Coach currentCoach = getCurrentCoach();
         Coach opponentCoach = getOpponentCoach();
 
@@ -24,18 +24,20 @@ public class BattleArenaSurvival extends BattleArena {
             .findFirst()
             .orElse(null); // Si no encuentra el ataque, devuelve null
 
-        if (attack.getPowerPoint() > 0){
+        int damage = 0;
+
+        if (attack != null && attack.getPowerPoint() > 0) {
             if ("itself".equals(itself)) {
-            // Realiza el ataque sobre sí mismo
-            
-            attacker.attack(attacker, attack);
+                // Realiza el ataque sobre sí mismo
+                damage = attacker.attack(attacker, attack);
             } else {
-            // Realiza el ataque sobre el oponente
-            attacker.attack(defender, attack);
+                // Realiza el ataque sobre el oponente
+                damage = attacker.attack(defender, attack);
             }
         } else {
-            System.out.println("No puedes usar este ataque, no tienes PP.");
+            System.out.println("No puedes usar este ataque, no tienes PP o el ataque no existe.");
         }
+        return damage;
     }
 
     
