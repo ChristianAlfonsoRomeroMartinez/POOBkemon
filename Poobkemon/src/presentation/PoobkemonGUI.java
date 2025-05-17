@@ -1686,7 +1686,13 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
     List<String> opponentPokemonList = isPlayer1 ? player2Pokemon : player1Pokemon;
     JPanel opponentPanel = isPlayer1 ? player2Panel : player1Panel;
 
-    int damage = (int) (Math.random() * 20) + 10; // Daño aleatorio
+    int damage = 0;
+    try {
+        damage = poobkemon.attack(moveName, isPlayer1 ? player1Name : player2Name);
+    } catch (PoobkemonException e) {
+        JOptionPane.showMessageDialog(this, "Error al calcular el daño: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }// Ahora puedes usar 'damage' para actualizar la barra de vida, mostrar mensajes, etc.
     JProgressBar opponentHealthBar = (JProgressBar) opponentPanel.getClientProperty("healthBar");
     int newHealth = Math.max(0, opponentHealthBar.getValue() - damage);
     opponentHealthBar.setValue(newHealth);
@@ -1703,6 +1709,7 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
     }
 
     switchTurn(); // Cambiar el turno después de realizar un movimiento
+    poobkemon.changeTurn(); // Cambiar el turno en el dominio
 }
     
     private void updateBattlePokemonPanel(JPanel panel, String pokemonName, boolean isPlayer) {

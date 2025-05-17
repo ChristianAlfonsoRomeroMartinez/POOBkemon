@@ -145,7 +145,7 @@ public abstract class BattleArena {
         return coaches;
     }
 
-    public void attack(String moveName, String itself) throws PoobkemonException {
+    public int attack(String moveName, String itself) throws PoobkemonException {
         Coach currentCoach = getCurrentCoach();
         Coach opponentCoach = getOpponentCoach();
 
@@ -158,20 +158,27 @@ public abstract class BattleArena {
             .findFirst()
             .orElse(null); // Si no encuentra el ataque, devuelve null
 
-        if (attack.getPowerPoint() > 0){
+        int damage = 0;
+
+        System.out.println("Movimientos del Pokémon atacante (" + attacker.getName() + "):");
+        for (Attack a : attacker.getAtaques()) {
+            System.out.println("- " + a.getName() + " (PP: " + a.getPowerPoint() + ")");
+        }
+        System.out.println("Intentando usar: " + moveName);
+
+        if (attack != null && attack.getPowerPoint() > 0) {
             if ("itself".equals(itself)) {
-            // Realiza el ataque sobre sí mismo
-            
-            attacker.attack(attacker, attack);
-            // Cambia el turno al siguiente entrenador
-            nextTurn();
+                // Realiza el ataque sobre sí mismo
+                damage = attacker.attack(attacker, attack);
+                nextTurn();
             } else {
-            // Realiza el ataque sobre el oponente
-            attacker.attack(defender, attack);
+                // Realiza el ataque sobre el oponente
+                damage = attacker.attack(defender, attack);
             }
         } else {
-            System.out.println("No puedes usar este ataque, no tienes PP.");
+            System.out.println("No puedes usar este ataque, no tienes PP o el ataque no existe.");
         }
+        return damage;
     }
 
 

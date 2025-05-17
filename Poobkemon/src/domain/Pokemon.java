@@ -119,26 +119,29 @@ public class Pokemon {
 
     /**
      * Ataca a otro Pokémon con un ataque específico.
+     * @return el daño causado
      */
-    public void attack(Pokemon defensor, Attack attack) {
+    public int attack(Pokemon defensor, Attack attack) {
         int daño = attack.calcDaño(this, defensor);
         if (daño > 0) {
             defensor.setPs(defensor.getPs() - daño);
         }
+        return daño;
     }
 
     /**
      * Realiza un ataque a sí mismo o al oponente.
      * @param toItself si true, se ataca a sí mismo.
      * @param attack el ataque a usar.
+     * @return el daño causado
      */
-    public void attack(boolean toItself, Attack attack) {
+    public int attack(boolean toItself, Attack attack) {
         if (!ataques.contains(attack)) {
             throw new IllegalArgumentException("El Pokémon no conoce este ataque.");
         }
 
         if (toItself) {
-            attackItself(attack);
+            return attackItself(attack);
         } else {
             throw new UnsupportedOperationException("Debes usar attack(Pokemon, Attack) para atacar al oponente.");
         }
@@ -146,11 +149,13 @@ public class Pokemon {
 
     /**
      * Aplica un ataque a sí mismo (por ejemplo, por confusión).
+     * @return el daño causado
      */
-    private void attackItself(Attack attack) {
+    private int attackItself(Attack attack) {
         int daño = attack.calcDaño(this, this); // Atacándose a sí mismo
         if (daño > 0) {
             setPs(ps - daño);
         }
+        return daño;
     }
 }

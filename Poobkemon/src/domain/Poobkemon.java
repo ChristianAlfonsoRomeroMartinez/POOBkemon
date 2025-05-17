@@ -61,10 +61,10 @@ public class Poobkemon {
         return allAttacks;
     } 
 
-    public void attack(String moveName, String itself) throws PoobkemonException {
+    public int attack(String moveName, String itself) throws PoobkemonException {
         // Delegar la lógica del ataque a la arena de batalla
-        battleArenaNormal.attack(moveName, itself);
-
+        return battleArenaNormal.attack(moveName, itself);
+        
     }
 
     /**
