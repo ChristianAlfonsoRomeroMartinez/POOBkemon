@@ -1945,13 +1945,14 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
         Map<String, String[][]> survivalMoves = poobkemon.getSurvivalMoves();
 
         // Integrar movimientos del jugador 1
-        String[][] player1Moves = survivalMoves.get(player1Name);
+        String[][] player1Moves = survivalMoves.get("Player 1");
+        System.out.println("probando0");
         for (int i = 0; i < player1Pokemon.size(); i++) {
             selectedMoves.put(player1Name + "_" + player1Pokemon.get(i), List.of(player1Moves[i]));
         }
 
         // Integrar movimientos del jugador 2
-        String[][] player2Moves = survivalMoves.get(player2Name);
+        String[][] player2Moves = survivalMoves.get("Player 2");
         for (int i = 0; i < player2Pokemon.size(); i++) {
             selectedMoves.put(player2Name + "_" + player2Pokemon.get(i), List.of(player2Moves[i]));
         }
