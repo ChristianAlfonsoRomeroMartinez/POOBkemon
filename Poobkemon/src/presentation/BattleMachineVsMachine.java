@@ -5,6 +5,7 @@ import domain.PoobkemonException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -102,64 +103,162 @@ public class BattleMachineVsMachine extends ShowBattle {
     }
 
     private void executeNextMachineMove() {
-        // Obtener la información de la máquina actual
+        if (poobkemon.getBattleArena().isBattleFinished()) {
+            handleBattleEnd();
+            return;
+        }
+
+        // Determinar qué jugador es la máquina actual
         List<String> currentMachinePokemonList = isPlayer1Turn ? player1Pokemon : player2Pokemon;
         JPanel currentMachinePanel = isPlayer1Turn ? player1Panel : player2Panel;
-        String currentMachinePlayer = isPlayer1Turn ? player1Name : player2Name;
-        
+        String currentMachineName = isPlayer1Turn ? player1Name : player2Name;
+
+        // Definir al oponente
+        List<String> opponentPokemonList = isPlayer1Turn ? player2Pokemon : player1Pokemon;
+        JPanel opponentPanel = isPlayer1Turn ? player2Panel : player1Panel;
+        String opponentName = isPlayer1Turn ? player2Name : player1Name;
+
         // Obtener el Pokémon actual
         String currentPokemon = (String) currentMachinePanel.getClientProperty("pokemonName");
-        
-        // Obtener los movimientos disponibles
-        List<String> availableMoves = getSelectedMoves(currentMachinePlayer, currentPokemon);
-        
-        if (availableMoves != null && !availableMoves.isEmpty()) {
-            // Seleccionar un movimiento aleatorio (en una implementación real,
-            // esto debería usar la estrategia de la máquina)
+        if (currentPokemon == null && !currentMachinePokemonList.isEmpty()) {
+            currentPokemon = currentMachinePokemonList.get(0);
+            currentMachinePanel.putClientProperty("pokemonName", currentPokemon);
+        }
+
+        // Decidir si cambiar de Pokémon (puedes mejorar la lógica usando el dominio)
+        boolean shouldSwitchPokemon = random.nextInt(100) < 20;
+
+        if (shouldSwitchPokemon && currentMachinePokemonList.size() > 1) {
+            int newPokemonIndex;
+            String newPokemonName;
+            do {
+                newPokemonIndex = random.nextInt(currentMachinePokemonList.size());
+                newPokemonName = currentMachinePokemonList.get(newPokemonIndex);
+            } while (newPokemonName.equals(currentPokemon));
+
+            try {
+                poobkemon.switchToPokemon(newPokemonIndex);
+                updateBattlePokemonPanel(currentMachinePanel, newPokemonName, isPlayer1Turn);
+                JOptionPane.showMessageDialog(this,
+                    currentMachineName + " cambió a " + newPokemonName + ".",
+                    "Cambio de Pokémon", JOptionPane.INFORMATION_MESSAGE);
+                switchTurn();
+                return;
+            } catch (domain.PoobkemonException e) {
+                System.out.println("Error al cambiar Pokémon: " + e.getMessage());
+            }
+        }
+
+        // Si no cambia, realiza un ataque
+        List<String> availableMoves = getSelectedMoves(currentMachineName, currentPokemon);
+        if (availableMoves == null || availableMoves.isEmpty()) {
+            availableMoves = new ArrayList<>();
+            List<String> allAttacks = domain.Poobkemon.getAvailableAttacks();
+            for (int i = 0; i < 4 && i < allAttacks.size(); i++) {
+                availableMoves.add(allAttacks.get(random.nextInt(allAttacks.size())));
+            }
+            gui.getSelectedMoves().put(currentMachineName + "_" + currentPokemon, availableMoves);
+        }
+
+        if (!availableMoves.isEmpty()) {
             String selectedMove = availableMoves.get(random.nextInt(availableMoves.size()));
-            
-            // Mostrar un mensaje con el movimiento seleccionado
-            JOptionPane.showMessageDialog(this, 
-                currentMachinePlayer + " usa " + selectedMove, 
-                "Turno de " + currentMachinePlayer, JOptionPane.INFORMATION_MESSAGE);
-            
-            // Ejecutar el movimiento
-            handleMoveAction(selectedMove, currentMachinePokemonList, currentMachinePanel, isPlayer1Turn);
+            try {
+                int damage = poobkemon.attack(selectedMove, "");
+                JProgressBar opponentHealthBar = (JProgressBar) opponentPanel.getClientProperty("healthBar");
+                if (opponentHealthBar != null) {
+                    int currentHealth = opponentHealthBar.getValue();
+                    int newHealth = Math.max(0, currentHealth - damage);
+                    opponentHealthBar.setValue(newHealth);
+                    if (newHealth <= 20) opponentHealthBar.setForeground(Color.RED);
+                    else if (newHealth <= 50) opponentHealthBar.setForeground(Color.YELLOW);
+                    else opponentHealthBar.setForeground(Color.GREEN);
+                }
+                String message = currentMachineName + " usó " + selectedMove + " contra " + opponentName + "!";
+                if (damage > 0) {
+                    message += "\n¡Causó " + damage + " puntos de daño!";
+                } else {
+                    message += "\nEl ataque no fue efectivo.";
+                }
+                JOptionPane.showMessageDialog(this, message, "Turno de " + currentMachineName, JOptionPane.INFORMATION_MESSAGE);
+
+                if (opponentHealthBar != null && opponentHealthBar.getValue() == 0) {
+                    handlePokemonDefeated(opponentPokemonList, opponentPanel, isPlayer1Turn);
+                } else {
+                    switchTurn();
+                }
+            } catch (domain.PoobkemonException e) {
+                JOptionPane.showMessageDialog(this,
+                    "Error al usar " + selectedMove + ": " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                switchTurn();
+            }
         } else {
-            // Si no hay movimientos disponibles
-            JOptionPane.showMessageDialog(this, 
-                currentMachinePlayer + " no tiene movimientos disponibles.", 
-                "Turno de " + currentMachinePlayer, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                currentMachineName + " no tiene movimientos disponibles. Pasando turno.",
+                "Turno de " + currentMachineName, JOptionPane.INFORMATION_MESSAGE);
             switchTurn();
         }
     }
 
-    @Override
-    protected void updateBattleButtons() {
-        // No se necesita actualizar botones de ataque aquí
-        // Solo informamos del cambio de turno
-        JOptionPane.showMessageDialog(this, 
-            "Ahora es el turno de " + (isPlayer1Turn ? player1Name : player2Name), 
-            "Cambio de Turno", JOptionPane.INFORMATION_MESSAGE);
+    private void handlePokemonDefeated(List<String> opponentPokemonList, JPanel opponentPanel, boolean isPlayerAttacking) {
+        // Eliminar el Pokémon derrotado
+        String defeatedPokemon = opponentPokemonList.remove(0);
+        
+        if (opponentPokemonList.isEmpty()) {
+            // Si no quedan Pokémon, la batalla ha terminado
+            String winnerName = isPlayerAttacking ? player1Name : player2Name;
+            
+            JOptionPane.showMessageDialog(this, 
+                defeatedPokemon + " ha sido derrotado.\n" +
+                winnerName + " ha ganado la batalla!", 
+                "Fin de la Batalla", JOptionPane.INFORMATION_MESSAGE);
+            
+            // Detener el autoplay
+            if (autoplayTimer != null && autoplayTimer.isRunning()) {
+                autoplayTimer.stop();
+            }
+            
+            // Regresar al menú principal
+            gui.returnToMainMenu();
+        } else {
+            // Si quedan Pokémon, mostrar el siguiente
+            String nextPokemon = opponentPokemonList.get(0);
+            
+            JOptionPane.showMessageDialog(this, 
+                defeatedPokemon + " ha sido derrotado.\n" +
+                "Enviando a " + nextPokemon + ".", 
+                "Pokémon Derrotado", JOptionPane.INFORMATION_MESSAGE);
+            
+            // Actualizar la UI con el siguiente Pokémon
+            updateBattlePokemonPanel(opponentPanel, nextPokemon, !isPlayerAttacking);
+            
+            // Cambiar turno
+            switchTurn();
+        }
     }
 
-    @Override
-    protected void onTimerEnd() {
-        // En este caso, simplemente cambiamos de turno sin mostrar mensajes,
-        // ya que las máquinas no tienen límite de tiempo real
-        switchTurn();
-    }
-    
-    @Override
-    protected void startTurnTimer() {
-        // No utilizamos el temporizador normal para máquina vs máquina
-        // En su lugar, nos basamos en el autoplayTimer
-    }
-    
-    @Override
-    protected void switchTurn() {
-        isPlayer1Turn = !isPlayer1Turn;
-        updateBattleButtons();
-        // No reiniciamos el temporizador normal aquí
+    private void handleBattleEnd() {
+        // Detener el autoplay
+        if (autoplayTimer != null && autoplayTimer.isRunning()) {
+            autoplayTimer.stop();
+        }
+        
+        // Determinar el ganador
+        domain.Coach[] coaches = poobkemon.getBattleArena().getCoaches();
+        String winnerMessage;
+        
+        if (coaches[0].areAllPokemonFainted()) {
+            winnerMessage = player2Name + " ha ganado la batalla!";
+        } else if (coaches[1].areAllPokemonFainted()) {
+            winnerMessage = player1Name + " ha ganado la batalla!";
+        } else {
+            winnerMessage = "La batalla ha terminado en empate.";
+        }
+        
+        JOptionPane.showMessageDialog(this, 
+            winnerMessage + "\nVolviendo al menú principal.", 
+            "Batalla Terminada", JOptionPane.INFORMATION_MESSAGE);
+        
+        gui.returnToMainMenu();
     }
 }

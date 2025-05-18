@@ -361,4 +361,13 @@ public abstract class ShowBattle extends JPanel {
      * Crea el panel de acciones específico para cada tipo de batalla
      */
     protected abstract JPanel createActionPanel();
+    
+    /**
+     * Cambia el fondo de la ventana principal usando la ruta especificada.
+     */
+    protected void setBattleBackground(String imagePath) {
+        if (gui != null && gui.getFondo() != null) {
+            gui.getFondo().setImagenFija(imagePath);
+        }
+    }
 }

@@ -583,7 +583,12 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
     
         JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true, 220, 55);
         machineVsMachineBtn.addActionListener(e -> {
-            System.out.println("Machine vs Machine selected");
+            buttonSound.play();
+            // Aquí debes mostrar la pantalla de selección de tipo de máquina para ambos
+            getContentPane().removeAll();
+            setContentPane(new MachineVsMachineSelectionScreen(this));
+            revalidate();
+            repaint();
         });
     
         buttonPanel.add(humanVsHumanBtn);
@@ -596,7 +601,7 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
         contentPanel.add(buttonPanel, BorderLayout.CENTER);
     
         // 9. Botón BACK (derecha inferior)
-        JButton backBtn = createMenuButton("BACK", buttonFont, true, 200, 55);
+        JButton backBtn = createMenuButton("BACK", buttonFont, true,200,55);
         backBtn.addActionListener(e -> start()); // Volver al menú principal
         
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -749,7 +754,12 @@ private JButton createMenuButton(String text, Font font, boolean enabled, int wi
     
         JButton machineVsMachineBtn = createMenuButton("MACHINE vs MACHINE", buttonFont, true,220,55);
         machineVsMachineBtn.addActionListener(e -> {
-            System.out.println(gameMode + " mode - Machine vs Machine selected");
+            buttonSound.play();
+            // Aquí debes mostrar la pantalla de selección de tipo de máquina para ambos
+            getContentPane().removeAll();
+            setContentPane(new MachineVsMachineSelectionScreen(this));
+            revalidate();
+            repaint();
         });
     
         buttonPanel.add(humanVsHumanBtn);
@@ -1165,8 +1175,8 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         selectedItemList.setFont(new Font(font, Font.PLAIN, 14));
         selectedItemList.setBackground(new Color(0, 51, 102)); // Fondo azul oscuro
         selectedItemList.setForeground(new Color(204, 255, 204)); // Texto verde claro
-        selectedItemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul oscuro
-    
+        selectedItemList.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 102), 2)); // Borde azul
+
         addButton.addActionListener(e -> {
             String selectedItem = itemList.getSelectedValue();
             if (selectedItem != null && selectedItemModel.size() < 4) {
@@ -1205,6 +1215,23 @@ private List<String> getSelectedItems(JPanel playerPanel) {
         playerPanel.putClientProperty("selectedItemList", selectedItemList);
     
         return playerPanel;
+    }
+
+    private void showCoinFlipAndStartBattle(List<String> player1Pokemon, List<String> player2Pokemon) {
+        getContentPane().removeAll();
+        setContentPane(new CoinFlipScreen(this, result -> {
+            if ("cara".equals(result)) {
+                showBattleScreen(player1Pokemon, player2Pokemon);
+            } else {
+                showBattleScreen(player2Pokemon, player1Pokemon);
+            }
+        }));
+        revalidate();
+        repaint();
+    }
+
+    public FondoAnimado getFondo() {
+        return fondo;
     }
 
     public static void main(String[] args) {
@@ -1250,7 +1277,7 @@ private List<String> getSelectedItems(JPanel playerPanel) {
             }
     
             // Mostrar la pantalla de batalla
-            showBattleScreen(player1Pokemon, player2Pokemon);
+            showCoinFlipAndStartBattle(player1Pokemon, player2Pokemon);
         });
     
         JButton backButton = createMenuButton("BACK", new Font(font, Font.BOLD, 18), true, 200, 50);
@@ -1709,6 +1736,8 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
         updateBattlePokemonPanel(opponentPanel, opponentPokemonList.get(0), !isPlayer1);
     }
 
+
+
     switchTurn(); // Cambiar el turno después de realizar un movimiento
     poobkemon.changeTurn(); // Cambiar el turno en el dominio
 }
@@ -1942,8 +1971,7 @@ private JPanel createMovesPanel(List<String> pokemonList, JPanel playerPanel, bo
             integrateSurvivalMoves(player1Pokemon, player2Pokemon);
 
             // Mostrar la pantalla de batalla
-            showBattleScreen(player1Pokemon, player2Pokemon);
-
+        showCoinFlipAndStartBattle(player1Pokemon, player2Pokemon);
         } catch (PoobkemonException e) {
             JOptionPane.showMessageDialog(this, "Error al iniciar el modo Survival: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -2053,5 +2081,128 @@ public void returnToMainMenu() {
     start(); // Muestra el menú principal
     revalidate();
     repaint();
+}
+/**
+ * Inicia una batalla entre dos máquinas
+ * @param machine1Type Tipo de la primera máquina
+ * @param machine2Type Tipo de la segunda máquina
+ */
+public void startMachineVsMachineBattle(String machine1Type, String machine2Type) {
+    try {
+        fondo.setImagenFija(rutaImagenBattle);
+
+        // Nombres de las máquinas
+        String machine1Name = machine1Type + "Machine1";
+        String machine2Name = machine2Type + "Machine2";
+
+        // Seleccionar Pokémon aleatorios para ambas máquinas
+        List<String> availablePokemon = Poobemon.getAvailablePokemon();
+        Collections.shuffle(availablePokemon);
+
+        List<String> machine1Pokemon = new ArrayList<>(availablePokemon.subList(0, 6));
+        List<String> machine2Pokemon = new ArrayList<>(availablePokemon.subList(6, 12));
+
+        // Asignar movimientos a cada Pokémon de ambas máquinas
+        Random random = new Random();
+
+        List<String> machine1Attacks = getAttacksForMachineType(machine1Type);
+        for (String pokemonName : machine1Pokemon) {
+            List<String> moves = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                moves.add(machine1Attacks.get(random.nextInt(machine1Attacks.size())));
+            }
+            this.selectedMoves.put(machine1Name + "_" + pokemonName, moves);
+        }
+
+        List<String> machine2Attacks = getAttacksForMachineType(machine2Type);
+        for (String pokemonName : machine2Pokemon) {
+            List<String> moves = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                moves.add(machine2Attacks.get(random.nextInt(machine2Attacks.size())));
+            }
+            this.selectedMoves.put(machine2Name + "_" + pokemonName, moves);
+        }
+
+        // Inicializar el dominio
+        poobkemon = new Poobkemon();
+        poobkemon.startBattleMachineVsMachine(
+            machine1Name,
+            machine2Name,
+            new ArrayList<>(machine1Pokemon),
+            new ArrayList<>(machine2Pokemon),
+            machine1Type,
+            machine2Type
+        );
+
+        // Configurar la UI
+        this.player1Name = machine1Name;
+        this.player2Name = machine2Name;
+        this.player1Pokemon = new ArrayList<>(machine1Pokemon);
+        this.player2Pokemon = new ArrayList<>(machine2Pokemon);
+
+        // Mostrar la pantalla de batalla
+        getContentPane().removeAll();
+        setContentPane(fondo);
+
+        ShowBattle battleScreen = new BattleMachineVsMachine(
+            this.player1Pokemon,
+            this.player2Pokemon,
+            this.player1Name,
+            this.player2Name,
+            poobkemon,
+            this
+        );
+
+        fondo.add(battleScreen, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+            "Error al iniciar la batalla: " + e.getMessage(),
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+/**
+ * Obtiene la lista de ataques apropiada para un tipo de máquina
+ */
+private List<String> getAttacksForMachineType(String machineType) {
+    List<String> attacks = new ArrayList<>();
+    
+    switch (machineType) {
+        case "Defensive":
+            // Máquina defensiva prefiere ataques de estado y defensivos
+            attacks.addAll(Poobkemon.getStatusAttacks());
+            attacks.addAll(Poobkemon.getSpecialAttacks().subList(0, 
+                Math.min(10, Poobkemon.getSpecialAttacks().size())));
+            break;
+        case "Attacking":
+            // Máquina atacante prefiere ataques físicos y potentes
+            attacks.addAll(Poobkemon.getPhysicalAttacks());
+            break;
+        case "Strategic":
+        case "Expert":
+            // Máquinas avanzadas usan una mezcla balanceada
+            List<String> physical = Poobkemon.getPhysicalAttacks();
+            List<String> special = Poobkemon.getSpecialAttacks();
+            List<String> status = Poobkemon.getStatusAttacks();
+            
+            attacks.addAll(physical.subList(0, Math.min(8, physical.size())));
+            attacks.addAll(special.subList(0, Math.min(8, special.size())));
+            attacks.addAll(status.subList(0, Math.min(4, status.size())));
+            break;
+        default:
+            // Por defecto, usar todos los ataques disponibles
+            attacks.addAll(Poobkemon.getAvailableAttacks());
+    }
+    
+    // Asegurarse de que hay suficientes ataques
+    if (attacks.isEmpty()) {
+        attacks.addAll(Poobkemon.getAvailableAttacks());
+    }
+    
+    return attacks;
 }
 }

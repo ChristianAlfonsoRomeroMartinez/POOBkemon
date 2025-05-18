@@ -9,17 +9,8 @@ import java.util.Random;
 import javax.swing.*;
 
 public class BattleHumanVsMachine extends ShowBattle {
+        private String rutaImagenBattle = "Poobkemon/mult/fondo3.jpeg";
 
-    private void setSpecificBackground(String backgroundPath) {
-        // Example implementation to set a background image
-        try {
-            ImageIcon background = new ImageIcon(backgroundPath);
-            JLabel backgroundLabel = new JLabel(background);
-            this.add(backgroundLabel);
-        } catch (Exception e) {
-            System.err.println("Error setting background: " + e.getMessage());
-        }
-    }
 
     private List<JButton> humanBattleMoveButtons = new ArrayList<>(); // Initialize at declaration
     private List<JButton> humanBattlePokeballButtons = new ArrayList<>(); // Initialize at declaration
@@ -27,20 +18,17 @@ public class BattleHumanVsMachine extends ShowBattle {
     private Random random = new Random();
 
     public BattleHumanVsMachine(List<String> p1Pokemons, List<String> p2Pokemons,
-                      String p1Name, String p2Name, 
-                      boolean isP1Human, Poobkemon poobkemon, PoobkemonGUI gui) {
-    
-        // Llamar al constructor de la clase base
-        super(p1Pokemons, p2Pokemons, p1Name, p2Name, poobkemon, gui);
-        
-        // Establecer el fondo específico para Human vs Machine
-        setSpecificBackground("Poobkemon/mult/fondo3.jpeg");
-        
-        this.isHumanPlayer1 = isP1Human;
-        
-        // Completar la inicialización
-        completeInitialization();
-    }
+                  String p1Name, String p2Name, 
+                  boolean isP1Human, Poobkemon poobkemon, PoobkemonGUI gui) {
+
+    super(p1Pokemons, p2Pokemons, p1Name, p2Name, poobkemon, gui);
+
+    // Cambia el fondo de batalla de forma limpia
+    setBattleBackground("Poobkemon/mult/fondo3.jpeg");
+
+    this.isHumanPlayer1 = isP1Human;
+    completeInitialization();
+}
 
     @Override
     protected JPanel createActionPanel() {

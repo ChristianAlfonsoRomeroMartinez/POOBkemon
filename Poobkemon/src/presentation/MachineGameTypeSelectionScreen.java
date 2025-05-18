@@ -56,6 +56,15 @@ public class MachineGameTypeSelectionScreen extends JPanel {
         backgroundLabel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    private void returnToPreviousScreen() {
+        PoobkemonGUI gui = (PoobkemonGUI) parentFrame;
+        gui.getContentPane().removeAll();
+        gui.start(); // Vuelve a la pantalla principal
+        gui.revalidate();
+        gui.repaint();
+    
+    }
+
     private JButton createMenuButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 16));
@@ -102,12 +111,7 @@ public class MachineGameTypeSelectionScreen extends JPanel {
         parentFrame.revalidate();
         parentFrame.repaint();
     }
-    private void returnToPreviousScreen() {
-        ((PoobkemonGUI) parentFrame).getContentPane().removeAll();
-        ((PoobkemonGUI) parentFrame).start(); // Muestra la pantalla principal
-        ((PoobkemonGUI) parentFrame).revalidate();
-        ((PoobkemonGUI) parentFrame).repaint();
-    }
+
 
     @Override
     protected void paintComponent(Graphics g) {
