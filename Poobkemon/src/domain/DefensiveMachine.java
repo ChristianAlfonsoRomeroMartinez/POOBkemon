@@ -103,4 +103,30 @@ public class DefensiveMachine extends Machine {
         // Si no hay pociones, usar cualquier item
         return !items.isEmpty() ? 0 : -1;
     }
+    
+    @Override
+    public boolean shouldSwitchPokemon() {
+        // La máquina defensiva cambia con más frecuencia para evitar daño
+        Pokemon currentPokemon = getActivePokemon();
+        Pokemon opponentPokemon = opponent.getActivePokemon();
+        
+        // Si está por debajo del 35% de PS, considera cambiar
+        if (currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.35) {
+            return true;
+        }
+        
+        // Si tiene desventaja de tipo moderada o alta
+        if (opponentHasTypeAdvantage()) {
+            int pokemonType = efectivity.numberType.getOrDefault(currentPokemon.getType(), 10);
+            int opponentType = efectivity.numberType.getOrDefault(opponentPokemon.getType(), 10);
+            double typeDisadvantage = efectivity.efectividad(opponentType, pokemonType);
+            
+            // Si la desventaja es significativa (más de 1.5x daño)
+            if (typeDisadvantage >= 1.5) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

@@ -145,4 +145,28 @@ public class BattleArenaMachine extends BattleArenaNormal {
                 return new DefensiveMachine(machineName, pokemonObjects, new ArrayList<>());
         }
     }
+
+    /**
+     * Determina si la máquina debería cambiar su Pokémon activo
+     * @return true si debe cambiar, false si no
+     */
+    public boolean shouldMachineSwitchPokemon() {
+        if (getCurrentCoach() instanceof Machine) {
+            Machine machineCoach = (Machine) getCurrentCoach();
+            return machineCoach.shouldSwitchPokemon();
+        }
+        return false;
+    }
+
+    /**
+     * Obtiene el índice del mejor Pokémon para cambiar
+     * @return índice del Pokémon seleccionado, o -1 si no debería cambiar
+     */
+    public int getMachineBestPokemonIndex() {
+        if (getCurrentCoach() instanceof Machine) {
+            Machine machineCoach = (Machine) getCurrentCoach();
+            return machineCoach.selectBestPokemon();
+        }
+        return -1;
+    }
 }

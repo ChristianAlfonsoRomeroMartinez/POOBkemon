@@ -76,7 +76,7 @@ public class ExpertMachine extends Machine {
             Attack attack = attacks.get(i);
             
             // Saltar ataques sin PP
-            if (attack.getPp() <= 0) {
+            if (attack.getPowerPoint() <= 0) {
                 continue;
             }
             
@@ -84,7 +84,7 @@ public class ExpertMachine extends Machine {
             double power = attack.getPowerPoint();
             
             // Calcular una puntuación combinada
-            double overallScore = effectiveness * power * (attack.getAccuracy() / 100.0);
+            double overallScore = effectiveness * power * (attack.getBaseDamage() / 100.0);
             
             // Para ataques de estado, evaluar de forma diferente
             if (attack.getType().equals("Status")) {
@@ -194,5 +194,41 @@ public class ExpertMachine extends Machine {
         
         // Por defecto, usar el primer ítem disponible
         return !items.isEmpty() ? 0 : -1;
+    }
+    
+    @Override
+    public boolean shouldSwitchPokemon() {
+        // La máquina experta cambia de manera estratégica
+        Pokemon currentPokemon = getActivePokemon();
+        Pokemon opponentPokemon = opponent.getActivePokemon();
+        
+        // Factores a considerar
+        boolean hasLowHealth = currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.3;
+        boolean hasTypeDisadvantage = opponentHasTypeAdvantage();
+        boolean opponentIsStrong = opponentPokemon.getPhysicalAttack() > currentPokemon.getPhysicalDefense() * 1.2;
+        boolean hasUsedMostMoves = hasUsedMostMoves(currentPokemon);
+        
+        // Si se cumplen al menos dos condiciones
+        int factorsPresent = 0;
+        if (hasLowHealth) factorsPresent++;
+        if (hasTypeDisadvantage) factorsPresent++;
+        if (opponentIsStrong) factorsPresent++;
+        if (hasUsedMostMoves) factorsPresent++;
+        
+        return factorsPresent >= 2;
+    }
+
+    // Método auxiliar para verificar si ha usado la mayoría de sus movimientos
+    private boolean hasUsedMostMoves(Pokemon pokemon) {
+        int totalPP = 0;
+        int usedPP = 0;
+        
+        for (Attack attack : pokemon.getAtaques()) {
+            totalPP += attack.getPowerPoint();
+            usedPP += attack.getPowerPoint() - attack.getPowerPoint();
+        }
+        
+        // Si ha usado más del 70% de sus PP totales
+        return totalPP > 0 && (double)usedPP / totalPP > 0.7;
     }
 }

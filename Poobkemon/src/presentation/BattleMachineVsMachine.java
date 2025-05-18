@@ -19,6 +19,11 @@ public class BattleMachineVsMachine extends ShowBattle {
                                  String player1Name, String player2Name,
                                  Poobkemon poobkemon, PoobkemonGUI gui) {
         super(player1Pokemon, player2Pokemon, player1Name, player2Name, poobkemon, gui);
+        
+        // Establecer el fondo específico para Machine vs Machine
+        setSpecificBackground("Poobkemon/mult/fondo3.jpeg");
+        
+        completeInitialization();
     }
 
     @Override

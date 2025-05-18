@@ -164,4 +164,33 @@ public abstract class Machine extends Coach {
         
         return bestPokemonIndex;
     }
+    
+    /**
+     * Determina si la máquina debería cambiar de Pokémon en lugar de atacar.
+     * @return true si debería cambiar de Pokémon, false si debería atacar
+     */
+    public boolean shouldSwitchPokemon() {
+        Pokemon currentPokemon = getActivePokemon();
+        Pokemon opponentPokemon = opponent.getActivePokemon();
+        
+        // Si el Pokémon actual está muy débil (menos del 25% de PS)
+        if (currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.25) {
+            return true;
+        }
+        
+        // Si el oponente tiene ventaja de tipo muy significativa
+        if (opponentHasTypeAdvantage()) {
+            int pokemonType = efectivity.numberType.getOrDefault(currentPokemon.getType(), 10);
+            int opponentType = efectivity.numberType.getOrDefault(opponentPokemon.getType(), 10);
+            double typeDisadvantage = efectivity.efectividad(opponentType, pokemonType);
+            
+            // Si la desventaja es muy grande (más del doble de daño)
+            if (typeDisadvantage >= 2.0) {
+                return true;
+            }
+        }
+        
+        // Por defecto, no cambiar y seguir con el ataque
+        return false;
+    }
 }

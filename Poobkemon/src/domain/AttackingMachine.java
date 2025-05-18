@@ -107,4 +107,29 @@ public class AttackingMachine extends Machine {
         // Si no hay ítems específicos, usar cualquiera
         return !items.isEmpty() ? 0 : -1;
     }
+    
+    @Override
+    public boolean shouldSwitchPokemon() {
+        // La máquina atacante rara vez cambia, solo si está muy débil y sin ventaja
+        Pokemon currentPokemon = getActivePokemon();
+        
+        // Si está crítico (menos del 15% de PS) y no tiene ventaja de tipo
+        if (currentPokemon.getPs() < currentPokemon.getTotalPs() * 0.15 && !hasTypeAdvantageAgainstOpponent()) {
+            return true;
+        }
+        
+        // Los atacantes prefieren quedarse y pelear
+        return false;
+    }
+
+    // Método auxiliar para verificar si tiene ventaja de tipo contra el oponente
+    private boolean hasTypeAdvantageAgainstOpponent() {
+        Pokemon currentPokemon = getActivePokemon();
+        Pokemon opponentPokemon = opponent.getActivePokemon();
+        
+        int ownType = efectivity.numberType.getOrDefault(currentPokemon.getType(), 10);
+        int opponentType = efectivity.numberType.getOrDefault(opponentPokemon.getType(), 10);
+        
+        return efectivity.efectividad(ownType, opponentType) > 1.0;
+    }
 }

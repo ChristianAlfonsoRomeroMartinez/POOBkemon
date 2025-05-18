@@ -25,12 +25,12 @@ public class GameController {
      * @param machinePokemons Lista de nombres de pokémon para la máquina
      */
     public void initializeGame(String playerName, String machineType, 
-                              List<String> playerPokemons, List<String> machinePokemons) {
+                         List<String> playerPokemons, List<String> machinePokemons) {
         // Crear entrenador humano
         humanTrainer = new HumanCoach(playerName, new ArrayList<>(), new ArrayList<>());
         
         // Crear máquina con una lista vacía de pokémon y items (se poblarán después)
-        machineTrainer = MachineFactory.createMachine(machineType, "CPU " + machineType, new ArrayList<>(), new ArrayList<>());
+        machineTrainer = createMachine(machineType, "CPU " + machineType, new ArrayList<>(), new ArrayList<>());
         
         // Añadir Pokémon a cada entrenador
         setupPokemonTeams(playerPokemons, machinePokemons);
@@ -38,6 +38,42 @@ public class GameController {
         // Inicializar estado del juego
         gameOver = false;
         playerTurn = true;
+    }
+    
+    /**
+     * Crea una máquina del tipo especificado
+     * @param machineType Tipo de máquina ("Defensive", "Attacking", "Expert", etc.)
+     * @param machineName Nombre de la máquina
+     * @param pokemons Lista inicial de Pokémon (puede estar vacía)
+     * @param items Lista inicial de ítems (puede estar vacía)
+     * @return La instancia de Machine creada
+     */
+    private Machine createMachine(String machineType, String machineName, 
+                            ArrayList<Pokemon> pokemons, ArrayList<String> items) {
+        // Asegurarse de que el tipo de máquina sea válido
+        String normalizedType = machineType.trim();
+        
+        // Convertir el primer carácter a mayúscula si es necesario
+        if (!normalizedType.isEmpty()) {
+            normalizedType = normalizedType.substring(0, 1).toUpperCase() + 
+                            (normalizedType.length() > 1 ? normalizedType.substring(1) : "");
+        }
+        
+        // Crear la máquina según el tipo especificado
+        switch(normalizedType) {
+            case "Defensive":
+                return new DefensiveMachine(machineName, pokemons, items);
+            case "Attacking":
+                return new AttackingMachine(machineName, pokemons, items);
+            case "Strategic":
+                return new ExpertMachine(machineName, pokemons, items);
+            case "Expert":
+                return new ExpertMachine(machineName, pokemons, items);
+            default:
+                // Por defecto, usamos DefensiveMachine
+                System.out.println("Tipo de máquina no reconocido: " + machineType + ". Usando DefensiveMachine por defecto.");
+                return new DefensiveMachine(machineName, pokemons, items);
+        }
     }
     
     /**
@@ -155,7 +191,7 @@ public class GameController {
                 result = "La máquina cambió a " + machineTrainer.getActivePokemon().getName();
             } else {
                 // Seleccionar movimiento según la estrategia
-                String moveName = machine.selectMove();
+                int moveName = machine.selectMove();
                 result = "La máquina usó " + moveName;
                 
                 // Aquí iría la lógica para aplicar el movimiento

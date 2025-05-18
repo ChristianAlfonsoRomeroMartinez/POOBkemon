@@ -10,28 +10,36 @@ import javax.swing.*;
 
 public class BattleHumanVsMachine extends ShowBattle {
 
+    private void setSpecificBackground(String backgroundPath) {
+        // Example implementation to set a background image
+        try {
+            ImageIcon background = new ImageIcon(backgroundPath);
+            JLabel backgroundLabel = new JLabel(background);
+            this.add(backgroundLabel);
+        } catch (Exception e) {
+            System.err.println("Error setting background: " + e.getMessage());
+        }
+    }
+
     private List<JButton> humanBattleMoveButtons = new ArrayList<>(); // Initialize at declaration
     private List<JButton> humanBattlePokeballButtons = new ArrayList<>(); // Initialize at declaration
     private boolean isHumanPlayer1;
     private Random random = new Random();
 
     public BattleHumanVsMachine(List<String> p1Pokemons, List<String> p2Pokemons,
-                           String p1Name, String p2Name, // These are player1Name and player2Name for ShowBattle
-                           boolean isP1Human, Poobkemon poobkemon, PoobkemonGUI gui) {
-        // p1Name should be human's name, p2Name should be machine's name if isP1Human is true
-        super(p1Pokemons, p2Pokemons, p1Name, p2Name, poobkemon, gui); // Calls ShowBattle constructor (base part)
-        this.isHumanPlayer1 = isP1Human; // This flag determines which side is human
-
-        // humanBattleMoveButtons and humanBattlePokeballButtons are already initialized at declaration
-
-        System.out.println("[BattleHumanVsMachine Constructor] isHumanPlayer1: " + this.isHumanPlayer1);
-        // ShowBattle fields (player1Name, player1Pokemon etc.) are initialized by super() call.
-        // Let's log them here to see what BattleHumanVsMachine inherits.
-        System.out.println("[BattleHumanVsMachine Constructor] Inherited this.player1Name: " + this.player1Name +
-                           ", this.player2Name: " + this.player2Name);
-        System.out.println("[BattleHumanVsMachine Constructor] Inherited this.player1Pokemon: " + this.player1Pokemon);
-
-        completeInitialization(); // Call UI setup now that subclass fields are initialized
+                      String p1Name, String p2Name, 
+                      boolean isP1Human, Poobkemon poobkemon, PoobkemonGUI gui) {
+    
+        // Llamar al constructor de la clase base
+        super(p1Pokemons, p2Pokemons, p1Name, p2Name, poobkemon, gui);
+        
+        // Establecer el fondo específico para Human vs Machine
+        setSpecificBackground("Poobkemon/mult/fondo3.jpeg");
+        
+        this.isHumanPlayer1 = isP1Human;
+        
+        // Completar la inicialización
+        completeInitialization();
     }
 
     @Override
@@ -326,33 +334,101 @@ public class BattleHumanVsMachine extends ShowBattle {
             return;
         }
 
-        // Determine which player is the machine
+        // Determinar qué jugador es la máquina
         String machinePlayerName = isHumanPlayer1 ? this.player2Name : this.player1Name;
         List<String> machinePokemonListForUI = isHumanPlayer1 ? this.player2Pokemon : this.player1Pokemon;
         JPanel machineDisplayPanelForUI = isHumanPlayer1 ? this.player2Panel : this.player1Panel;
-        boolean isMachineActingAsPlayer1 = !this.isHumanPlayer1; // If human is P2, machine is P1
+        boolean isMachineActingAsPlayer1 = !this.isHumanPlayer1;
 
-        // The machine's logic should come from the domain layer (Machine coach)
-        // For now, we'll simulate a random move selection based on its available moves.
+        // Preguntar al dominio si la máquina debería cambiar de Pokémon
+        boolean shouldSwitch = false;
+        int bestPokemonIndex = -1;
+        
+        try {
+            // Consultar al dominio si la máquina debería cambiar Pokémon
+            // Esta es una forma simulada - la lógica real estaría en el dominio
+            shouldSwitch = random.nextInt(10) < 3; // 30% de probabilidad de cambio para pruebas
+            
+            if (shouldSwitch) {
+                // Obtener el índice del mejor Pokémon para cambiar
+                bestPokemonIndex = random.nextInt(machinePokemonListForUI.size());
+                
+                // Verificar que el Pokémon seleccionado no sea el mismo que el actual
+                String currentPokemonName = (String) machineDisplayPanelForUI.getClientProperty("pokemonName");
+                if (currentPokemonName != null && currentPokemonName.equals(machinePokemonListForUI.get(bestPokemonIndex))) {
+                    // Es el mismo, mejor atacar en lugar de cambiar
+                    shouldSwitch = false;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("[executeMachineMove] Error al decidir cambio de Pokémon: " + e.getMessage());
+            shouldSwitch = false;
+        }
+
+        // Si decide cambiar de Pokémon
+        if (shouldSwitch && bestPokemonIndex >= 0 && bestPokemonIndex < machinePokemonListForUI.size()) {
+            try {
+                // Cambiar Pokémon en el dominio
+                poobkemon.switchToPokemon(bestPokemonIndex);
+                
+                // Actualizar la UI
+                String newPokemonName = machinePokemonListForUI.get(bestPokemonIndex);
+                updateBattlePokemonPanel(machineDisplayPanelForUI, newPokemonName, isMachineActingAsPlayer1);
+                
+                // Mostrar mensaje
+                JOptionPane.showMessageDialog(this,
+                    machinePlayerName + " cambió a " + newPokemonName + ".",
+                    "Cambio de Pokémon", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Cambiar turno
+                switchTurn();
+                return;
+            } catch (PoobkemonException e) {
+                System.out.println("[executeMachineMove] Error al cambiar Pokémon: " + e.getMessage());
+                // Si hay error, intentará atacar
+            }
+        }
+
+        // Si no cambia Pokémon o hubo un error al cambiar, realiza un ataque
         String currentMachinePokemonName = (String) machineDisplayPanelForUI.getClientProperty("pokemonName");
         if (currentMachinePokemonName == null && !machinePokemonListForUI.isEmpty()) {
             currentMachinePokemonName = machinePokemonListForUI.get(0);
         }
 
-        // Get moves from the selectedMoves map (populated from PoobkemonGUI)
+        // Obtener movimientos
         List<String> availableMoves = getSelectedMoves(machinePlayerName, currentMachinePokemonName);
+        
+        // Verificar si hay movimientos disponibles
+        if (availableMoves == null || availableMoves.isEmpty()) {
+            System.out.println("[executeMachineMove] ADVERTENCIA: No se encontraron movimientos para " 
+                + machinePlayerName + "_" + currentMachinePokemonName + ". Generando movimientos de emergencia.");
+            
+            availableMoves = new ArrayList<>();
+            List<String> allAttacks = Poobkemon.getAvailableAttacks();
+            
+            if (!allAttacks.isEmpty()) {
+                // Añadir 4 ataques aleatorios
+                for (int i = 0; i < 4 && i < allAttacks.size(); i++) {
+                    availableMoves.add(allAttacks.get(random.nextInt(allAttacks.size())));
+                }
+                
+                // Guardar estos movimientos para futuras referencias
+                gui.getSelectedMoves().put(machinePlayerName + "_" + currentMachinePokemonName, availableMoves);
+                System.out.println("[executeMachineMove] Movimientos de emergencia generados: " + availableMoves);
+            }
+        }
 
-        if (availableMoves != null && !availableMoves.isEmpty()) {
+        if (!availableMoves.isEmpty()) {
             String selectedMove = availableMoves.get(random.nextInt(availableMoves.size()));
             System.out.println("[executeMachineMove] Máquina (" + machinePlayerName + ") va a usar: " + selectedMove);
-            // The last argument to handleMoveAction is 'isActorPlayer1'
             handleMoveAction(selectedMove, machinePokemonListForUI, machineDisplayPanelForUI, isMachineActingAsPlayer1);
         } else {
-            System.out.println("[executeMachineMove] Máquina (" + machinePlayerName + ") no tiene movimientos. Pasando turno.");
+            // Sólo como último recurso si todo lo demás falla
+            System.out.println("[executeMachineMove] ERROR CRÍTICO: Imposible generar movimientos para " + machinePlayerName);
             JOptionPane.showMessageDialog(this,
-                machinePlayerName + " no tiene movimientos disponibles y pasa su turno.",
+                "La máquina no tiene movimientos disponibles. Pasando turno.",
                 "Turno de la Máquina", JOptionPane.INFORMATION_MESSAGE);
-            switchTurn(); // Machine passes, switch back to human or end.
+            switchTurn();
         }
     }
 
